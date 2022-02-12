@@ -18,20 +18,8 @@ const sequelize = new Sequelize(process.env.database, process.env.user_sql, proc
   module.exports = sequelize;
 
 
-// // Connexion mysql
-// const mysql = require('mysql');
-// console.log('Get connection ...');
+  ///--------- TEST ---------///
 
-// const conn = mysql.createConnection({
-//   database: process.env.database,
-//   host: process.env.host_sql,
-//   user: process.env.user_sql,
-//   password: process.env.password_sql
-// });
 
-// conn.connect(function(err) {
-//   if (err) throw err;
-//   console.log("Connecté à la base de donnée");
-// });
-
-// module.exports = conn;
+// const chaton = sequelize.models.Utilisateur.build ({ mail: "rk@mail.fr", mot_psw: "milky", pseudonyme: "chaton"});
+// console.log(chaton); 

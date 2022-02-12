@@ -20,7 +20,7 @@ try {
     console.log(error);
 }
 // app.use('/api/post', postRoutes);
-
+/*
 const dataBase = require('./db');
 
 const users = "SELECT * FROM utilisateur";
@@ -30,7 +30,7 @@ dataBase.query(users, function (err, result) {
     if (err) throw err;
     // if there is no error, you have the result
     console.log(result);
-});
+});*/
 
 // import dotenv
 require('dotenv').config();
