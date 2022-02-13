@@ -6,37 +6,22 @@ const app = express();
 app.use(express.json());
 
 // CORS
-const cors = require('cors');
+const cors = require("cors");
 app.use(cors());
 
 // // Routes
-const userRoutes = require('./routes/user');
-// const postRoutes = require('./routes/post');
+const userRoutes = require("./routes/user");
+// const commentRoutes = require('./routes/comment');
+// const articleRoutes = require('./routes/article');
 
-try {
-    app.use('/api/user', userRoutes);
-
-} catch (error) {
-    console.log(error);
-}
-// app.use('/api/post', postRoutes);
-/*
-const dataBase = require('./db');
-
-const users = "SELECT * FROM utilisateur";
-
-dataBase.query(users, function (err, result) {
-    // if any error while executing above query, throw error
-    if (err) throw err;
-    // if there is no error, you have the result
-    console.log(result);
-});*/
+app.use("/api/user", userRoutes);
+// app.use('/api/comment', commentRoutes);
+// app.use('/api/article', articleRoutes);
 
 // import dotenv
-require('dotenv').config();
+require("dotenv").config();
 
-
-// Ecoute du serveur 
+// Ecoute du serveur
 app.listen(8080, () => {
-    console.log('Serveur OK !');
-})
+  console.log("Serveur écoute !");
+});
