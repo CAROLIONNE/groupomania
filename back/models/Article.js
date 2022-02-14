@@ -15,12 +15,12 @@ const Article = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    dat_crea: {
+    date_crea: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
       allowNull: false,
     },
-    dat_mod: {
+    date_mod: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
@@ -32,7 +32,7 @@ const Article = sequelize.define(
     media: {
       type: DataTypes.STRING(150),
     },
-    texte: {
+    text: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
@@ -48,6 +48,7 @@ const Article = sequelize.define(
 
 // console.log(Article === sequelize.models.Article);
 
-// const article1 = Article.build ({ id_user: 1, titre:"un article",  texte: "Article de super qualité"});
+// const article1 = Article.build ({ id_user: 1, titre:"un article",  text: "Article de super qualité"});
 // console.log(article1);
 // article1.save()
+// .catch(err => console.log(err))

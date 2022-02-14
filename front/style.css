@@ -1,0 +1,70 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+a {
+  text-decoration: none;
+}
+#nav {
+  display: flex;
+  height: 4rem;
+  background-color: black;
+}
+#img_logo {
+  max-width: 50%;
+  height: 100%;
+}
+#img_reunion {
+  max-width: 100%;
+}
+#inscription,
+#connexion {
+  margin: 1em;
+  display: flex;
+}
+
+#ancre_inscription,
+#ancre_connexion {
+  color: white;
+  font-size: larger;
+}
+
+#ancre_inscription:hover,
+#ancre_connexion:hover {
+  color: #29a5e3;
+  transition : all .15s ease-in-out;
+  transform: scale(1.1);
+}
+
+#content {
+}
+
+h1 {
+  position: absolute;
+  top: 6rem;
+  background: white;
+  opacity: 0.8;
+  padding: 1rem;
+}
+footer {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background: black;
+  height: 3rem;
+}
+
+#contact,
+#adresse {
+  color: white;
+  font-size: larger;
+}
+
+#mailto {
+  color: white;
+}
+#mailto:hover {
+  color: #29a5e3;
+  transition : all .15s ease-in-out;
+  transform: scale(1.1);
+}

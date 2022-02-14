@@ -4,7 +4,7 @@ const { Sequelize, Model, DataTypes } = require("sequelize");
 const Comment = sequelize.define(
   "Comment",
   {
-    id_article2: {
+    id_commentaire: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -19,12 +19,12 @@ const Comment = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    dat_crea: {
+    date_crea: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
       allowNull: false,
     },
-    dat_mod: {
+    date_mod: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
 
@@ -34,7 +34,7 @@ const Comment = sequelize.define(
       defaultValue: "title",
       allowNull: false,
     },
-    texte: {
+    text: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
@@ -50,6 +50,7 @@ const Comment = sequelize.define(
 
 console.log(Comment === sequelize.models.Comment);
 
-const comment1 = Comment.build({ id_article: 1, id_user: 1, texte: "Super" });
+const comment1 = Comment.build({ id_article: 1, id_user: 1, text: "Super" });
 console.log(comment1);
-// comment1.save();
+comment1.save()
+.catch(err => console.log(err))

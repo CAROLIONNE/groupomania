@@ -21,9 +21,13 @@ try {
 }
 
 module.exports = sequelize;
+
  const Utilisateur = require('./models/User');
  const Comment = require('./models/Comment');
  const Article =require('./models/Article');
+
+//  await sequelize.sync({ force: true });
+// console.log("All models were synchronized successfully.");
 
 // relations
 

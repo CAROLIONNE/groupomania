@@ -22,11 +22,11 @@ Utilisateur.init(
     },
     role: {
       type: DataTypes.STRING(10),
-      defaultValue: "simple_user",
+      defaultValue: "simpleUser",
       allowNull: false,
     },
     mot_psw: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING(70),
       allowNull: false,
       set(value) {
         const hash = bcrypt.hashSync(value, 10);
@@ -38,12 +38,12 @@ Utilisateur.init(
       defaultValue: true,
       allowNull: false,
     },
-    dat_crea: {
+    date_crea: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
       allowNull: false,
     },
-    dat_mdp: {
+    date_mdp: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
       allowNull: false,
@@ -71,19 +71,23 @@ Utilisateur.init(
     tableName: "utilisateur",
     timestamps: false,
   }
+  
 );
 
-// (async () => {
+(async () => {
+//   await utilisateur.sync({ force: true });
+// console.log("The table for the Utilisateur model was just (re)created!");
+  })();
 
-//   })();
+console.log(Utilisateur === sequelize.models.Utilisateur);
 
-// console.log(Utilisateur === sequelize.models.Utilisateur);
+// const user = Utilisateur.build({
+//   mail: "meimei@free.fr",
+//   mot_psw: "test2",
+//   pseudonyme: "lili",
+// });
+// console.log(user);
 
-const chaton = Utilisateur.build({
-  mail: "m@mail.fr",
-  mot_psw: "milky",
-  pseudonyme: "chaton",
-});
-console.log(chaton);
+// user.save()
+// .catch(err => console.log(err))
 
-// chaton.save();
