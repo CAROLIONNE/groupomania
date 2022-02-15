@@ -79,7 +79,7 @@ Utilisateur.init(
 // console.log("The table for the Utilisateur model was just (re)created!");
   })();
 
-console.log(Utilisateur === sequelize.models.Utilisateur);
+// console.log(Utilisateur === sequelize.models.Utilisateur);
 
 // const user = Utilisateur.build({
 //   mail: "meimei@free.fr",

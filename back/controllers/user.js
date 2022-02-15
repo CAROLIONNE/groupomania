@@ -1,18 +1,55 @@
 const bcrypt = require("bcrypt");
-const dataBase = require('../db');
+const sequelize = require("../db.js");
 const Utilisateur = require("../models/User");
 
 require("dotenv").config();
 
-module.exports.signup = async (req, res) => {
-    await Utilisateur.create({
+module.exports.getOneUser = (req, res) => {
+  const userFound = Utilisateur.findOne({ 
+    where: { id_user: req.params.id_user }
+}).catch(err => console.log(err))
+
+if(foundUser){
+    res.status(200).json({ message: `userfound : ${userFound.pseudonyme}`})
+}else{
+    res.status(404).json( {error : "User not found"} )
+}
+}
+
+// module.exports.getOneUser = async (req, res) => {
+//   const userFound = await Utilisateur.findOne({ 
+//     order: ['id_user']
+// }).catch(err => console.log(err))
+
+// if(foundUser){
+//     res.status(200).json({ message: `userfound : ${userFound.pseudonyme}`})
+// }else{
+//     res.status(404).json( {error : "User not found"} )
+// }
+// }
+
+module.exports.signup =  (req, res) => {
+  try{
+    const user = Utilisateur.create({       
       mail: req.body.mail,
       mot_psw: req.body.mot_psw,
-      pseudonyme: req.body.pseudonyme,
-    });
-    res.json("Compte créé");
-    if (err) throw err;
-  };
+      pseudonyme: req.body.pseudonyme, })
+      ;
+      console.log("user's pseudo:", user.pseudonyme);
+    } catch(error){
+      console.log(error);
+    }
+}
+
+// module.exports.signup = async (req, res) => {
+//     await Utilisateur.create({
+//       mail: req.body.mail,
+//       mot_psw: req.body.mot_psw,
+//       pseudonyme: req.body.pseudonyme,
+//     })
+//     .catch(err => console.log(err))
+//     res.json("Compte créé");
+//   };
 
 // Inscription
 // module.exports.signup = async (req, res) => {
