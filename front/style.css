@@ -9,13 +9,20 @@ a {
   display: flex;
   height: 4rem;
   background-color: black;
+  
 }
+
 #img_logo {
-  max-width: 50%;
+  max-width: 11rem;
   height: 100%;
+  margin-left: 1em;
 }
 #img_reunion {
   max-width: 100%;
+}
+.authentication {
+    display: flex;
+    align-items: center;
 }
 #inscription,
 #connexion {
@@ -31,7 +38,7 @@ a {
 
 #ancre_inscription:hover,
 #ancre_connexion:hover {
-  color: #29a5e3;
+  color: #a3eeff;
   transition : all .15s ease-in-out;
   transform: scale(1.1);
 }
@@ -64,7 +71,7 @@ footer {
   color: white;
 }
 #mailto:hover {
-  color: #29a5e3;
+  color: #a3eeff;
   transition : all .15s ease-in-out;
   transform: scale(1.1);
 }
