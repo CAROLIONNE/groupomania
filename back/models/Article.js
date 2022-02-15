@@ -1,6 +1,9 @@
 const sequelize = require("../db.js");
-const { Sequelize, Model, DataTypes } = require("sequelize");
+// const { Sequelize, Model, DataTypes } = require("sequelize");
 
+
+
+module.exports = (sequelize, DataTypes) => {
 const Article = sequelize.define(
   "Article",
   {
@@ -43,10 +46,11 @@ const Article = sequelize.define(
     modelName: "Article",
     tableName: "article",
     timestamps: false,
-  }
-);
+  } 
+  );
+  return Article;
+}
 
-// console.log(Article === sequelize.models.Article);
 
 // const article1 = Article.build ({ id_user: 1, titre:"un article",  text: "Article de super qualité"});
 // console.log(article1);
