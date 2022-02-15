@@ -1,17 +1,49 @@
-const Comment = require('../models/Comment');
+const Comment = require("../models/Comment");
 
+exports.ViewComment = (req, res) => {
+    const commentFound = Comment.findOne({
+      where: { id_commentaire: req.params.id_commentaire },
+    }).catch((err) => console.log(err));
 
+    if (commentFound) {
+      res
+        .status(200)
+        .json({ message: `articleFound : ${commentFound.id_commentaire}` });
+    } else {
+      res.status(404).json({ error: "comment not found" });
+    }
+  };
 
-// exports.ViewArticle = (req, res) => {
-//     const articleFound = Article.findOne({
-//       where: { id_article: req.params.id_article },
-//     }).catch((err) => console.log(err));
-  
-//     if (articleFound) {
-//       res
-//         .status(200)
-//         .json({ message: `articleFound : ${articleFound.id_article}` });
-//     } else {
-//       res.status(404).json({ error: "User not found" });
-//     }
-//   };
+module.exports.createComment = (req, res) => {
+  try {
+    const comment = Comment.create({
+      id_article: req.body.id_article,
+      id_user: req.body.id_user,
+      text: req.body.text,
+    });
+    console.log('Comment update !');
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports.updateComment = (req, res) => {
+    try {
+        const comment = Comment.update({
+            id_article: req.body.id_article,
+            id_user: req.body.id_user,
+            text: req.body.text,
+          });
+          console.log("ID article:", comment.id_article);
+        } catch (error) {
+          console.log(error);
+        }
+    }
+
+exports.deleteComment = async (req, res) => {
+    await Comment.destroy({
+      where: {
+        id_commentaire: req.params.id_commentaire,
+      },
+    }).catch((err) => console.log(err));
+  };

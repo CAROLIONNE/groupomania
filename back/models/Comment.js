@@ -48,7 +48,8 @@ const Comment = sequelize.define(
   }
 );
 
-// console.log(Comment === sequelize.models.Comment);
+exports.Comment = Comment;
+
 
 // const comment1 = Comment.build({ id_article: 1, id_user: 1, text: "Super" });
 // console.log(comment1);
