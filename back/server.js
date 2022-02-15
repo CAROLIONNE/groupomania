@@ -11,15 +11,18 @@ app.use(cors());
 
 // // Routes
 const userRoutes = require("./routes/user");
-// const commentRoutes = require('./routes/comment');
-// const articleRoutes = require('./routes/article');
+const articleRoutes = require('./routes/article');
+const commentRoutes = require('./routes/comment');
 
 app.use("/api/user", userRoutes);
-// app.use('/api/comment', commentRoutes);
-// app.use('/api/article', articleRoutes);
+app.use('/api/article', articleRoutes);
+app.use('/api/comment', commentRoutes);
 
 // import dotenv
 require("dotenv").config();
+
+
+
 
 // Ecoute du serveur
 app.listen(8080, () => {
