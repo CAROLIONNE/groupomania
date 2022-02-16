@@ -46,12 +46,12 @@ const Comment = sequelize.define(
     tableName: "commentaire",
     timestamps: false,
   }
-);
-
-exports.Comment = Comment;
-
-
-// const comment1 = Comment.build({ id_article: 1, id_user: 1, text: "Super" });
-// console.log(comment1);
-// comment1.save()
-// .catch(err => console.log(err))
+  );
+  
+  module.exports = Comment;
+  
+  
+  // const comment1 = Comment.build({ id_article: 1, id_user: 1, text: "Super" });
+  // console.log(comment1);
+  // comment1.save()
+  // .catch(err => console.log(err))

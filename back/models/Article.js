@@ -48,11 +48,20 @@ const Article = sequelize.define(
     timestamps: false,
   } 
   );
+  // Article.associate = (models) => {
+  //   this.hasOne(models.Utilisateur, {
+  //     onDelete: "cascade",
+  //   });
+  //   this.user_id = this.belongsTo(models.Utilisateur, {
+  //       foreignKey: "id_user",
+	// 	})
+  // };
   return Article;
 }
 
-
 // const article1 = Article.build ({ id_user: 1, titre:"un article",  text: "Article de super qualité"});
 // console.log(article1);
+
+
 // article1.save()
 // .catch(err => console.log(err))

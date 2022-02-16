@@ -1,12 +1,8 @@
 const Article = require("../models/Article");
 // const Article = require('../models').Article
 // const { article } = require('../models');
-// const t = await sequelize.transaction();
 
-// const article1 = Article.build ({ id_user: 1, titre:"un article",  text: "Article de super qualité"}), ;
-// console.log(article1);
-// article1.save()
-// .catch(err => console.log(err))
+
 
 exports.viewAllArticles = (req, res, next) => {
   Article.findAll()
