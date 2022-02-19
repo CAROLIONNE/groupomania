@@ -8,7 +8,7 @@
     <title>Groupomania</title>
   </head>
   <body>
-    <div class="page">
+    <div id="app">
       <!-- <header class="header">En-tête</header> -->
       <nav class="nav" id="nav">
         <a id="accueil" href="">
@@ -27,7 +27,7 @@
           </div>
         </div>
       </nav>
-      <main class="main">
+      <main id="main">
         <div class="wrapper">
           <div id="content">
             <div class="presentation">
@@ -39,6 +39,7 @@
               <h1>Pour une meilleure ambiance au travail</h1>
               <h2>
                 <a href="#ancre_inscription">Inscrivez-vous des maintenant !</a>
+                <p> {{ message }} </p>
               </h2>
             </div>
           </div>
@@ -52,5 +53,15 @@
         <div id="adresse">Groupomania, 101 Avenue picasso 62000 ARRAS</div>
       </footer>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+      <script>
+        const app = new Vue({
+          el: "#app",
+          data: {
+            message: "Bonjour"
+          }
+        })
+      </script>
   </body>
 </html>
