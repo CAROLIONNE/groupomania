@@ -1,29 +1,5 @@
-const db = require('../db');
-// let connexion = require('../db.connectDb')
-
-module.exports = (req, res) => {
-  function createUser(connection, Uti) {
-    let requete =
-      "INSERT INTO `utilisateur`(`MAIL`, `ROLE`, `MOT_PSW`, `TEMP_PSW`, `DAT_CREA`, `DAT_MDP`,`AVATAR`,`PSEUDONYME`,`POSTE`,`BUREAU`) VALUES (?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,'default.png',?,?,?)";
-    let data = [
-      Uti.mail,
-      Uti.role,
-      Uti.psw,
-      Uti.tempPsw,
-      Uti.pseudonyme,
-      Uti.poste,
-      Uti.bureau,
-    ];
-    connection.query(requete, data, function (err) {
-      if (!err) return 0;
-      else {
-        console.log("Error Occured:" + err);
-        return 1;
-      }
-    });
-  }
-}
-
+// const connexion = require('../db');
+// let connexion = require('db.connectDb')
 
 function Utilisateur(
   id,
@@ -51,21 +27,21 @@ function Utilisateur(
   this.bureau = bureau;
 }
 
+module.exports = Utilisateur();
 
-
-let util = new Utilisateur(
-  3,
-  "rk@jt.fr",
-  "SimpleUser",
-  "motdepasse",
-  0,
-  "2002-12-02",
-  "2003-11-01",
-  "default.png",
-  "keke",
-  "developpeur",
-  "12"
-);
+// let util = new Utilisateur(
+//   3,
+//   "rk@jt.fr",
+//   "SimpleUser",
+//   "motdepasse",
+//   0,
+//   "2002-12-02",
+//   "2003-11-01",
+//   "default.png",
+//   "keke",
+//   "developpeur",
+//   "12"
+// );
 
 
 function createUser(connection, Uti) {
@@ -89,7 +65,7 @@ function createUser(connection, Uti) {
   });
 }
 
-let testCrea = createUser(connexion, util);
+// let testCrea = createUser(connexion, util);
 
 // // const sequelize = require("../db.js");
 

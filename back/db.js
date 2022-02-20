@@ -3,10 +3,11 @@ require("dotenv").config();
 // Connexion mysql
 const mysql = require("mysql");
 
-function connectDb() {
-  console.log("Get connection ...");
 
-  let conn = mysql.createConnection({
+function connectDb () {
+    console.log("Get connection ...");
+  
+    let conn = mysql.createConnection({
     database: process.env.database,
     host: process.env.host_sql,
     user: process.env.user_sql,
@@ -14,33 +15,17 @@ function connectDb() {
   });
 
   conn.connect(function (err) {
-    if (err) throw err;
-    console.log("Connecté à la base de donnée");
-  });
+      if (err) throw err;
+      console.log("Connecté à la base de donnée");
+    });
+  
+    return conn;
+  }
 
-  return conn;
-}
+module.exports = connectDb();
 
-let connexion = connectDb()
-
-// module.exports = function connectDb () {
-//   console.log("Get connection ...");
-
-//   let conn = mysql.createConnection({
-//     database: process.env.database,
-//     host: process.env.host_sql,
-//     user: process.env.user_sql,
-//     password: process.env.password_sql,
-//   });
-
-//   conn.connect(function (err) {
-//     if (err) throw err;
-//     console.log("Connecté à la base de donnée");
-//   });
-
-//   return conn;
-// }
-
+  let connexion = connectDb()
+  
 // function createUser(connection, Uti) {
 //   let requete =
 //     "INSERT INTO `utilisateur`(`MAIL`, `ROLE`, `MOT_PSW`, `TEMP_PSW`, `DAT_CREA`, `DAT_MDP`,`AVATAR`,`PSEUDONYME`,`POSTE`,`BUREAU`) VALUES (?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,'default.png',?,?,?)";
@@ -188,7 +173,7 @@ function Article(id, idUti, datCre, datMod, titre, media, text) {
 
 let art = new Article(
   1,
-  1,
+  3,
   "",
   "",
   "titre article",
@@ -196,7 +181,7 @@ let art = new Article(
   "bla bla bla"
 );
 
-//testArt = createArticle(connexion, art)
+testArt = createArticle(connexion, art)
 
 function selectArticle(connection, Article) {
   let requete =
@@ -233,7 +218,8 @@ function Commentaire(id, idArt, idUtilisateur, datCre, datMod, titre, text) {
   this.text = text;
 }
 
-let com = new Commentaire(1, 1, 1, "", "", "super commentaire", "hello");
+let com = new Commentaire(1, 6, 3, "", "", "super commentaire", "hello");
+// let testCom = createCommentaire(connexion, com);
 
 function selectCommentaire(connection, Commentaire) {
   let requete =
@@ -281,7 +267,6 @@ function getCommentOneArticle(connection, Commentaire) {
 // selectCommentaire(connexion, com)
 // getCommentOneArticle(connexion, com);
 
-//let testCom = createCommentaire(connexion, com);
 
 
 function getArticleFromUtilisateur(connection, Article) {
@@ -305,7 +290,9 @@ function getArticleFromUtilisateur(connection, Article) {
     }
   });
 }
-function updtUtilisateur(connection, Utilisateur) {
+// getArticleFromUtilisateur(connexion, art);
+
+function updateUtilisateur(connection, Utilisateur) {
   let requete = "UPDATE `utilisateur` SET `MAIL` = ?, `POSTE` = ?,`BUREAU` = ? WHERE `ID_USER` = ?";
   let data = [Utilisateur.mail, Utilisateur.poste, Utilisateur.bureau, Utilisateur.id];
   connection.query(requete, data, function (err, res, fields) {
@@ -318,8 +305,7 @@ function updtUtilisateur(connection, Utilisateur) {
     }
   });
 }
-// getArticleFromUtilisateur(connexion, art);
-// updtUtilisateur(connexion, util2);
+// updateUtilisateur(connexion, util2);
 
 function deleteUtilisateur(connection, Utilisateur) {
 	let requete = "DELETE FROM `utilisateur` WHERE `ID_USER` = ?";
