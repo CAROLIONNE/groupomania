@@ -1,14 +1,15 @@
 const Comment = require("../models/Comment");
 
+
 exports.ViewComment = (req, res) => {
     const commentFound = Comment.findOne({
-      where: { id_commentaire: req.params.id_commentaire },
+      where: { id_commentaire: req.params.id },
     }).catch((err) => console.log(err));
 
     if (commentFound) {
       res
         .status(200)
-        .json({ message: `articleFound : ${commentFound.id_commentaire}` });
+        .json({ message: `comment : ${commentFound.id_commentaire}` });
     } else {
       res.status(404).json({ error: "comment not found" });
     }

@@ -1,35 +1,21 @@
 const bcrypt = require("bcrypt");
-// const sequelize = require("../db.js");
+const sequelize = require("../db.js");
 const Utilisateur = require("../models/User");
-const db = require("../db");
+
 
 require("dotenv").config();
 
+exports.getOneUser = async (req, res, next) => {
+  const userFound = await Utilisateur.findOne({ 
+      where: { id_user: req.params.id }
+  })
+  if(userFound){
+      res.status(200).json({ message: 'Successfuly found the user ' + userFound.id_user})
+  }else{
+      res.status(404).json( {error : "User not found"} )
+  }
+}
 
-
-// module.exports.getOneUser = (req, res) => {
-//   const userFound = Utilisateur.findOne({
-//     where: { id_user: req.params.id_user }
-// }).catch(err => console.log(err))
-
-// if(foundUser){
-//     res.status(200).json({ message: `userfound : ${userFound.pseudonyme}`})
-// }else{
-//     res.status(404).json( {error : "User not found"} )
-// }
-// }
-
-// module.exports.getOneUser = async (req, res) => {
-//   const userFound = await Utilisateur.findOne({
-//     order: ['id_user']
-// }).catch(err => console.log(err))
-
-// if(foundUser){
-//     res.status(200).json({ message: `userfound : ${userFound.pseudonyme}`})
-// }else{
-//     res.status(404).json( {error : "User not found"} )
-// }
-// }
 
 // module.exports.signup =  (req, res) => {
 //   try{
@@ -55,33 +41,35 @@ require("dotenv").config();
 //   };
 
 // Inscription
-// module.exports.signup = async (req, res) => {
-//   bcrypt
-//     // Cryptage du mot de passe
-//     .hash(req.body.psw, 10)
-//     // Creer nouvel utilisateur
-//     .then((hash) => {
-//       const utilisateur = new Utilisateur(
-//         "",
-//         req.body.mail,
-//         0,
-//         hash,
-//         0,
-//         "",
-//         "",
-//         "",
-//         req.body.pseudonyme,
-//         req.body.poste,
-//         req.body.bureau
-//       );
-//       // Sauvegarde dans la data base
-//       utilisateur
-//         .then((utilisateur) => createUser(conn, utilisateur))
-//         .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
-//         .catch((error) => res.status(400).json({ error }));
-//     })
-//     .catch((error) => res.status(500).json({ error }));
-// };
+module.exports.signup = async (req, res) => {
+  bcrypt
+    // Cryptage du mot de passe
+    .hash(req.body.psw, 10)
+    // Creer nouvel utilisateur
+    .then((hash) => {
+      const utilisateur = new Utilisateur(
+        "",
+        req.body.mail,
+        0,
+        hash,
+        0,
+        "",
+        "",
+        "",
+        req.body.pseudonyme,
+        req.body.poste,
+        req.body.bureau
+      );
+      // Sauvegarde dans la data base
+      utilisateur
+        .then((utilisateur) => createUser(conn, utilisateur))
+        .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
+        .catch((error) => res.status(400).json({ error }));
+    })
+    .catch((error) => res.status(500).json({ error }));
+};
+
+
 
 // dataBase.query(newUser.then(([results, metadata]) => {
 //     console.log(results);
