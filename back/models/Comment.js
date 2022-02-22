@@ -48,10 +48,20 @@ const Comment = sequelize.define(
   }
   );
   
+  Comment.associate = (models) => {
+    Comment.hasOne(models.Article, {
+      onDelete: "cascade",
+    });
+    Comment.id_article = Comment.belongsTo(models.Article, {
+      foreignKey: "id_article",
+    })
+    Comment.hasOne(models.Utilisateur, {
+      onDelete: "cascade",
+    });
+    Comment.user_id = Comment.belongsTo(models.Utilisateur, {
+      foreignKey: "id_user",
+    });
+  }
+
   module.exports = Comment;
   
-  
-//   const comment1 = Comment.build({ id_article: 1, id_user: 1, text: "Super" });
-//   console.log(comment1);
-//   comment1.save()
-//   .catch(err => console.log(err))

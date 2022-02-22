@@ -1,14 +1,13 @@
 const sequelize = require("../db.js");
 const { Sequelize, Model, DataTypes } = require("sequelize");
 
-
-const bcrypt = require("bcrypt");
-
-
 class Utilisateur extends Model {
-
+  associate(models) {
+    // define association here
+    this.hasMany(models.Comment);
+    this.hasMany(models.Article);
+  }
 }
-
 Utilisateur.init(
   {
     id_user: {
@@ -68,7 +67,7 @@ Utilisateur.init(
     modelName: "Utilisateur", // We need to choose the model name
     tableName: "utilisateur",
     timestamps: false,
-  })
-;
+  }
+);
 
 module.exports = Utilisateur;

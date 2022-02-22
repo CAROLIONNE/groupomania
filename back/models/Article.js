@@ -1,8 +1,6 @@
 const sequelize = require("../db.js");
 const { Sequelize, Model, DataTypes } = require("sequelize");
 
-
-
 const Article = sequelize.define(
   "Article",
   {
@@ -45,24 +43,28 @@ const Article = sequelize.define(
     modelName: "Article",
     tableName: "article",
     timestamps: false,
-  } 
-  );
-  // Article.associate = (models) => {
-  //   this.hasOne(models.Utilisateur, {
-  //     onDelete: "cascade",
-  //   });
-  //   this.user_id = this.belongsTo(models.Utilisateur, {
-  //       foreignKey: "id_user",
-	// 	})
-  // };
+  }
+);
 
+Article.associate = (models) => {
+  Article.hasMany(models.Comment, {
+    onDelete: "cascade",
+  });
+  Article.hasOne(models.Utilisateur, {
+    onDelete: "cascade",
+  });
+  Article.user_id = Article.belongsTo(models.Utilisateur, {
+    foreignKey: "id_user",
+  });
+};
 
-  module.exports = Article;
+// Article.associate = (models) => {
+//   this.hasOne(models.Utilisateur, {
+//     onDelete: "cascade",
+//   });
+//   this.user_id = this.belongsTo(models.Utilisateur, {
+//       foreignKey: "id_user",
+// 	})
+// };
 
-
-// // const article1 = Article.build ({ id_user: 1, titre:"un article",  text: "Article de super qualité"});
-// // console.log(article1);
-
-
-// // article1.save()
-// // .catch(err => console.log(err))
+module.exports = Article;
