@@ -24,20 +24,16 @@ Utilisateur.init(
     },
     role: {
       type: DataTypes.STRING(10),
-      defaultValue: "simpleUser",
+      defaultValue: "0",
       allowNull: false,
     },
     mot_psw: {
       type: DataTypes.STRING(70),
       allowNull: false,
-      set(value) {
-        const hash = bcrypt.hashSync(value, 10);
-        this.setDataValue("mot_psw", hash);
-      },
     },
     temp_psw: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true,
+      defaultValue: false,
       allowNull: false,
     },
     date_crea: {
@@ -76,20 +72,3 @@ Utilisateur.init(
 ;
 
 module.exports = Utilisateur;
-
-
-// // const user = Utilisateur.build({
-// //   mail: "meimei@free.fr",
-// //   mot_psw: "test2",
-// //   pseudonyme: "lili",
-// // });
-// // console.log(user);
-
-// // user.save()
-// // .catch(err => console.log(err))
-
-// sequelize.query('SELECT * FROM utilisateur', (err, res) => {
-//   if(err) throw err;
-//   console.log(res);
-// })
-
