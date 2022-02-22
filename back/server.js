@@ -9,7 +9,10 @@ app.use(express.json());
 const cors = require("cors");
 app.use(cors());
 
-// // Routes
+const path = require('path');
+
+// Routes
+app.use('/images', express.static(path.join(__dirname, 'images')));
 const userRoutes = require("./routes/user");
 const articleRoutes = require('./routes/article');
 const commentRoutes = require('./routes/comment');

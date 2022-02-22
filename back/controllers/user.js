@@ -1,90 +1,134 @@
 const bcrypt = require("bcrypt");
 const sequelize = require("../db.js");
 const Utilisateur = require("../models/User");
-
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
 
 require("dotenv").config();
 
-exports.getOneUser = async (req, res, next) => {
-  const userFound = await Utilisateur.findOne({ 
-      where: { id_user: req.params.id }
-  })
-  if(userFound){
-      res.status(200).json({ message: 'Successfuly found the user ' + userFound.id_user})
-  }else{
-      res.status(404).json( {error : "User not found"} )
-  }
-}
-
-
-// module.exports.signup =  (req, res) => {
-//   try{
-//     const user = new Utilisateur({
-//       mail: req.body.mail,
-//       mot_psw: req.body.mot_psw,
-//       pseudonyme: req.body.pseudonyme, })
-//       ;
-//       console.log("user's pseudo:", user.pseudonyme);
-//     } catch(error){
-//       console.log(error);
-//     }
-// }
-
-// module.exports.signup = async (req, res) => {
-//     await Utilisateur.create({
-//       mail: req.body.mail,
-//       mot_psw: req.body.mot_psw,
-//       pseudonyme: req.body.pseudonyme,
-//     })
-//     .catch(err => console.log(err))
-//     res.json("Compte créé");
-//   };
 
 // Inscription
 module.exports.signup = async (req, res) => {
-  bcrypt
+  const utilisateur = await Utilisateur.findOne({
+    where: { mail: req.body.mail },
+  });
+  if (utilisateur) {
+    res.json({ error: "This email is already in use!" });
+  } else {
     // Cryptage du mot de passe
-    .hash(req.body.psw, 10)
-    // Creer nouvel utilisateur
-    .then((hash) => {
-      const utilisateur = new Utilisateur(
-        "",
-        req.body.mail,
-        0,
-        hash,
-        0,
-        "",
-        "",
-        "",
-        req.body.pseudonyme,
-        req.body.poste,
-        req.body.bureau
-      );
-      // Sauvegarde dans la data base
-      utilisateur
-        .then((utilisateur) => createUser(conn, utilisateur))
-        .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
-        .catch((error) => res.status(400).json({ error }));
-    })
-    .catch((error) => res.status(500).json({ error }));
+    bcrypt.hash(req.body.mot_psw, 10).then((hash) => {
+      // Creer nouvel utilisateur
+      Utilisateur.create({
+        mail: req.body.mail,
+        mot_psw: hash,
+        pseudonyme: req.body.pseudonyme,
+        poste: req.body.poste,
+        bureau: req.body.bureau,
+      });
+      res.status(201).json("User registered");
+    });
+  }
 };
 
+// Connexion
+module.exports.login = async (req, res) => {
+  const { mail, mot_psw } = req.body;
+  const utilisateur = await Utilisateur.findOne({ where: { mail: mail } });
 
+  if (!utilisateur) {
+    res.json({ error: "User not found" });
+  } else {
+    // Verification mot de passe
+    bcrypt.compare(mot_psw, utilisateur.mot_psw).then(async (match) => {
+      if (!match) {
+        res.status(404).json({ error: " Email and password do not match " });
+      } else {
+        res.status(200).json({
+          id_user: utilisateur.id_user,
+          token: jwt.sign(
+            { id_user: utilisateur.id_user, role: utilisateur.role },
+            process.env.SECRET,
+            { expiresIn: "1h" }
+          ),
+        });
+      }
+    });
+  }
+};
 
-// dataBase.query(newUser.then(([results, metadata]) => {
-//     console.log(results);
-//   }))
+// Trouve un utilisateur avec son id
+exports.getOneUser = async (req, res, next) => {
+  const userFound = await Utilisateur.findOne({
+    where: { id_user: req.params.id },
+  });
+  if (userFound) {
+    res
+      .status(200)
+      .json({ message: "Successfuly found the user " + userFound.pseudonyme });
+  } else {
+    res.status(404).json({ error: "User not found" });
+  }
+};
 
-// dataBase.query("INSERT INTO utilisateur (mail,role,mot_psw,temp_psw,dat_crea,dat_mdp,avatar,pseudonyme) VALUES ('alex@de.fr', 0,'test2', 0, '2022-02-12.10.19.00.0000', '2022-02-12.10.19.00.0000', 'img', 'alex')", function (err, result, fields) {
-//     // if any error while executing above query, throw error
-//     if (err) throw err;
-//     // if there is no error, you have the result
-//     console.log(result);
-//   });
+// Modifier infos utilisateur
+module.exports.updateUser= async (req, res) => {
+  const utilisateur = await Utilisateur.update({ 
+    mail: req.body.mail,
+    pseudonyme: req.body.pseudonyme,
+    poste: req.body.poste,
+    bureau: req.body.bureau,
+  },{
+    where : {
+      id_user: req.params.id
+    }
+  })
+  if (utilisateur) {
+    return res.status(200).json(" User update")
+  } else {
+    return res.status(500).json({ error: "Can't update user"})
+  }
+}
+// Modifier MDP utilisateur
+module.exports.updatePassword = async (req, res) => {
+  const utilisateur = await Utilisateur.update({ 
+    mot_psw: req.body.mot_psw
+  },{
+    where : {
+      id_user: req.params.id
+    }
+  })
+  if (utilisateur) {
+    return res.status(200).json(" Password update")
+  } else {
+    return res.status(500).json({ error: "Can't update password"})
+  }
+}
+// Modifier avatar d'un utilisateur
+module.exports.updateAvatar = async (req, res) => {
+  const avatarObject = JSON.parse(req.body.article)
+  delete avatarObject.avatar;
+  const utilisateur = await Utilisateur.update({ 
+    avatar: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+  },{
+    where : {
+      id_user: req.params.id
+    }
+  })
+  if (utilisateur) {
+    return res.status(200).json(" Avatar update")
+  } else {
+    return res.status(500).json({ error: "Can't update avatar"})
+  }
+}
 
-
-
-
-
+// Supprimer un utilisateur
+module.exports.deleteUser = async (req, res) => {
+	await Utilisateur.destroy({
+		where: {
+			id_user: req.params.id,
+		},
+	})
+	res.status(201).json('User deleted')
+}
 
 

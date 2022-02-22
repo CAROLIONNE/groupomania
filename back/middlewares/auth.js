@@ -1,14 +1,14 @@
 const jwt = require('jsonwebtoken');
 
-module.exports = (req, res, next) => {
+module.exports = (req, res) => {
   try {
     // Recuperer le token dans l'en-tête authorisation de la requete
     const token = req.headers.authorization.split(' ')[1];
     // Decoder le token
-    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+    const decodedToken = jwt.verify(token, process.env.SECRET);
     // Verification de l'ID
-    const userId = decodedToken.userId;
-    if (req.body.userId && req.body.userId !== userId) {
+    const id_user = decodedToken.id_user;
+    if (req.body.id_user && req.body.userId !== id_user) {
       // Remonter l'erreur
       throw 'Invalid user ID';
     } else {
