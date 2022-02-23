@@ -13,10 +13,11 @@ module.exports.signup = async (req, res) => {
     where: { mail: req.body.mail },
   });
   if (utilisateur) {
-    res.json({ error: "This email is already in use!" });
+    res.status(401).json({ error: "This email is already in use!" });
   } else {
     // Cryptage du mot de passe
-    bcrypt.hash(req.body.mot_psw, 10).then((hash) => {
+    bcrypt.hash(req.body.mot_psw, 10)
+    .then((hash) => {
       // Creer nouvel utilisateur
       Utilisateur.create({
         mail: req.body.mail,
@@ -26,6 +27,7 @@ module.exports.signup = async (req, res) => {
         bureau: req.body.bureau,
       });
       res.status(201).json("User registered");
+      
     });
   }
 };
@@ -44,13 +46,13 @@ module.exports.login = async (req, res) => {
         res.status(404).json({ error: " Email and password do not match " });
       } else {
         res.status(200).json({
-          id_user: utilisateur.id_user,
+          userID: utilisateur.id_user,
           token: jwt.sign(
-            { id_user: utilisateur.id_user, role: utilisateur.role },
+            { id_user: utilisateur.id_user},
             process.env.SECRET,
             { expiresIn: "1h" }
-          ),
-        });
+            ),
+          });
       }
     });
   }
@@ -63,7 +65,7 @@ exports.getOneUser = async (req, res, next) => {
   });
   if (userFound) {
     res
-      .status(200)
+      .status(200).json({ "user": userFound.id_user})
       .json({ message: "Successfuly found the user " + userFound.pseudonyme });
   } else {
     res.status(404).json({ error: "User not found" });

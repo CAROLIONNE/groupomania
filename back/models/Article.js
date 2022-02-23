@@ -53,18 +53,9 @@ Article.associate = (models) => {
   Article.hasOne(models.Utilisateur, {
     onDelete: "cascade",
   });
-  Article.user_id = Article.belongsTo(models.Utilisateur, {
+  Article.id_user = Article.belongsTo(models.Utilisateur, {
     foreignKey: "id_user",
   });
 };
-
-// Article.associate = (models) => {
-//   this.hasOne(models.Utilisateur, {
-//     onDelete: "cascade",
-//   });
-//   this.user_id = this.belongsTo(models.Utilisateur, {
-//       foreignKey: "id_user",
-// 	})
-// };
 
 module.exports = Article;

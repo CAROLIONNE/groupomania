@@ -31,19 +31,18 @@ exports.ViewArticle = async (req, res) => {
   }
 };
 
-// TO DO verifier images
+// TO DO verifier images | ajouter date de modif
 // Créer un article
 module.exports.createArticle = async (req, res) => {
   const articleObject = JSON.parse(req.body.article);
   delete articleObject.id_article;
   const article = await Article.create({
-    ...articleObject,
+    id_article: req.body.id_article,
+    id_user: req.body.id_user,
+    titre: req.body.titre,
+    // media: req.body.media,
     media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
-    // id_article: req.body.id_article,
-    // id_user: req.body.id_user,
-    // titre: req.body.titre,
-    // media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
-    // text: req.body.text,
+    text: req.body.text,
   }).catch((err) => console.log(err));
 
   if (article) {
@@ -52,6 +51,22 @@ module.exports.createArticle = async (req, res) => {
     return res.status(500).json({ error: `can't create a new article ` });
   }
 };
+
+// module.exports.createArticle = async (req, res) => {
+//   const articleObject = JSON.parse(req.body.article);
+//   console.log(articleObject);
+//   delete articleObject.id_article;
+//   const article = await Article.create({
+//     ...articleObject,
+//     media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+//   }).catch((err) => console.log(err));
+
+//   if (article) {
+//     return res.status(201).json({ "number article create": article.id });
+//   } else {
+//     return res.status(500).json({ error: `can't create a new article ` });
+//   }
+// };
 
 // Modifier titre et/ou texte d'un article
 module.exports.updateArticle = async (req, res) => {
@@ -64,6 +79,7 @@ module.exports.updateArticle = async (req, res) => {
     }
   );
   if (article) {
+    console.log(req);
     return res.status(201).json("article update");
   } else {
     return res.status(500).json({ error: `can't update article ` });
