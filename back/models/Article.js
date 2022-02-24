@@ -45,7 +45,6 @@ const Article = sequelize.define(
     timestamps: false,
   }
 );
-
 Article.associate = (models) => {
   Article.hasMany(models.Comment, {
     onDelete: "cascade",
@@ -57,5 +56,6 @@ Article.associate = (models) => {
     foreignKey: "id_user",
   });
 };
+
 
 module.exports = Article;

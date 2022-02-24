@@ -31,22 +31,22 @@ exports.ViewArticle = async (req, res) => {
   }
 };
 
-// TO DO verifier images | ajouter date de modif
+// TO DO verifier images | 
 // Créer un article
 module.exports.createArticle = async (req, res) => {
-  const articleObject = JSON.parse(req.body.article);
-  delete articleObject.id_article;
+  // const articleObject = JSON.parse(req.body.article);
+  // console.log(articleObject);
+  // delete articleObject.id_article;
   const article = await Article.create({
-    id_article: req.body.id_article,
-    id_user: req.body.id_user,
+    id_user: req.auth.userId,
     titre: req.body.titre,
-    // media: req.body.media,
-    media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+    media: req.body.media,
+    // media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
     text: req.body.text,
   }).catch((err) => console.log(err));
 
   if (article) {
-    return res.status(201).json({ "number article create": article.id });
+    return res.status(201).json({ "number article create": article.id_article });
   } else {
     return res.status(500).json({ error: `can't create a new article ` });
   }
@@ -71,7 +71,7 @@ module.exports.createArticle = async (req, res) => {
 // Modifier titre et/ou texte d'un article
 module.exports.updateArticle = async (req, res) => {
   const article = await Article.update(
-    { titre: req.body.titre, text: req.body.text },
+    { titre: req.body.titre, text: req.body.text , date_mod: new Date() },
     {
       where: {
         id_article: req.params.id,
@@ -79,7 +79,6 @@ module.exports.updateArticle = async (req, res) => {
     }
   );
   if (article) {
-    console.log(req);
     return res.status(201).json("article update");
   } else {
     return res.status(500).json({ error: `can't update article ` });
@@ -97,7 +96,7 @@ exports.deleteArticle = async (req, res) => {
             id_article: req.params.id,
           },
         });
-        res.status(201).json("Account deleted with success");
+        res.status(201).json("Article deleted with success");
       });
     })
     .catch((error) => res.status(500).json({ error }));
