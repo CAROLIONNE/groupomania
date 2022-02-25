@@ -1,4 +1,5 @@
 const Comment = require("../models/Comment");
+const Article = require("../models/Article");
 
 // Afficher un commentaire
 exports.ViewComment = (req, res) => {
@@ -31,7 +32,7 @@ exports.ViewAllComment = (req, res) => {
 module.exports.createComment = async (req, res) => {
   try {
   await Comment.create({
-    id_article: req.body.id_article,
+    id_article: req.params.idarticle,
     id_user: req.auth.userId,
     titre: req.body.titre,
     text: req.body.text,
