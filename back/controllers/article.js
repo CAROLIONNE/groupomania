@@ -30,7 +30,7 @@ exports.ViewArticle = async (req, res) => {
   }
 };
 
-// TO DO verifier images |
+// TO DO gestion des images
 // Créer un article
 module.exports.createArticle = async (req, res) => {
   // try {
@@ -41,6 +41,7 @@ module.exports.createArticle = async (req, res) => {
   // } catch (err) {
   //   console.log(err);
   // }
+
 
   const article = Article.create({
     id_user: req.auth.userId,
@@ -53,7 +54,7 @@ module.exports.createArticle = async (req, res) => {
   if (article) {
     return res
       .status(201)
-      .json({ "number article create": article.id_article });
+      .json({ "number article created": article.id_article });
   } else {
     return res.status(500).json({ error: `can't create a new article ` });
   }
@@ -75,36 +76,53 @@ module.exports.createArticle = async (req, res) => {
 //   }
 // };
 
-// Modifier titre et/ou texte d'un article
+// TO DO gestion des images
+// Mise a jour d'un article
 module.exports.updateArticle = async (req, res) => {
-  const article = await Article.update(
-    { titre: req.body.titre, text: req.body.text, date_mod: new Date() },
-    {
-      where: {
-        id_article: req.params.id,
-      },
-    }
-  );
-  if (article) {
+  let article = await Article.findOne({ id_article: req.params.id });
+  // Verifie que l'article existe
+  if (!article) {
+    return res.status(404).json({ err: "Article undefined" });
+  }
+  // Acces admin ou utilisateur qui a créer le post
+  if (req.auth.userId == com.id_user || req.auth.role == 1) {
+    Article.update(
+      { titre: req.body.titre, text: req.body.text, date_mod: new Date() },
+      {
+        where: {
+          id_article: req.params.id,
+        },
+      }
+    );
     return res.status(201).json("article update");
   } else {
     return res.status(500).json({ error: `can't update article ` });
   }
 };
 
+
 // Suprimer un article
 exports.deleteArticle = async (req, res) => {
-  await Article.findOne({ id_article: req.params.id })
-    .then((article) => {
-      const filename = article.media.split("/images/")[1];
-      fs.unlink(`images/${filename}/`, () => {
-        Article.destroy({
-          where: {
-            id_article: req.params.id,
-          },
-        });
-        res.status(201).json("Article deleted with success");
+  let article = await Article.findOne({ id_article: req.params.id });
+  // Verifie que l'article existe
+  if (!article) {
+    return res.status(404).json({ err: "Article undefined" });
+  }
+  // Acces admin ou utilisateur qui a créer le post
+  if (req.auth.userId == com.id_user || req.auth.role == 1) {
+    // nom du fichier a supprimer
+    const filename = article.media.split("/images/")[1];
+    // Supprimer image du dossier
+    fs.unlink(`images/${filename}/`, () => {
+      // Supprimer l'article
+      Article.destroy({
+        where: {
+          id_article: req.params.id,
+        },
       });
-    })
-    .catch((error) => res.status(500).json({ error }));
+      res.status(201).json("Article deleted with success");
+    });
+  } else {
+    res.status(500).json({ error });
+  }
 };
