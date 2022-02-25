@@ -20,7 +20,6 @@ exports.ViewArticle = async (req, res) => {
   const articleFound = await Article.findOne({
     where: { id_article: req.params.id },
   }).catch((err) => console.log(err));
-
   if (articleFound) {
     res
       .status(200)
@@ -31,22 +30,30 @@ exports.ViewArticle = async (req, res) => {
   }
 };
 
-// TO DO verifier images | 
+// TO DO verifier images |
 // Créer un article
 module.exports.createArticle = async (req, res) => {
-  // const articleObject = JSON.parse(req.body.article);
-  // console.log(articleObject);
-  // delete articleObject.id_article;
-  const article = await Article.create({
+  // try {
+  //   console.log(req.body);
+  //   const articleObject = JSON.parse(req.body.media);
+  //   delete articleObject.id_article;
+  //   console.log(articleObject);
+  // } catch (err) {
+  //   console.log(err);
+  // }
+
+  const article = Article.create({
     id_user: req.auth.userId,
     titre: req.body.titre,
-    media: req.body.media,
-    // media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+    // media: req.body.media,
+    media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
     text: req.body.text,
   }).catch((err) => console.log(err));
 
   if (article) {
-    return res.status(201).json({ "number article create": article.id_article });
+    return res
+      .status(201)
+      .json({ "number article create": article.id_article });
   } else {
     return res.status(500).json({ error: `can't create a new article ` });
   }
@@ -71,7 +78,7 @@ module.exports.createArticle = async (req, res) => {
 // Modifier titre et/ou texte d'un article
 module.exports.updateArticle = async (req, res) => {
   const article = await Article.update(
-    { titre: req.body.titre, text: req.body.text , date_mod: new Date() },
+    { titre: req.body.titre, text: req.body.text, date_mod: new Date() },
     {
       where: {
         id_article: req.params.id,

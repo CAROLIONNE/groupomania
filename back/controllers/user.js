@@ -68,8 +68,7 @@ exports.getOneUser = async (req, res, next) => {
   if (userFound) {
     res
       .status(200)
-      .json({ user: userFound.id_user })
-      .json({ message: "Successfuly found the user " + userFound.pseudonyme });
+      .json({ "user id": userFound.id_user , "pseudonyme": userFound.pseudonyme  })
   } else {
     res.status(404).json({ error: "User not found" });
   }

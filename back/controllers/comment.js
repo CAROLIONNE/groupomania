@@ -12,6 +12,7 @@ exports.ViewComment = (req, res) => {
     res.status(404).json({ error: "comment not found" });
   }
 };
+
 // Afficher tous les commentaires
 exports.ViewAllComment = (req, res) => {
   Comment.findAll()
@@ -41,21 +42,24 @@ module.exports.createComment = async (req, res) => {
   }
 };
 
-// requete ok mais ne modifie pas la BDD
 // Modifier titre et/ou texte d'un commentaire
 module.exports.updateComment = async (req, res) => {
-  const comment = await Comment.update(
-    { titre: req.body.titre, text: req.body.text, date_mod: new Date() },
-    {
-      where: {
-        id_commentaire: req.params.id,
-      },
-    }
-  );
-  if (comment) {
-    return res.status(201).json("comment update");
+  let com = await Comment.findOne({
+    where: { id_commentaire: req.params.id },
+  });
+  if (!com) {
+    return res.status(404).json({ err: "Comment undefined" });
+  }
+  if (req.auth.userId == com.id_user || req.auth.role == 1) {
+    Comment.update(
+      { titre: req.body.titre, text: req.body.text, date_mod: new Date() },
+      {
+        where: { id_commentaire: req.params.id },
+      }
+    );
+    res.status(201).json("comment update");
   } else {
-    return res.status(500).json({ error: `can't update comment ` });
+    res.status(401).json({ error: "Request non authorized" });
   }
 };
 
