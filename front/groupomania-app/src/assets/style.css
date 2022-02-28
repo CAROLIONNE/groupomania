@@ -1,0 +1,36 @@
+a {
+  text-decoration: none;
+}
+#nav {
+  display: flex;
+  height: 4rem;
+  background-color: black;
+  
+}
+#img_logo {
+  max-width: 11rem;
+  height: 100%;
+  margin-left: 1em;
+}
+.authentification {
+    display: flex;
+    align-items: center;
+}
+#inscription,
+#connexion {
+  margin: 1em;
+  display: flex;
+}
+
+#ancre_inscription,
+#ancre_connexion {
+  color: white;
+  font-size: larger;
+}
+
+#ancre_inscription:hover,
+#ancre_connexion:hover {
+  color: #a3eeff;
+  transition : all .15s ease-in-out;
+  transform: scale(1.1);
+}
