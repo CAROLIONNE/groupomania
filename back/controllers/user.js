@@ -20,14 +20,14 @@ module.exports.signup = async (req, res) => {
   });
   // si l'utilisateur a un compte avec cet email
   if (utilisateur) {
-    return res.status(401).json({ error: "This email is already in use!" });
+    return res.status(401).json({ error: "This email is already in use !" });
   } else {
     // Cryptage du mot de passe
     bcrypt.hash(req.body.mot_psw, 10).then((hash) => {
       // Creer nouvel utilisateur
       Utilisateur.create({
         mail: req.body.mail,
-        role: req.body.role,
+        // role: req.body.role,
         mot_psw: hash,
         pseudonyme: req.body.pseudonyme,
         poste: req.body.poste,

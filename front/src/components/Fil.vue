@@ -2,9 +2,11 @@
   <div class="post">
     <div class="header">
       <h1>{{ intro }}</h1>
+          <button class="createArticle">Créer une publication</button>
+          <!-- redirection createArticle.vue -->
       <h2>Fil d'actualité</h2>
     </div>
-    <div class="article" v-for="article in articles">
+    <div class="article" v-for="article in articles" :key="article.id">
       <!-- <router-link to="/article" id="ancre_article">{{ article.title }}</router-link> -->
       <a :href="article.url">{{ article.title }}</a>
       <img :src="article.image" />
@@ -13,12 +15,16 @@
       <div class="newCom"> 
         <input type="text">
       </div>
-      <button class="coms" v-if="commentaires" v-on:click="displaycommentaires">Commentaires</button>
+      <button class="coms" > Commentaires </button> 
+       <h1 v-if="commentaires"> {{ Commentaires.titre }}</h1>
+    <p class="error" v-if="errorMessage"></p>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: "FilActu",
   data() {
@@ -28,10 +34,30 @@ export default {
         { url: "www.google.com", title: "titre test", image: "../assets/icon-left-font-monochrome-white.svg", text: "texte test" },
         { url: "www.bug.com", title: "titre test2", image: "imagetest2.jpg", text: "texte test2" }
       ],
-      commentaires: [
-""
-      ]
+      commentaires: [],
+      errors: [],
     };
+  },
+  // mounted() {
+  //   try {
+  //     const response = axios.get(`http://localhost:3000/api/comment`)
+  //     console.log(response.data)
+  //     this.commentaires = response.data
+  //   } catch (e) {
+  //     this.errors.push(e)
+  //   }
+  // },
+  mounted() {
+    axios.get(`http://localhost:3000/api/comment`)
+    .then(response => {
+      // JSON responses are automatically parsed.
+      this.commentaires = response.data
+    })
+    .catch(e => {
+      this.errors.push(e)
+    })
+  },
+  methods:{
   }
 };
 </script>

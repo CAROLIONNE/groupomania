@@ -13,23 +13,41 @@
       <label>Mail:</label>
       <input v-model="mail" placeholder="mail" /><br />
       <label>Mot de passe:</label>
-      <input type="password" v-model="password" placeholder="mot de passe" />
+      <input type="password" v-model="password" placeholder="mot de passe" /><br/>
+      <label>Pseudonyme:</label>
+      <input type="text" v-model="pseudonyme" placeholder="pseudonyme" />
     </form>
-    // redirection vers fil d'actualité
-    <button type="submit">Envoyer</button>
+    <p id="error" v-if="errors.length"> {{ errors }} </p>
+     <!-- redirection vers fil d'actualité -->
+    <input type="submit" v-on:click="signUp()" value="Envoyer"/>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: "InscriptionUser",
   data() {
     return {
-      msg: "Pour une meilleure ambiance au travail"
+      msg: "Pour une meilleure ambiance au travail",
+      mail: '',
+      password: '',
+      pseudonyme: '',
+      errors: ''
     };
   },
   methods: {
-    
+    signUp() {
+      axios.post(`http://localhost:3000/api/user/signup`, {
+        mail: this.mail,
+        mot_psw: this.password,
+        pseudonyme: this.pseudonyme
+      })
+      .then(response => {alert(response.data)})
+      .catch(e => {
+        this.errors = e.response.data.error
+      })
+    }
   }
   
 };
@@ -55,5 +73,8 @@ h2 {
 }
 #img_reunion {
   max-width: 100%;
+}
+#error {
+  color:red;
 }
 </style>
