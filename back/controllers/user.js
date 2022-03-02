@@ -14,6 +14,9 @@ module.exports.signup = async (req, res) => {
   if (!EMAIL_REGEX.test(req.body.mail)) {
     return res.status(400).json({ error: "Invalid email" });
   }
+  if (req.body.pseudonyme.length == 0) {
+    return res.status(401).json({ error: "Pseudonyme required" });
+  }
   const utilisateur = await Utilisateur.findOne({
     attributes: ["mail"],
     where: { mail: req.body.mail },
@@ -21,19 +24,18 @@ module.exports.signup = async (req, res) => {
   // si l'utilisateur a un compte avec cet email
   if (utilisateur) {
     return res.status(401).json({ error: "This email is already in use !" });
-  } else {
+  } 
+  else {
     // Cryptage du mot de passe
     bcrypt.hash(req.body.mot_psw, 10).then((hash) => {
       // Creer nouvel utilisateur
       Utilisateur.create({
         mail: req.body.mail,
-        // role: req.body.role,
         mot_psw: hash,
         pseudonyme: req.body.pseudonyme,
-        poste: req.body.poste,
-        bureau: req.body.bureau,
       });
-      res.status(201).json("User registered");
+        res.status(201).json("User registered");
+
     });
   }
 };
@@ -53,6 +55,7 @@ module.exports.login = async (req, res) => {
       }
       res.status(200).json({
         // Creation du token et envoi coté client
+        pseudo : userFound.pseudonyme,
         userID: userFound.id_user,
         token: jwt.sign(
           { id_user: userFound.id_user, role: userFound.role },
