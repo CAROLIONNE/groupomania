@@ -3,7 +3,9 @@ import VueRouter from 'vue-router'
 // import HomeView from '../views/HomeView.vue'
 import ConnectUser from '@/components/Connect'
 import InscriptionUser from '@/components/Inscription'
-import FilActu from '@/components/Fil'
+import FilActu from '@/components/FilActu'
+import CreateArticle from '@/components/CreateArticle'
+// import DisplayArticle from '@/components/DisplayArticle'
 
 Vue.use(VueRouter)
 
@@ -20,9 +22,19 @@ const routes = [
   },    
   {
     path: '/articles',
-    name: 'Fil',
+    name: 'FilActu',
     component: FilActu
   },    
+  {
+    path: '/articles/post',
+    name: 'NewArticle',
+    component: CreateArticle
+  },    
+  // {
+  //   path: '/article:id',
+  //   name: 'DisplayArticle',
+  //   component: DisplayArticle
+  // },    
 ]
 
 const router = new VueRouter({

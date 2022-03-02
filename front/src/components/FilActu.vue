@@ -13,7 +13,9 @@
       <p>{{ article.text }}</p>
       <button class="com" v-on:click="createcommentaire">Commenter</button>
       <div class="newCom"> 
-        <input type="text">
+              <textarea id="commentText" name="text" rows="5" cols="33">
+        Ecrivez votre commentaire ici
+      </textarea>
       </div>
       <button class="coms" > Commentaires </button> 
        <h1 v-if="commentaires"> {{ Commentaires.titre }}</h1>
@@ -22,8 +24,9 @@
   </div>
 </template>
 
+
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 
 export default {
   name: "FilActu",
@@ -39,24 +42,15 @@ export default {
     };
   },
   // mounted() {
-  //   try {
-  //     const response = axios.get(`http://localhost:3000/api/comment`)
-  //     console.log(response.data)
+  //   axios.get(`http://localhost:3000/api/comment`)
+  //   .then(response => {
+  //     // JSON responses are automatically parsed.
   //     this.commentaires = response.data
-  //   } catch (e) {
+  //   })
+  //   .catch(e => {
   //     this.errors.push(e)
-  //   }
+  //   })
   // },
-  mounted() {
-    axios.get(`http://localhost:3000/api/comment`)
-    .then(response => {
-      // JSON responses are automatically parsed.
-      this.commentaires = response.data
-    })
-    .catch(e => {
-      this.errors.push(e)
-    })
-  },
   methods:{
   }
 };

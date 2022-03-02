@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>Groupomania</title>
   </head>
   <body>
-    
     <div id="app"></div>
     <!-- built files will be auto injected -->
     <footer class="footer">
@@ -14,36 +13,39 @@
         <a id="mailto" href="mailto:groupomania@network.fr">Contact</a>
       </div>
       <div id="adresse">Groupomania, 101 Avenue picasso 62000 ARRAS</div>
-    </footer>    
+    </footer>
   </body>
 </html>
 
-	  
 <style>
   * {
     margin: 0;
     padding: 0;
   }
-    footer {
+  footer {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
     background: black;
     height: 3rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
-  
+
   #contact,
   #adresse {
     color: white;
     font-size: larger;
   }
-  
+
   #mailto {
     color: white;
   }
   #mailto:hover {
     color: #a3eeff;
-    transition : all .15s ease-in-out;
+    transition: all 0.15s ease-in-out;
     transform: scale(1.1);
   }
 </style>
