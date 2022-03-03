@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import HomeView from '../views/HomeView.vue'
 import ConnectUser from '@/components/Connect'
 import InscriptionUser from '@/components/Inscription'
 import FilActu from '@/components/FilActu'
-import CreateArticle from '@/components/CreateArticle'
+import NewArticle from '@/components/NewArticle'
 // import DisplayArticle from '@/components/DisplayArticle'
 
 Vue.use(VueRouter)
@@ -28,7 +27,7 @@ const routes = [
   {
     path: '/articles/post',
     name: 'NewArticle',
-    component: CreateArticle
+    component: NewArticle
   },    
   // {
   //   path: '/article:id',
