@@ -1,12 +1,12 @@
 <template>
   <div id="app">
     <nav class="nav" id="nav">
-      <img
+      <router-link to="/" id="ancre_accueil"><img
         id="img_logo"
         src="./assets/icon-left-font-monochrome-white.svg"
         alt="logo de groupomania"
-      />
-
+      /></router-link
+          >
       <div class="authentification">
         <div id="inscription">
           <router-link to="/inscription" id="ancre_inscription">Inscription</router-link
@@ -31,5 +31,5 @@ export default {
   },
 };
 </script>
-
-<style scoped src="@/assets/style.css"></style>
+ 
+ <style scoped src="@/assets/style.css"></style>
