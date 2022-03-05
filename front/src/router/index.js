@@ -1,9 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import ConnectUser from '@/components/Connect'
-import InscriptionUser from '@/components/Inscription'
-import FilActu from '@/components/FilActu'
-import NewArticle from '@/components/NewArticle'
+import ConnectUser from '@/views/Connect'
+import InscriptionUser from '@/views/Inscription'
+import FilActu from '@/views/FilActu'
+// import NewArticle from '@/components/NewArticle'
+import NewArticle from '@/views/NewArticle'
 // import DisplayArticle from '@/components/DisplayArticle'
 
 Vue.use(VueRouter)

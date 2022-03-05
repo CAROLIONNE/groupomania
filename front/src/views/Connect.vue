@@ -86,6 +86,7 @@ form {
 }
 #error {
   color: red;
+  height: 2em;
 }
 
 #mail,
