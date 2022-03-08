@@ -32,7 +32,6 @@ export default {
       mail: "",
       password: "",
       errors: "",
-      idUser: "",
     };
   },
   methods: {
@@ -43,14 +42,12 @@ export default {
           mot_psw: this.password,
         })
         .then((response) => {
-          console.log(response.data);
-          this.idUser = response.data.userID;
+          let userConnect = response.data;
+          console.log(response);
+          localStorage.setItem('user', JSON.stringify(userConnect) );
+          response.headers.authorization = userConnect.token
           this.$router.push({ name: "FilActu" });
         })
-        // .then( () => {alert("authentification OK => redirection")})
-        // .then( () => {
-        // }
-        // )
         .catch((e) => {
           console.log(e);
           this.errors = e.response.data.error;
@@ -70,10 +67,10 @@ h1 {
   height: 17em;
 }
 form {
-  text-align: center;
+  /* text-align: center; */
   padding: 1em;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   background: #a3eeff;
   width: 24em;
@@ -83,6 +80,9 @@ form {
   margin-right: auto;
   border: black 3px solid;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+label {
+  margin: 0.5em;
 }
 #error {
   color: red;
@@ -114,7 +114,7 @@ form {
   font-size: 16px;
   font-weight: 600;
   line-height: normal;
-  margin: 0;
+  margin: 1em;
   min-height: 60px;
   min-width: 0;
   outline: none;

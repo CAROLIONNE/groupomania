@@ -36,24 +36,33 @@ export default {
   },
   methods: {
     createArticle() {
-      axios
-        .post(`http://localhost:3000/api/article`, {
-          titre: this.titre,
-          text: this.text,
-        })
-        .then((response) => {
-          console.log(response.data);
-          // this.idUser = response.data.userID;
-          this.$router.push({ name: "FilActu" });
-        })
-        // .then( () => {alert("authentification OK => redirection")})
-        // .then( () => {
-        // }
-        // )
-        .catch((e) => {
-          console.log(e);
-          this.errors = e.response.data.error;
-        });
+         let userJson = localStorage.getItem('user');
+         let user = JSON.parse(userJson);
+         let token = user.token;
+         if (this.titre.length >= 3 && this.text.length >= 3){
+           axios
+             .post(`http://localhost:3000/api/article`, {
+               titre: this.titre,
+               text: this.text,
+               // media: ,
+             }, {
+                headers: {
+                   'Authorization': 'Bearer ' + token,
+                 },
+             })
+             .then((response) => {
+               console.log("requete ok", response.data);
+               this.$router.push({ name: "FilActu" });
+             })
+             .catch((e) => {
+               console.log("log erreur", e.response)
+               // console.log(e.response.config.data);
+               this.errors = e.response.data.error;
+             });
+
+         } else {
+           this.errors = 'Fields incomplete min 3 characters'
+         }
     },
   },
 };

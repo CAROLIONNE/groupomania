@@ -10,6 +10,14 @@ require("dotenv").config();
 
 // Inscription
 module.exports.signup = async (req, res) => {
+  //Verifie que les champs sont remplis
+  if (req.body.mail == null || req.body.mot_psw == null || req.body.pseudonyme == null){
+    return res.status(400).json({'error': 'Missing parameters'})
+  }
+  //Verifie que la taille du pseudo
+  if (req.body.pseudonyme.length <= 3 || req.body.pseudonyme.length >= 14){
+    return res.status(400).json({'error': 'pseudonyme too long or too short'})
+  }
   // Contrôle adresse email
   if (!EMAIL_REGEX.test(req.body.mail)) {
     return res.status(400).json({ error: "Invalid email" });

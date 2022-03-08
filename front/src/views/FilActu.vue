@@ -17,9 +17,7 @@
         <img id="article_img" :src="article.media" />
         <p id="article_text">{{ article.text }}</p>
         <div id="btn">
-          <button id="btn_new_com" v-on:click="newComment()">
-            Commenter
-          </button>
+          <button id="btn_new_com" v-on:click="newComment()">Commenter</button>
           <button class="btn_coms" v-on:click="displayCommentaires()">
             Commentaires
           </button>
@@ -87,13 +85,18 @@ export default {
     };
   },
   mounted() {
+    let userJson = localStorage.getItem("user");
+    let user = JSON.parse(userJson);
+    let token = user.token;
     axios
-      .get(`http://localhost:3000/api/article`)
+      .get(`http://localhost:3000/api/article`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
       .then((response) => {
         this.articles = response.data;
-        // this.articles.push(response.data)
         console.log("data", response.data);
-        console.log(this.articles[0]);
       })
       .catch((e) => {
         this.errors = e;
@@ -108,13 +111,7 @@ export default {
       axios
         .get(`http://localhost:3000/api/comment`)
         .then((response) => {
-          // response.data.forEach((commentaire) => {
           this.commentaires = response.data;
-          // console.log(commentaire);
-          // (this.commentaires.titre = commentaire.titre),
-          //   (this.commentaires.text = commentaire.text),
-          //   (this.commentaires.id_commentaire = commentaire.id_commentaire);
-          // });
           console.log(this.commentaires);
         })
         .catch((e) => {
@@ -159,6 +156,8 @@ h2 {
 }
 a {
   color: white;
+  text-decoration: none;
+  cursor: pointer;
 }
 #container {
   margin-left: auto;
@@ -203,7 +202,8 @@ img {
 
 /* CSS */
 #btn_new_com,
-.btn_coms, #submit_com {
+.btn_coms,
+#submit_com {
   background-color: #ffffff;
   border: 1px solid #222222;
   border-radius: 8px;
@@ -233,20 +233,23 @@ img {
 }
 
 #btn_new_com:focus-visible,
-.btn_coms:focus-visible, #submit_com:focus-visible {
+.btn_coms:focus-visible,
+#submit_com:focus-visible {
   box-shadow: #222222 0 0 0 2px, rgba(255, 255, 255, 0.8) 0 0 0 4px;
   transition: box-shadow 0.2s;
 }
 
 #btn_new_com:active,
-.btn_coms:active, #submit_com:active {
+.btn_coms:active,
+#submit_com:active {
   background-color: #f7f7f7;
   border-color: #000000;
   transform: scale(0.96);
 }
 
 #btn_new_com:disabled,
-.btn_coms:disabled, #submit_com:disabled {
+.btn_coms:disabled,
+#submit_com:disabled {
   border-color: #dddddd;
   color: #dddddd;
   cursor: not-allowed;
