@@ -81,9 +81,10 @@ exports.getOneUser = async (req, res, next) => {
     where: { id_user: req.params.id },
   });
   if (userFound) {
+    console.log(userFound)
     res
       .status(200)
-      .json({ "user id": userFound.id_user, pseudonyme: userFound.pseudonyme });
+      .json({ user_id: userFound.id_user,mail: userFound.mail,poste: userFound.poste, bureau: userFound.bureau, pseudonyme: userFound.pseudonyme, date_crea : userFound.date_crea , avatar: userFound.avatar});
   } else {
     res.status(404).json({ error: "User not found" });
   }
