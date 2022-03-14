@@ -3,9 +3,9 @@ import VueRouter from 'vue-router'
 import ConnectUser from '@/views/Connect'
 import InscriptionUser from '@/views/Inscription'
 import FilActu from '@/views/FilActu'
-// import NewArticle from '@/components/NewArticle'
 import NewArticle from '@/views/NewArticle'
-// import DisplayArticle from '@/components/DisplayArticle'
+import DisplayArticle from '@/views/DisplayArticle'
+import DisplayProfil from '@/views/DisplayProfil'
 
 Vue.use(VueRouter)
 
@@ -30,11 +30,16 @@ const routes = [
     name: 'NewArticle',
     component: NewArticle
   },    
-  // {
-  //   path: '/article:id',
-  //   name: 'DisplayArticle',
-  //   component: DisplayArticle
-  // },    
+  {
+    path: '/article/:id',
+    name: 'DisplayArticle',
+    component: DisplayArticle
+  },    
+  {
+    path: '/profil/:id',
+    name: 'DisplayProfil',
+    component: DisplayProfil
+  },    
 ]
 
 const router = new VueRouter({
