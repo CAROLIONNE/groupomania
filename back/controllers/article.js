@@ -42,13 +42,12 @@ exports.ViewArticle = async (req, res) => {
 
 module.exports.createArticle = async (req, res) => {
   try {
-    if (req.body.titre.length >=3  && req.body.texte.length >=3) {
+    if (req.body.titre !== null && req.body.texte !== null) {
       Article.create({
         id_user: req.auth.userId,
         titre: req.body.titre,
         text: req.body.text,
         media: req.body.media,
-        // media: "../images/photo-paysage.jpg",
         // media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
       });
       return res.status(201).json("article created");

@@ -1,15 +1,16 @@
 const Comment = require("../models/Comment");
-const Article = require("../models/Article");
+const sequelize = require("../db.js");
 
-// Afficher un commentaire
-exports.ViewComment = (req, res) => {
-  const commentFound = Comment.findOne({
-    where: { id_commentaire: req.params.id },
+// // Afficher commentaires d'un article
+exports.ViewComment = async (req, res) => {
+  const commentFound = await Comment.findAll({
+    where: { id_article: req.params.id },
   }).catch((err) => console.log(err));
-
   if (commentFound) {
-    res.status(200).json({ message: "comment :" + commentFound.text });
+    console.log("if", commentFound)
+    res.status(200).json( commentFound );
   } else {
+    console.log("else", commentFound)
     res.status(404).json({ error: "comment not found" });
   }
 };
