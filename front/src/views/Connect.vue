@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
   name: "ConnectUser",
   data() {
@@ -36,7 +35,7 @@ export default {
   },
   methods: {
     login() {
-      axios
+      this.axios
         .post(`http://localhost:3000/api/user/login`, {
           mail: this.mail,
           mot_psw: this.password,

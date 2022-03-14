@@ -26,7 +26,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   name: "InscriptionUser",
   data() {
@@ -41,7 +40,7 @@ export default {
   methods: {
     signUp() {
       // this.errors = '';
-      axios.post(`http://localhost:3000/api/user/signup`, {
+      this.axios.post(`http://localhost:3000/api/user/signup`, {
         mail: this.mail,
         mot_psw: this.password,
         pseudonyme: this.pseudonyme
