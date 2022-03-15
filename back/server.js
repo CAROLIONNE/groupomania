@@ -12,7 +12,7 @@ app.use(cors());
 const path = require('path');
 
 // Routes
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/images', express.static(path.join(__dirname, '/images')));
 const userRoutes = require("./routes/user");
 const articleRoutes = require('./routes/article');
 const commentRoutes = require('./routes/comment');

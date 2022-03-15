@@ -1,6 +1,9 @@
 a {
   text-decoration: none;
 }
+#app {
+  margin-bottom: 2em;
+}
 #nav {
   display: flex;
   height: 4rem;
@@ -17,19 +20,19 @@ a {
     align-items: center;
 }
 #inscription,
-#connexion {
+#connexion, #fil_actu, #profil {
   margin: 1em;
   display: flex;
 }
 
 #ancre_inscription,
-#ancre_connexion {
+#ancre_connexion, #ancre_fil_actu, #ancre_profil {
   color: white;
   font-size: larger;
 }
 
 #ancre_inscription:hover,
-#ancre_connexion:hover {
+#ancre_connexion:hover, #ancre_fil_actu:hover, #ancre_profil:hover {
   color: #a3eeff;
   transition : all .15s ease-in-out;
   transform: scale(1.1);

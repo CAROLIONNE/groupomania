@@ -5,7 +5,7 @@ const sequelize = require("../db.js");
 exports.ViewComment = async (req, res) => {
   const commentFound = await Comment.findAll({
     where: { id_article: req.params.id },
-  }).catch((err) => console.log(err));
+  })
   if (commentFound) {
     console.log("if", commentFound)
     res.status(200).json( commentFound );

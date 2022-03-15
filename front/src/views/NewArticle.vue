@@ -1,7 +1,8 @@
 <template>
   <div>
     <h1>Créez votre publication ici</h1>
-    <div id="new_article">
+    <!-- <div id="new_article"> -->
+     <form id="new_article" >
       <!-- <h2>Titre</h2> -->
       <input
         type="text"
@@ -19,12 +20,11 @@
         Publier
       </button>
 
-    </div>
+    </form>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 export default {
   name: "NewArticle",
   data() {
@@ -40,7 +40,7 @@ export default {
          let user = JSON.parse(userJson);
          let token = user.token;
          if (this.titre.length >= 3 && this.text.length >= 3){
-           axios
+           this.axios
              .post(`http://localhost:3000/api/article`, {
                titre: this.titre,
                text: this.text,
@@ -55,9 +55,9 @@ export default {
                this.$router.push({ name: "FilActu" });
              })
              .catch((e) => {
-               console.log("log erreur", e.response)
+               console.log("log erreur", e)
                // console.log(e.response.config.data);
-               this.errors = e.response.data.error;
+              //  this.errors = e.response.data.error;
              });
 
          } else {
@@ -103,6 +103,7 @@ padding: 0.5em;
 
 
 #btn_submit {
+  margin: 1em;
   width: 30%;
   appearance: none;
   background-color: transparent;
