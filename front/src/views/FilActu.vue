@@ -7,22 +7,27 @@
       </button>
       <h2 id="fil">Fil d'actualité</h2>
     </div>
-    <div id="container" v-for="article in articles" :key="article.id_article">
-      <div class="article">
-        <!-- <router-link to="/article:id" id="ancre_article">{{ article.title }}</router-link> -->
+    <div id="container" v-for="(article, index) in articles" :key="article.id">
+      <div id="article">
         <!-- redirection vers article ciblé -->
-        <a href="#"
-          ><h2>{{ article.titre }}</h2></a
-        >
-        <img id="article_img" :src="article.media" />
+        <!-- <router-link to="/article:id" id="ancre_article">{{ article.title }}</router-link> -->
+        <router-link :to="{ path: `/article/${this.idArticle}`}" id="ancre_article">{{ article.id_article }}</router-link>
+        <a href="#">
+          <h2>{{ article.titre }} {{ index }}</h2>
+        </a>
+        <!-- <img id="article_img" :src="article.media" /> -->
         <p id="article_text">{{ article.text }}</p>
+        <p id="article_id" style="color: orange">
+          l'id dynamique que je veux recupérer ====> {{ article.id_article }}
+        </p>
+
         <div id="btn">
           <button id="btn_new_com" v-on:click="newComment()">Commenter</button>
-          <button class="btn_coms" v-on:click="displayCommentaires()">
+          <button class="btn_coms" v-on:click="displayCommentaires(index)">
             Commentaires
           </button>
         </div>
-        <div class="new_com" v-on:click="newComment()">
+        <div class="new_com" v-if="click">
           <h2>Titre :</h2>
           <input type="text" class="com_title" v-model="commentaire.titre" />
           <h2>Texte :</h2>
@@ -34,22 +39,23 @@
             cols="33"
           >
           Ecrivez votre commentaire ici
-          </textarea
-          ><br />
+          </textarea>
           <input
             type="submit"
             id="submit_com"
             v-on:click="createCommentaire()"
             value="Envoyer"
           />
+          <p class="error" v-if="errors">
+            {{ errors }}
+          </p>
         </div>
 
         <div id="container_comments">
           <div
             id="display_com"
             v-for="com in commentaires"
-            :key="com.id_commentaire"
-          >
+            :key="com.id_commentaire">
             <h2 id="com_titre">{{ com.titre }}</h2>
             <div id="com_text">{{ com.text }}</div>
             <p id="com_date">{{ com.date_crea }}</p>
@@ -62,13 +68,14 @@
         </div>
       </div>
     </div>
-    <!-- <router-view /> -->
+    <router-view />
   </div>
 </template>
 
 <script>
-import axios from "axios";
-
+let userJson = localStorage.getItem("user");
+let user = JSON.parse(userJson);
+let token = user.token;
 export default {
   name: "FilActu",
   data() {
@@ -81,22 +88,29 @@ export default {
         titre: "",
         text: "",
       },
+      id_article: "",
       errors: null,
+      click: false,
+      userJson: localStorage.getItem("user"),
+      user: JSON.parse(userJson),
+      token: user.token,
+      idArticleCom: [],
+      idArticle: "",
     };
   },
-  mounted() {
-    let userJson = localStorage.getItem("user");
-    let user = JSON.parse(userJson);
-    let token = user.token;
-    axios
+  computed: {
+
+  },
+  created() {
+    this.axios
       .get(`http://localhost:3000/api/article`, {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
-      .then((response) => {
-        this.articles = response.data;
-        console.log("data", response.data);
+      .then((articles) => {
+        this.articles = articles.data;
+        console.log("data", articles.data);
       })
       .catch((e) => {
         this.errors = e;
@@ -105,16 +119,24 @@ export default {
 
   methods: {
     newComment() {
+      this.click = true;
       console.log("nouveau com", document.getElementById("com"));
     },
-    displayCommentaires() {
-      axios
-        .get(`http://localhost:3000/api/comment`)
-        .then((response) => {
-          this.commentaires = response.data;
-          console.log(this.commentaires);
+
+    displayCommentaires(index) {
+      this.idArticle = this.articles[index].id_article;
+      this.axios
+        .get(`http://localhost:3000/api/comment/${this.idArticle}`, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((foundCommentaires) => {
+          this.commentaires = foundCommentaires.data;
+          console.log("commentaires", this.commentaires)
         })
         .catch((e) => {
+          console.log(e);
           this.errors = e;
         });
     },
@@ -124,10 +146,20 @@ export default {
     },
 
     createCommentaire() {
-      this.preventDefault();
       console.log("create com");
-      axios
-        .post(`http://localhost:3000/api/comment`)
+      this.axios
+        .post(
+          `http://localhost:3000/api/comment`,
+          {
+            titre: this.commentaire.titre,
+            text: this.commentaire.text,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        )
         .then((response) => {
           // JSON responses are automatically parsed.
           this.commentaire.push(response.data);
@@ -164,7 +196,7 @@ a {
   margin-right: auto;
   width: 75%;
 }
-.article {
+#article {
   background: rgb(70, 70, 70);
   border-radius: 3em;
   border: 4px solid black;
@@ -192,6 +224,7 @@ img {
 }
 .new_com {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-around;
   /* width: 60%; */
@@ -320,5 +353,9 @@ img {
 #com_text,
 #com_date {
   padding: 0.2em;
+}
+.error {
+  color: red;
+  padding: 0.5em;
 }
 </style>
