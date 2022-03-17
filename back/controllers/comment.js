@@ -6,12 +6,12 @@ exports.ViewComment = async (req, res) => {
   const commentFound = await Comment.findAll({
     where: { id_article: req.params.id },
   })
-  if (commentFound) {
-    console.log("if", commentFound)
+  if (commentFound.length >= 1) {
+    console.log("if", commentFound.length)
     res.status(200).json( commentFound );
   } else {
     console.log("else", commentFound)
-    res.status(404).json({ error: "comment not found" });
+    res.status(404).json({error : "No comment for this article for the moment" });
   }
 };
 
@@ -25,7 +25,7 @@ exports.ViewAllComment = (req, res) => {
       res.status(200).json(commentaires);
     })
     .catch((error) => {
-      res.status(500).json({ error: "cannot access to DB" });
+      res.status(500).json( error );
     });
 };
 

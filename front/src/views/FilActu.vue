@@ -11,21 +11,25 @@
       <div id="article">
         <!-- redirection vers article ciblé -->
         <!-- <router-link to="/article:id" id="ancre_article">{{ article.title }}</router-link> -->
-        <router-link :to="{ path: `/article/${this.idArticle}`}" id="ancre_article">{{ article.id_article }}</router-link>
+        <router-link
+          :to="{ path: `/article/${idArticle}` }"
+          id="ancre_article"
+          >{{ article.id_article }}</router-link
+        >
         <a href="#">
-          <h2>{{ article.titre }} {{ index }}</h2>
+          <h2>{{ article.titre }}</h2>
         </a>
         <!-- <img id="article_img" :src="article.media" /> -->
         <p id="article_text">{{ article.text }}</p>
-        <p id="article_id" style="color: orange">
-          l'id dynamique que je veux recupérer ====> {{ article.id_article }}
-        </p>
-
+        <!-- TO DO : Recup pseudonyme avec ID -->
+        <p id="article_author">Créé par {{ article.id_user }}</p>
+        <p id="article_date_crea">Le {{ timestamp2(article.date_crea) }}</p>
         <div id="btn">
           <button id="btn_new_com" v-on:click="newComment()">Commenter</button>
           <button class="btn_coms" v-on:click="displayCommentaires(index)">
             Commentaires
           </button>
+          <p class="error" v-if="errors">{{ errors }}</p>
         </div>
         <div class="new_com" v-if="click">
           <h2>Titre :</h2>
@@ -46,24 +50,13 @@
             v-on:click="createCommentaire()"
             value="Envoyer"
           />
-          <p class="error" v-if="errors">
-            {{ errors }}
-          </p>
         </div>
-
+        <!-- TO DO recupérer pseudonyme avec ID -->
         <div id="container_comments">
-          <div
-            id="display_com"
-            v-for="com in commentaires"
-            :key="com.id_commentaire">
+          <div id="display_com" v-for="com in commentaires" :key="com.id_commentaire">
             <h2 id="com_titre">{{ com.titre }}</h2>
             <div id="com_text">{{ com.text }}</div>
-            <p id="com_date">{{ com.date_crea }}</p>
-            <!-- TO DO recupérer pseudonyme avec ID -->
-            <!-- <p>{{ com }}</p> -->
-            <p class="error" v-if="errors">
-              {{ errors }}
-            </p>
+            <p id="com_date">{{ timestamp(com.date_crea) }}</p>
           </div>
         </div>
       </div>
@@ -73,6 +66,7 @@
 </template>
 
 <script>
+import moment from "moment";
 let userJson = localStorage.getItem("user");
 let user = JSON.parse(userJson);
 let token = user.token;
@@ -88,36 +82,36 @@ export default {
         titre: "",
         text: "",
       },
-      id_article: "",
       errors: null,
       click: false,
-      userJson: localStorage.getItem("user"),
-      user: JSON.parse(userJson),
-      token: user.token,
-      idArticleCom: [],
       idArticle: "",
     };
   },
-  computed: {
-
-  },
-  created() {
-    this.axios
+  computed: {},
+  async mounted() {
+    await this.axios
       .get(`http://localhost:3000/api/article`, {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
-      .then((articles) => {
-        this.articles = articles.data;
-        console.log("data", articles.data);
+      .then((allArticles) => {
+        this.articles = allArticles.data;
+        console.log("articles", this.articles);
       })
       .catch((e) => {
+        console.log(e);
         this.errors = e;
       });
   },
 
   methods: {
+    timestamp(date) {
+      return moment(date, "YYYYMMDD").fromNow();
+    },
+    timestamp2(date) {
+      return moment(date).format("DD-MM-YYYY");
+    },
     newComment() {
       this.click = true;
       console.log("nouveau com", document.getElementById("com"));
@@ -132,12 +126,17 @@ export default {
           },
         })
         .then((foundCommentaires) => {
-          this.commentaires = foundCommentaires.data;
-          console.log("commentaires", this.commentaires)
+
+            const article = document.getElementById("article");
+            console.log(article);
+            console.log(this.articles[index]);
+            this.commentaires = foundCommentaires.data;
+            // console.log("commentaires", this.commentaires);
+
         })
         .catch((e) => {
           console.log(e);
-          this.errors = e;
+          this.errors = e.response.data.error;
         });
     },
 
@@ -161,7 +160,6 @@ export default {
           }
         )
         .then((response) => {
-          // JSON responses are automatically parsed.
           this.commentaire.push(response.data);
         })
         .catch((e) => {
@@ -173,7 +171,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #post {
   text-align: center;
