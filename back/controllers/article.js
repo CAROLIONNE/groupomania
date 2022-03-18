@@ -23,60 +23,35 @@ exports.ViewArticle = async (req, res) => {
   if (articleFound) {
     res
       .status(200)
-      .json({ message: `articleFound : ${articleFound.id_article}` });
+      .json({ articleFound });
   } else {
     res.status(404).json({ error: "Article not found" });
   }
 };
 
-// TO DO gestion des images
 // Créer un article
-// try {
-//   console.log(req.body);
-//   const articleObject = JSON.parse(req.body.media);
-//   delete articleObject.id_article;
-//   console.log(articleObject);
-// } catch (err) {
-//   console.log(err);
-// }
-
 module.exports.createArticle = async (req, res) => {
   try {
-    if (req.body.titre !== null && req.body.texte !== null) {
-      Article.create({
+    if (req.body.titre !== null && req.body.text !== null) {
+       await Article.create({
         id_user: req.auth.userId,
         titre: req.body.titre,
         text: req.body.text,
-        media: req.body.media,
-        // media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+        media:`${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+        // media: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : '',
       });
       return res.status(201).json("article created");
     } else {
       return res.status(401).json({ error: `can't create a new article ` });
     }
   } catch (err) {
-    console.log(err);
+    console.log("filefound", req.file);
+    console.log("---------", err);
     return res.status(500).json({ error: `can't create a new article ` });
   }
 };
 
-// module.exports.createArticle = async (req, res) => {
-//   const articleObject = JSON.parse(req.body.article);
-//   console.log(articleObject);
-//   delete articleObject.id_article;
-//   const article = await Article.create({
-//     ...articleObject,
-//     media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
-//   }).catch((err) => console.log(err));
-
-//   if (article) {
-//     return res.status(201).json({ "number article create": article.id });
-//   } else {
-//     return res.status(500).json({ error: `can't create a new article ` });
-//   }
-// };
-
-// TO DO gestion des images
+// TO DO gestion des images et mise a jour des nouvelles données garder ce qui n'a pas été modifié
   // Mise a jour d'un article
 exports.updateArticle = async (req, res) => {
   let article = await Article.findOne({ where: { id_article: req.params.id } });
@@ -91,6 +66,7 @@ exports.updateArticle = async (req, res) => {
           titre: req.body.titre,
           text: req.body.text,
           date_mod: new Date(),
+          media:`${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
         },
         {
           where: {

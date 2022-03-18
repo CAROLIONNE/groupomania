@@ -9,21 +9,13 @@
     </div>
     <div id="container" v-for="(article, index) in articles" :key="article.id">
       <div id="article">
-        <!-- redirection vers article ciblé -->
-        <!-- <router-link to="/article:id" id="ancre_article">{{ article.title }}</router-link> -->
-        <router-link
-          :to="{ path: `/article/${idArticle}` }"
-          id="ancre_article"
-          >{{ article.id_article }}</router-link
-        >
-        <a href="#">
-          <h2>{{ article.titre }}</h2>
-        </a>
-        <!-- <img id="article_img" :src="article.media" /> -->
+        <!-- <router-link :to="{ path: `/article/${article.id_article}` }" id="ancre_article"><h2>{{ article.titre }}</h2></router-link> -->
+        <!-- <router-link :to="{ path: `/article/?id=${article.id_article}` }" id="ancre_article"><h2>{{ article.titre }}</h2></router-link> -->
+        <router-link :to="{ name: 'DisplayArticle', params: { id: article.id_article }}"><h2>{{ article.titre }}</h2></router-link>
+        <img id="article_img" :src="article.media" />
         <p id="article_text">{{ article.text }}</p>
         <!-- TO DO : Recup pseudonyme avec ID -->
-        <p id="article_author">Créé par {{ article.id_user }}</p>
-        <p id="article_date_crea">Le {{ timestamp2(article.date_crea) }}</p>
+        <p id="article_author">Créé par {{ article.id_user }}, le {{ timestamp2(article.date_crea) }}</p>
         <div id="btn">
           <button id="btn_new_com" v-on:click="newComment()">Commenter</button>
           <button class="btn_coms" v-on:click="displayCommentaires(index)">
@@ -88,8 +80,8 @@ export default {
     };
   },
   computed: {},
-  async mounted() {
-    await this.axios
+   mounted() {
+     this.axios
       .get(`http://localhost:3000/api/article`, {
         headers: {
           Authorization: "Bearer " + token,
@@ -199,14 +191,11 @@ a {
   border: 4px solid black;
   color: white;
   margin: 2em;
+  /* padding: 1em; */
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 1em;
   text-align: center;
-  /* margin-left: auto;
-  margin-right: auto;
-  width: 75%; */
 }
 img {
   max-width: 90%;
@@ -215,7 +204,6 @@ img {
   margin-right: auto;
 }
 #article_text {
-  /* height: 2em; */
   margin-left: auto;
   margin-right: auto;
 }

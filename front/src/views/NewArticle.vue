@@ -1,8 +1,7 @@
 <template>
   <div>
     <h1>Créez votre publication ici</h1>
-    <!-- <div id="new_article"> -->
-     <form id="new_article" >
+    <form id="new_article" method="post" enctype="multipart/form-data">
       <!-- <h2>Titre</h2> -->
       <input
         type="text"
@@ -11,15 +10,24 @@
         placeholder="Votre titre"
         v-model="titre"
       />
-      <textarea id="article_text" name="text" rows="5" cols="33" v-model="text" v-on:click="text=null">
-        
+      <textarea
+        id="article_text"
+        name="text"
+        rows="5"
+        cols="33"
+        v-model="text"
+        v-on:click="text = null"
+      >
       </textarea>
-      <input id="file" type="file" />
+      <input id="file" type="file" name="image" v-on:change="fileChange" />
       <p id="error" v-if="errors.length">{{ errors }}</p>
-      <button type="submit" id="btn_submit" v-on:click="createArticle()">
+      <button
+        type="submit"
+        id="btn_submit"
+        v-on:click.prevent="createArticle()"
+      >
         Publier
       </button>
-
     </form>
   </div>
 </template>
@@ -31,38 +39,46 @@ export default {
     return {
       titre: "",
       text: "Ecrivez votre texte ici",
+      media: "",
       errors: "",
     };
   },
   methods: {
+    fileChange(e) {
+      var files = e.target.files || e.dataTransfer.files;
+      this.media = files[0];
+      console.log(this.media);
+    },
     createArticle() {
-         let userJson = localStorage.getItem('user');
-         let user = JSON.parse(userJson);
-         let token = user.token;
-         if (this.titre.length >= 3 && this.text.length >= 3){
-           this.axios
-             .post(`http://localhost:3000/api/article`, {
-               titre: this.titre,
-               text: this.text,
-               // media: ,
-             }, {
-                headers: {
-                   'Authorization': 'Bearer ' + token,
-                 },
-             })
-             .then((response) => {
-               console.log("requete ok", response.data);
-               this.$router.push({ name: "FilActu" });
-             })
-             .catch((e) => {
-               console.log("log erreur", e)
-               // console.log(e.response.config.data);
-              //  this.errors = e.response.data.error;
-             });
-
-         } else {
-           this.errors = 'Fields incomplete min 3 characters'
-         }
+      let userJson = localStorage.getItem("user");
+      let user = JSON.parse(userJson);
+      let token = user.token;
+      const data = new FormData();
+      data.append("titre", this.titre);
+      data.append("text", this.text);
+      data.append("image", this.media);
+      console.log(data);
+      if (this.titre.length >= 3 && this.text.length >= 3) {
+        this.axios
+          .post(`http://localhost:3000/api/article`, data, {
+            headers: {
+              Authorization: "Bearer " + token,
+              'content-Type': "multipart/form-data",
+            },
+          })
+          .then((response) => {
+            console.log("requete ok", response.data);
+            this.$router.push({ name: "FilActu" });
+          })
+          .catch((e) => {
+            console.log(data);
+            console.log("log erreur", e);
+            // console.log(e.response.config.data);
+            //  this.errors = e.response.data.error;
+          });
+      } else {
+        this.errors = "Fields incomplete min 3 characters";
+      }
     },
   },
 };
@@ -90,7 +106,7 @@ h1 {
 }
 #titre {
   margin-top: 1em;
-padding: 0.5em;
+  padding: 0.5em;
 }
 #article_text {
   width: 70%;
@@ -100,7 +116,6 @@ padding: 0.5em;
 #file {
   margin: 1em;
 }
-
 
 #btn_submit {
   margin: 1em;
