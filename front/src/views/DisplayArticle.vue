@@ -1,15 +1,16 @@
 <template>
   <div>
-    <div id="container" v-for="article in articles" :key="article.id_article">
+    <div id="container">
       <div class="article">
-        <h1>{{ article.id_article }}</h1>
-        <!-- <router-link to="/article:id" id="ancre_article">{{ article.title }}</router-link> -->
-        <!-- redirection vers article ciblé -->
-        <a href="#"
-          ><h2>{{ article.titre }}</h2></a
-        >
+        <h1>{{ article.id }}</h1>
+        <a href="#">
+          <h2>{{ article.titre }}</h2>
+        </a>
         <img id="article_img" :src="article.media" />
         <p id="article_text">{{ article.text }}</p>
+        <p id="article_author">
+          Créé par {{ article.id_user }}, le {{ timestamp2(article.date_crea) }}
+        </p>
         <div id="btn">
           <button id="btn_new_com" v-on:click="newComment()">Commenter</button>
           <button class="btn_coms" v-on:click="displayCommentaires()">
@@ -50,7 +51,6 @@
             <div id="com_text">{{ com.text }}</div>
             <p id="com_date">{{ com.date_crea }}</p>
             <!-- TO DO recupérer pseudonyme avec ID -->
-            <!-- <p>{{ com }}</p> -->
             <p class="error" v-if="errors">
               {{ errors }}
             </p>
@@ -62,6 +62,7 @@
 </template>
 
 <script>
+import moment from "moment";
 let userJson = localStorage.getItem("user");
 let user = JSON.parse(userJson);
 let token = user.token;
@@ -70,7 +71,14 @@ export default {
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
-      articles: null,
+      article: {
+        id_user: "",
+        id: "",
+        titre: "",
+        text: "",
+        media: "",
+        date_crea: "",
+      },
       commentaires: null,
       commentaire: {
         id_commentaire: "",
@@ -88,15 +96,21 @@ export default {
   },
   computed: {},
   mounted() {
+    let $id = this.$route.params.id;
     this.axios
-      .get(`http://localhost:3000/api/article/`, {
+      .get(`http://localhost:3000/api/article/` + $id, {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
-      .then((articles) => {
-        this.articles = articles.data;
-        console.log("data", articles.data);
+      .then((article) => {
+        this.article.id = article.data.articleFound.id_article,
+        this.article.id_user = article.data.articleFound.id_user,
+        this.article.titre = article.data.articleFound.titre,
+        this.article.text = article.data.articleFound.text,
+        this.article.media = article.data.articleFound.media,
+        this.article.date_crea = article.data.articleFound.date_crea,
+        console.log("data", article.data.articleFound);
       })
       .catch((e) => {
         this.errors = e;
@@ -104,13 +118,19 @@ export default {
   },
 
   methods: {
+    timestamp(date) {
+      return moment(date, "YYYYMMDD").fromNow();
+    },
+    timestamp2(date) {
+      return moment(date).format("DD-MM-YYYY");
+    },
     newComment() {
       this.click = true;
       console.log("nouveau com", document.getElementById("com"));
     },
     displayCommentaires() {
       this.axios
-        .get(`http://localhost:3000/api/comment/${this.idArticle}`, {
+        .get(`http://localhost:3000/api/comment/` + this.$route.params.id, {
           headers: {
             Authorization: "Bearer " + token,
           },
