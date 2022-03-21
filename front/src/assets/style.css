@@ -6,7 +6,7 @@ a {
 }
 #nav {
   display: flex;
-  height: 4rem;
+  height: 3rem;
   background-color: black;
   
 }
@@ -15,9 +15,12 @@ a {
   height: 100%;
   margin-left: 1em;
 }
-.authentification {
+#navigation {
     display: flex;
     align-items: center;
+}
+#authentification {
+  display: flex;
 }
 #inscription,
 #connexion, #fil_actu, #profil {
