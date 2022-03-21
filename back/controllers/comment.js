@@ -33,7 +33,7 @@ exports.ViewAllComment = (req, res) => {
 module.exports.createComment = async (req, res) => {
   try {
   await Comment.create({
-    id_article: req.params.idarticle,
+    id_article: req.params.id,
     id_user: req.auth.userId,
     titre: req.body.titre,
     text: req.body.text,

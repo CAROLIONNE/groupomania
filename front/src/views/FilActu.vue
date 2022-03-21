@@ -9,10 +9,8 @@
     </div>
     <div id="container" v-for="(article, index) in articles" :key="article.id">
       <div id="article">
-        <!-- <router-link :to="{ path: `/article/${article.id_article}` }" id="ancre_article"><h2>{{ article.titre }}</h2></router-link> -->
-        <!-- <router-link :to="{ path: `/article/?id=${article.id_article}` }" id="ancre_article"><h2>{{ article.titre }}</h2></router-link> -->
-        <router-link :to="{ name: 'DisplayArticle', params: { id: article.id_article }}"><h2>{{ article.titre }}</h2></router-link>
-        <img id="article_img" :src="article.media" />
+        <router-link id="ancre_article" :to="{ name: 'DisplayArticle', params: { id: article.id_article }}"><h2>{{ article.titre }}</h2></router-link>
+        <img id="article_img" v-if="article.media" :src="article.media" />
         <p id="article_text">{{ article.text }}</p>
         <!-- TO DO : Recup pseudonyme avec ID -->
         <p id="article_author">Créé par {{ article.id_user }}, le {{ timestamp2(article.date_crea) }}</p>
@@ -48,7 +46,7 @@
           <div id="display_com" v-for="com in commentaires" :key="com.id_commentaire">
             <h2 id="com_titre">{{ com.titre }}</h2>
             <div id="com_text">{{ com.text }}</div>
-            <p id="com_date">{{ timestamp(com.date_crea) }}</p>
+            <p id="com_date"> {{ timestamp(com.date_crea) }}</p>
           </div>
         </div>
       </div>
@@ -140,7 +138,7 @@ export default {
       console.log("create com");
       this.axios
         .post(
-          `http://localhost:3000/api/comment`,
+          `http://localhost:3000/api/comment/${this.$route.params.id}`,
           {
             titre: this.commentaire.titre,
             text: this.commentaire.text,
@@ -152,7 +150,7 @@ export default {
           }
         )
         .then((response) => {
-          this.commentaire.push(response.data);
+          console.log(response.data);
         })
         .catch((e) => {
           console.log(e);
@@ -171,12 +169,13 @@ h1,
 h2 {
   font-weight: bold;
   text-align: center;
+  padding: 0.4em;
 }
 #fil {
-  margin: 1em;
+  margin: 0.5em;
 }
 a {
-  color: white;
+  color: black;
   text-decoration: none;
   cursor: pointer;
 }
@@ -187,25 +186,39 @@ a {
 }
 #article {
   background: rgb(70, 70, 70);
-  border-radius: 3em;
-  border: 4px solid black;
-  color: white;
-  margin: 2em;
-  /* padding: 1em; */
+  border: 2px solid  #a7a7a7 ;
+  margin-bottom: 2em;
+  padding: 0.2em;
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
+
+  border-radius: 20px;
+  box-shadow: 0.2em 0.2em 10px #a8a7a7;
+  background: rgb(144, 140, 153);
+  background: linear-gradient(
+    309deg,
+    rgba(144, 140, 153, 0.510224158022584) 0%,
+    rgba(208, 210, 237, 0.5858544101234244) 29%
+  );
 }
 img {
   max-width: 90%;
   height: 19em;
   margin-left: auto;
   margin-right: auto;
+  border: 2px solid black;
 }
 #article_text {
   margin-left: auto;
   margin-right: auto;
+  padding: 0.2em;
+  margin: 0.2em;
+}
+#article_author {
+  font-size: small;
+  padding: 0.2em;
 }
 .new_com {
   display: flex;
@@ -218,7 +231,6 @@ img {
   margin: 0.2em;
 }
 
-/* CSS */
 #btn_new_com,
 .btn_coms,
 #submit_com {
@@ -240,7 +252,7 @@ img {
   text-decoration: none;
   touch-action: manipulation;
   transition: box-shadow 0.2s, -ms-transform 0.1s, -webkit-transform 0.1s,
-    transform 0.1s;
+  transform 0.1s;
   user-select: none;
   -webkit-user-select: none;
   width: 20%;
@@ -319,7 +331,7 @@ img {
   transform: translateY(0);
 }
 #container_comments {
-  margin: 1em;
+  margin: 0.5em;
   /* background: black; */
   border-radius: 3em;
   width: 70%;
@@ -330,7 +342,9 @@ img {
   margin: 0.5em;
   margin-left: auto;
   margin-right: auto;
-  border: antiquewhite 2px solid;
+  /* border: antiquewhite 2px solid; */
+  border: 2px solid  #a7a7a7 ;
+  
   border-radius: 2em;
   width: 65%;
 }

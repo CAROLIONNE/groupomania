@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     fileChange(e) {
-      var files = e.target.files || e.dataTransfer.files;
+      let files = e.target.files || e.dataTransfer.files;
       this.media = files[0];
       console.log(this.media);
     },
@@ -84,7 +84,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 h1 {
   text-align: center;
   padding: 1em;
