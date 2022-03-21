@@ -47,7 +47,7 @@ Utilisateur.init(
     },
     avatar: {
       type: DataTypes.STRING(75),
-      defaultValue: "../images/default.png",
+      defaultValue: "default.png",
       allowNull: false,
     },
     pseudonyme: {
