@@ -42,7 +42,6 @@ export default {
         })
         .then((response) => {
           let userConnect = response.data;
-          console.log(response);
           localStorage.setItem('user', JSON.stringify(userConnect) );
           response.headers.authorization = userConnect.token
           this.$router.push({ name: "FilActu" });
@@ -56,7 +55,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1 {
   text-align: center;
@@ -66,26 +64,33 @@ h1 {
   height: 17em;
 }
 form {
-  /* text-align: center; */
   padding: 1em;
   display: flex;
-  /* justify-content: center; */
   align-items: center;
   background: #a3eeff;
   width: 24em;
   flex-direction: column;
-  border-radius: 2em;
   margin-left: auto;
   margin-right: auto;
-  border: black 3px solid;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border: black 2px solid;
+  /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
+
+  border-radius: 20px;
+  box-shadow: 0.2em 0.2em 10px #a8a7a7;
+  background: rgb(144, 140, 153);
+  background: linear-gradient(
+    309deg,
+    rgba(144, 140, 153, 0.510224158022584) 0%,
+    rgba(208, 210, 237, 0.5858544101234244) 29%
+  );
+  
 }
 label {
   margin: 0.5em;
 }
 #error {
   color: red;
-  height: 2em;
+  padding: 0.5em;
 }
 
 #mail,
