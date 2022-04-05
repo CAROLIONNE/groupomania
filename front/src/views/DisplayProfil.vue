@@ -5,10 +5,7 @@
       <form id="update_detail">
         <fieldset>
           <legend><h2>Profil</h2></legend>
-          Voici vos informations {{ userInfo.pseudonyme }}
-          <!-- <img :src="userInfo.avatar" /> -->
-          <!-- <input type="file" /> -->
-          <!-- <input id="file" type="file" name="image" v-on:change="fileChange" /> -->
+          <p> Voici vos informations {{ userInfo.pseudonyme }} </p>
           <label>Adresse email : </label>
           <input type="email" v-model.trim="userInfo.mail" />
           <label>Pseudonyme : </label>
@@ -39,8 +36,7 @@
       </form>
       <!-- </div> -->
       <!-------------------------------------------------------------------->
-      <form id="update_avatar" method="PUT" enctype="multipart/form-data">
-        <!-- <form id="update_avatar"> -->
+      <form id="update_avatar" method="POST" enctype="multipart/form-data">
         <fieldset>
           <legend><h2>Avatar</h2></legend>
           <img :src="userInfo.avatar" />
@@ -48,14 +44,15 @@
             id="file"
             type="file"
             name="image"
-            v-on:change="fileChange()"
+            v-on:change="fileChange"
           />
+          <!-- <BtnWhite /> -->
 
           <div id="btn">
             <input
               type="submit"
               value="Sauvegarder"
-              v-on:click="updateAvatar()"
+              v-on:click="updateUserAvatar()"
             />
             <input
               id="delete"
@@ -72,11 +69,10 @@
 
 <script>
 import moment from "moment";
-let user = JSON.parse(localStorage.getItem("user"));
-let token = user.token;
-let id = user.userID;
+// import BtnWhite from '../components/BtnWhite.vue';
 export default {
-  name: "UserProfil",
+  // name: "UserProfil",
+  // components: { BtnWhite },
   data() {
     return {
       userInfo: {
@@ -90,6 +86,9 @@ export default {
   },
 
   mounted() {
+    let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
+    let id = user.userID;
     this.axios
       .get(`http://localhost:3000/api/user/${id}`, {
         headers: {
@@ -109,6 +108,9 @@ export default {
   },
   methods: {
     updateUser() {
+    let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
+    let id = user.userID;
       this.axios
         .put(
           `http://localhost:3000/api/user/${id}`,
@@ -124,34 +126,60 @@ export default {
             },
           }
         )
+        .then((response) => {
+          alert(response.data);
+        })
+        .catch((e) => {
+          console.log(e);
+          this.errors = e;
+        });
+    },
+
+    updateUserAvatar() {
+    let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
+    let id = user.userID;
+    // const data = new FormData();
+    //   data.append("image", this.userInfo.avatar);
+    //   console.log(data);
+      this.axios
+        .put(
+          `http://localhost:3000/api/user/avatar/${id}`, {
+            avatar : this.userInfo.avatar
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        )
+        .then((res) => {
+            console.log(res);
+        })
         .catch((e) => {
           console.log(e);
           this.errors = e;
         });
     },
     // updateUserAvatar() {
-    //   // const data = new FormData();
-    //   // data.append("mail", this.userInfo.mail);
-    //   // data.append("pseudonyme", this.userInfo.pseudonyme);
-    //   // data.append("poste", this.userInfo.poste,);
-    //   // data.append("bureau", this.userInfo.bureau,);
-    //   // data.append("image", this.avatar);
-    //   // console.log(data);
+    // let user = JSON.parse(localStorage.getItem("user"));
+    // let token = user.token;
+    // let id = user.userID;
+    // const data = new FormData();
+    //   data.append("image", this.userInfo.avatar);
+    //   console.log(data);
     //   this.axios
     //     .put(
-    //       `http://localhost:3000/api/user/${id}`,
-    //       {
-    //         mail: this.userInfo.mail,
-    //         pseudonyme: this.userInfo.pseudonyme,
-    //         poste: this.userInfo.poste,
-    //         bureau: this.userInfo.bureau,
-    //       },
+    //       `http://localhost:3000/api/user/avatar/${id}`, data,
     //       {
     //         headers: {
     //           Authorization: "Bearer " + token,
     //         },
     //       }
     //     )
+    //     .then((res) => {
+    //         console.log(res);
+    //     })
     //     .catch((e) => {
     //       console.log(e);
     //       this.errors = e;
@@ -159,7 +187,9 @@ export default {
     // },
 
     deleteUser() {
-      let $id = this.$route.params.id;
+    let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
+    let $id = this.$route.params.id;
       const valid = confirm("Voulez vous supprimer votre compte ?");
       if (valid) {
       this.axios
@@ -231,5 +261,8 @@ input {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+} 
+p {
+  padding:0.2em;
 }
 </style>
