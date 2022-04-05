@@ -8,7 +8,7 @@
       <h2 id="fil">Fil d'actualité</h2>
     </div>
     <div id="container" v-for="(article, index) in articles" :key="article.id">
-      <div id="article">
+      <div id="article" v-if="article">
         <router-link id="ancre_article" :to="{ name: 'DisplayArticle', params: { id: article.id_article }}"><h2>{{ article.titre }}</h2></router-link>
         <img id="article_img" v-if="article.media" :src="article.media" />
         <p id="article_text">{{ article.text }}</p>
@@ -21,6 +21,7 @@
           </button>
           <p class="error" v-if="errors">{{ errors }}</p>
         </div>
+        
         <div class="new_com" v-if="click">
           <h2>Titre :</h2>
           <input type="text" class="com_title" v-model="commentaire.titre" />
@@ -50,6 +51,7 @@
           </div>
         </div>
       </div>
+      <p v-else> Pas encore d'article en ligne </p>
     </div>
     <router-view />
   </div>
@@ -57,9 +59,6 @@
 
 <script>
 import moment from "moment";
-let userJson = localStorage.getItem("user");
-let user = JSON.parse(userJson);
-let token = user.token;
 export default {
   name: "FilActu",
   data() {
@@ -77,8 +76,12 @@ export default {
       idArticle: "",
     };
   },
-  computed: {},
-   mounted() {
+  computed: {
+
+  },
+   created() {
+     let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
      this.axios
       .get(`http://localhost:3000/api/article`, {
         headers: {
@@ -106,8 +109,10 @@ export default {
       this.click = true;
       console.log("nouveau com", document.getElementById("com"));
     },
-
+    // TO DO afficher les commentaires sur un seul article
     displayCommentaires(index) {
+           let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
       this.idArticle = this.articles[index].id_article;
       this.axios
         .get(`http://localhost:3000/api/comment/${this.idArticle}`, {
@@ -116,9 +121,8 @@ export default {
           },
         })
         .then((foundCommentaires) => {
-
-            const article = document.getElementById("article");
-            console.log(article);
+            // const article = document.getElementById("article");
+            // console.log(article);
             console.log(this.articles[index]);
             this.commentaires = foundCommentaires.data;
             // console.log("commentaires", this.commentaires);
@@ -129,13 +133,12 @@ export default {
           this.errors = e.response.data.error;
         });
     },
-
     createArticle() {
       this.$router.push({ name: "NewArticle" });
     },
-
     createCommentaire() {
-      console.log("create com");
+    let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
       this.axios
         .post(
           `http://localhost:3000/api/comment/${this.$route.params.id}`,
@@ -164,6 +167,7 @@ export default {
 <style scoped>
 #post {
   text-align: center;
+  margin-bottom: 5em;
 }
 h1,
 h2 {
@@ -204,11 +208,12 @@ a {
   );
 }
 img {
+  object-fit: cover;
   max-width: 90%;
   height: 19em;
   margin-left: auto;
   margin-right: auto;
-  border: 2px solid black;
+  border: outset;
 }
 #article_text {
   margin-left: auto;
@@ -225,13 +230,12 @@ img {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-around;
-  /* width: 60%; */
   margin-left: auto;
   margin-right: auto;
   margin: 0.2em;
 }
 
-#btn_new_com,
+/* #btn_new_com,
 .btn_coms,
 #submit_com {
   background-color: #ffffff;
@@ -284,7 +288,7 @@ img {
   color: #dddddd;
   cursor: not-allowed;
   opacity: 1;
-}
+} */
 
 .btn_new_article {
   appearance: none;
@@ -307,12 +311,10 @@ img {
   padding: 16px 24px;
   text-align: center;
   text-decoration: none;
-  transition: all 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  transition: all 300ms ease-in-out;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  width: 25%;
-  will-change: transform;
 }
 
 .btn_new_article:disabled {
@@ -323,12 +325,10 @@ img {
   color: #fff;
   background-color: #1a1a1a;
   box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
-  transform: translateY(-2px);
 }
 
 .btn_new_article:active {
   box-shadow: none;
-  transform: translateY(0);
 }
 #container_comments {
   margin: 0.5em;
@@ -342,7 +342,6 @@ img {
   margin: 0.5em;
   margin-left: auto;
   margin-right: auto;
-  /* border: antiquewhite 2px solid; */
   border: 2px solid  #a7a7a7 ;
   
   border-radius: 2em;
