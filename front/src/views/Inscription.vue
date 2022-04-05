@@ -8,7 +8,7 @@
       />
     </div>
     <h1>Inscrivez-vous des maintenant !</h1>
-    <h2>{{ msg }}</h2>
+    <h2>{{ intro }}</h2>
     <form>
       <label for="mail">Mail :</label>
       <input v-model="mail" placeholder="mail" /><br />
@@ -18,7 +18,6 @@
       <input type="text" v-model="pseudonyme" placeholder="pseudonyme" />
     <div id="submit_form">
     <p id="error" v-if="errors.length"> {{ errors }} </p>
-     <!-- redirection vers fil d'actualité -->
     <input id ="btn_submit" type="submit" v-on:click="signUp()" value="Envoyer"/>
     </div>
     </form>
@@ -30,7 +29,7 @@ export default {
   name: "InscriptionUser",
   data() {
     return {
-      msg: "Pour une meilleure ambiance au travail",
+      intro: "Pour une meilleure ambiance au travail",
       mail: '',
       password: '',
       pseudonyme: '',
@@ -39,15 +38,17 @@ export default {
   },
   methods: {
     signUp() {
-      // this.errors = '';
       this.axios.post(`http://localhost:3000/api/user/signup`, {
         mail: this.mail,
         mot_psw: this.password,
         pseudonyme: this.pseudonyme
       })
-      // .then(res => {
-      //  this.valid = res.data
-      //   })
+      .then((response) => {
+          let userConnect = response.data;
+          localStorage.setItem('user', JSON.stringify(userConnect) );
+          response.headers.authorization = userConnect.token
+          this.$router.push({ name: "FilActu" });
+      })
       .catch(e => {
         this.errors = e.response.data.error
       })

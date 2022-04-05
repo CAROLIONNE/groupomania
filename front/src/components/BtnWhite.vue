@@ -1,5 +1,6 @@
 <template>
-<button> Commentaires</button>
+<button> Commentaires </button>
+
 </template>
 
 <script>
@@ -7,7 +8,7 @@ export default {
   name: 'BtnWhite',
   data: function () {
     return {
-      count: 0
+      // count: 0
     }
   }
 }
@@ -33,10 +34,9 @@ button {
   text-decoration: none;
   touch-action: manipulation;
   transition: box-shadow 0.2s, -ms-transform 0.1s, -webkit-transform 0.1s,
-    transform 0.1s;
+  transform 0.1s;
   user-select: none;
   -webkit-user-select: none;
-  width: 20%;
   margin-left: auto;
   margin-right: auto;
   padding: 0.5em;
@@ -44,20 +44,15 @@ button {
 }
 
 button {
-  box-shadow: #222222 0 0 0 2px, rgba(255, 255, 255, 0.8) 0 0 0 4px;
-  transition: box-shadow 0.2s;
+  /* box-shadow: #222222 0 0 0 2px, rgba(255, 255, 255, 0.8) 0 0 0 4px; */
+  /* transition: box-shadow 0.2s; */
+  border: 2px solid black
 }
 
-button {
+button:hover {
   background-color: #f7f7f7;
   border-color: #000000;
   transform: scale(0.96);
 }
 
-button {
-  border-color: #dddddd;
-  color: #dddddd;
-  cursor: not-allowed;
-  opacity: 1;
-}
 </style>

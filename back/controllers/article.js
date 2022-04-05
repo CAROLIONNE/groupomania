@@ -130,7 +130,7 @@ exports.deleteArticle = async (req, res) => {
         res.status(201).json("Article deleted with success");
       });
     } else {
-      res.status(500).json({ error });
+      res.status(401).json( "Request non authorized" );
     }
   } else {
     res.status(404).json("Article undefined");

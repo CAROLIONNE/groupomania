@@ -1,13 +1,11 @@
 const Comment = require("../models/Comment");
-const sequelize = require("../db.js");
 
-// // Afficher commentaires d'un article
+// Afficher commentaires d'un article
 exports.ViewComment = async (req, res) => {
   const commentFound = await Comment.findAll({
     where: { id_article: req.params.id },
   })
   if (commentFound.length >= 1) {
-    console.log("if", commentFound.length)
     res.status(200).json( commentFound );
   } else {
     console.log("else", commentFound)
@@ -78,6 +76,7 @@ exports.deleteComment = async (req, res) => {
   if (!com) {
     return res.status(404).json({ err: "Comment undefined" });
   }
+  console.log(com);
   // Acces admin ou utilisateur qui a créer le post
   if (req.auth.userId == com.id_user || req.auth.role == 1) {
     // Supression

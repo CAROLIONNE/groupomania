@@ -64,6 +64,7 @@ h1 {
   height: 17em;
 }
 form {
+  margin-bottom: 6em;
   padding: 1em;
   display: flex;
   align-items: center;
@@ -73,8 +74,6 @@ form {
   margin-left: auto;
   margin-right: auto;
   border: black 2px solid;
-  /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
-
   border-radius: 20px;
   box-shadow: 0.2em 0.2em 10px #a8a7a7;
   background: rgb(144, 140, 153);
@@ -100,7 +99,6 @@ label {
 }
 #mail:focus,
 #password:focus {
-  /* background: #a3eeff; */
   border: 3px solid #a3eeff;
 }
 #valid_form {

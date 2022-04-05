@@ -23,20 +23,26 @@ a {
   display: flex;
 }
 #inscription,
-#connexion, #fil_actu, #profil {
+#connexion, #fil_actu, #profil,#ancre_profil, #ancre_logout {
   margin: 1em;
   display: flex;
 }
 
 #ancre_inscription,
-#ancre_connexion, #ancre_fil_actu, #ancre_profil {
+#ancre_connexion, #ancre_fil_actu, #ancre_profil, #ancre_logout {
   color: white;
   font-size: larger;
+  cursor: pointer;
 }
 
 #ancre_inscription:hover,
 #ancre_connexion:hover, #ancre_fil_actu:hover, #ancre_profil:hover {
   color: #a3eeff;
+  transition : all .15s ease-in-out;
+  transform: scale(1.1);
+}
+#ancre_logout:hover {
+  color: orange;
   transition : all .15s ease-in-out;
   transform: scale(1.1);
 }

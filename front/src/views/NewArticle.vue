@@ -50,8 +50,7 @@ export default {
       console.log(this.media);
     },
     createArticle() {
-      let userJson = localStorage.getItem("user");
-      let user = JSON.parse(userJson);
+      let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
       const data = new FormData();
       data.append("titre", this.titre);
