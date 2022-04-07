@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const sequelize = require("../db.js");
 const Utilisateur = require("../models/User");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
@@ -11,12 +10,16 @@ require("dotenv").config();
 // Inscription
 module.exports.signup = async (req, res) => {
   //Verifie que les champs sont remplis
-  if (req.body.mail == null || req.body.mot_psw == null || req.body.pseudonyme == null){
-    return res.status(400).json({'error': 'Missing parameters'})
+  if (
+    req.body.mail == null ||
+    req.body.mot_psw == null ||
+    req.body.pseudonyme == null
+  ) {
+    return res.status(400).json({ error: "Missing parameters" });
   }
   //Verifie que la taille du pseudo
-  if (req.body.pseudonyme.length <= 3 || req.body.pseudonyme.length >= 14){
-    return res.status(400).json({'error': 'pseudonyme too long or too short'})
+  if (req.body.pseudonyme.length <= 3 || req.body.pseudonyme.length >= 14) {
+    return res.status(400).json({ error: "pseudonyme too long or too short" });
   }
   // Contrôle adresse email
   if (!EMAIL_REGEX.test(req.body.mail)) {
@@ -32,18 +35,25 @@ module.exports.signup = async (req, res) => {
   // si l'utilisateur a un compte avec cet email
   if (utilisateur) {
     return res.status(401).json({ error: "This email is already in use !" });
-  } 
-  else {
+  } else {
     // Cryptage du mot de passe
     bcrypt.hash(req.body.mot_psw, 10).then((hash) => {
       // Creer nouvel utilisateur
-      Utilisateur.create({
+      let user = Utilisateur.create({
         mail: req.body.mail,
         mot_psw: hash,
         pseudonyme: req.body.pseudonyme,
       });
-        res.status(201).json("User registered");
-
+      res.status(200).json({
+        // Creation du token et envoi coté client
+        pseudo: user.pseudonyme,
+        userID: user.id_user,
+        token: jwt.sign(
+          { id_user: user.id_user, role: user.role },
+          process.env.SECRET,
+          { expiresIn: "1h" }
+        ),
+      });
     });
   }
 };
@@ -63,7 +73,7 @@ module.exports.login = async (req, res) => {
       }
       res.status(200).json({
         // Creation du token et envoi coté client
-        pseudo : userFound.pseudonyme,
+        pseudo: userFound.pseudonyme,
         userID: userFound.id_user,
         token: jwt.sign(
           { id_user: userFound.id_user, role: userFound.role },
@@ -81,10 +91,18 @@ exports.getOneUser = async (req, res, next) => {
     where: { id_user: req.params.id },
   });
   if (userFound) {
-    console.log(userFound)
+    console.log(userFound);
     res
       .status(200)
-      .json({ user_id: userFound.id_user,mail: userFound.mail,poste: userFound.poste, bureau: userFound.bureau, pseudonyme: userFound.pseudonyme, date_crea : userFound.date_crea , avatar: process.env.img_avatar + userFound.avatar});
+      .json({
+        user_id: userFound.id_user,
+        mail: userFound.mail,
+        poste: userFound.poste,
+        bureau: userFound.bureau,
+        pseudonyme: userFound.pseudonyme,
+        date_crea: userFound.date_crea,
+        avatar: process.env.img_avatar + userFound.avatar,
+      });
   } else {
     res.status(404).json({ error: "User not found" });
   }
@@ -153,14 +171,16 @@ module.exports.updatePassword = async (req, res) => {
 // TO DO gestion des images
 // Modifier avatar d'un utilisateur
 module.exports.updateAvatar = async (req, res) => {
-  await Utilisateur.findOne({ where: { id_user: req.params.id } }).then(
-    (userFound) => {
+  await Utilisateur.findOne({ where: { id_user: req.params.id } })
+    .then((userFound) => {
       // Verifie que l'utilisateur existe
       if (!userFound) return res.status(404).json({ error: "User not found" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
       if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
+        console.log("id verifié update avatar 1", req.body.avatar);
+        console.log("id verifié update avatar 2", req.body.image);
         const avatarObject = JSON.parse(req.body.avatar);
-        console.log(req.body.avatar);
+        console.log(avatarObject, "------");
         // const avatarObject = req.body.avatar;
         // delete avatarObject;
         // Mettre à jour l'avatar
@@ -168,14 +188,17 @@ module.exports.updateAvatar = async (req, res) => {
           {
             avatar: `${req.protocol}://${req.get("host")}/images/${req.body.avatar}`,
           },
-          {where: { id_user: req.params.id }}
-        );
+          { where: { id_user: req.params.id } }
+          );
+          console.log(req.body.avatar);
         return res.status(200).json(" Avatar update");
       } else {
         return res.status(500).json({ error: "Can't update Avatar" });
       }
-    }
-  ).catch (err => {console.log(err);})
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 // Modifier avatar d'un utilisateur
@@ -201,7 +224,8 @@ module.exports.updateAvatar = async (req, res) => {
 // };
 
 
-// TO DO supprimer un utilisateur qui a deja
+
+// TO DO supprimer l'image si elle n'est pas par default
 // Supprimer un utilisateur
 module.exports.deleteUser = async (req, res) => {
   await Utilisateur.findOne({ where: { id_user: req.params.id } }).then(
@@ -210,13 +234,29 @@ module.exports.deleteUser = async (req, res) => {
       if (!userFound) return res.status(404).json({ error: "User not found" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
       if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
-        // Supprimer l'utilisateur
-        Utilisateur.destroy({
-          where: {
-            id_user: req.params.id,
-          },
-        });
-        res.status(201).json("User deleted");
+        // Nom du fichier a supprimer
+        if (userFound.avatar !== "default.png") {
+          const filename = userFound.avatar.split("/images/avatar/")[1];
+          console.log("avatar nom", filename);
+          // Supprimer avatar du dossier
+          fs.unlink(`images/${filename}/`, () => {
+            // Supprimer l'utilisateur de la BDD
+            Utilisateur.destroy({
+              where: {
+                id_user: req.params.id,
+              },
+            });
+            res.status(201).json("User deleted with success");
+          });
+        } else {
+          console.log("img par default, filename");
+          Utilisateur.destroy({
+            where: {
+              id_user: req.params.id,
+            },
+          });
+          res.status(201).json("User deleted with success");
+        };
       } else {
         return res.status(401).json({ error: "Request non authorized" });
       }
