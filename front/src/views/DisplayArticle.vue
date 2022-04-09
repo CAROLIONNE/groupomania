@@ -5,10 +5,14 @@
         <h1>{{ article.titre }}</h1>
         <!-- TO DO afficher seulement si c'est l'utilisateur qui l'a crée -->
         <div id="mod">
-          <button id="update-btn" v-on:click="show()">  Modifier titre ou texte </button>
-          <button id="delete-btn" v-on:click="deleteArticle()" >Supprimer l'article</button>
-          <fieldset id="container_update" v-if="click">
-            <legend><h2>Update</h2></legend>
+          <button id="update-btn" v-on:click="show()">
+            Modifier titre ou texte
+          </button>
+          <button id="delete-btn" v-on:click="deleteArticle()">
+            Supprimer l'article
+          </button>
+          <fieldset id="container_update" v-if="showUpdate">
+            <legend><h2>Modification</h2></legend>
             <label>Titre : </label>
             <input type="text" v-model.trim="article.titre" />
             <label>Texte : </label>
@@ -19,8 +23,9 @@
           <p class="valid" v-if="valid">{{ valid }}</p>
         </div>
         <img id="article_img" :src="article.media" v-if="article.media" />
-        <!-- <form id="new_article" method="put" enctype="multipart/form-data"> -->
-        <form enctype="multipart/form-data" method="POST">
+        <form id="new_article" method="put" enctype="multipart/form-data">
+        <!-- <form enctype="multipart/form-data" method="POST"> -->
+        <!-- <form enctype="multipart/form-data" > -->
           <input id="file" type="file" name="image" v-on:change="fileChange" />
           <input type="submit" name="image" v-on:click="updateImage()" />
         </form>
@@ -29,10 +34,15 @@
           Créé par {{ article.id_user }}, le {{ timestamp2(article.date_crea) }}
         </p>
         <div id="btn">
-          <button id="btn_new_com" v-on:click="newComment()">Commenter</button>
-          <button class="btn_coms" v-on:click="displayCommentaires()">
-            Commentaires
+          <!-- <button id="btn_new_com" @click="displayNewComment()">
+            Commenter
+          </button> -->
+          <BtnWhite  id="btn_new_com" nom="Commenter" @click="displayNewComment()"/>
+          <BtnWhite  id="btn_coms" v-on:click="displayComment()" v-if="commentaires" nom="Commentaire"/>
+          <button id="btn_coms" v-on:click="displayComment()" v-if="commentaires">
+            Commentaire<span v-if="commentaires.length > 1">s</span> ({{ commentaires.length }})
           </button>
+          <p v-else> Soyez le premier a commenter </p>
         </div>
         <div class="new_com" v-if="click">
           <h2>Titre :</h2>
@@ -59,16 +69,19 @@
           </p>
         </div>
 
-        <div id="container_comments">
+        <div id="container_comments" v-if="displayCom">
           <div
             id="display_com"
-            v-for="com in commentaires"
-            :key="com.id_commentaire"
+            v-for="(com, index) in commentaires"
+            :key="com.id_commentaire"  
           >
+            <i id="btn_delete-com" class="fa-solid fa-trash-can" @click="deleteCom(index)"></i>
             <h2 id="com_titre">{{ com.titre }}</h2>
             <div id="com_text">{{ com.text }}</div>
-            <p id="com_date">{{ timestamp(com.date_crea) }}</p>
-            <!-- TO DO recupérer pseudonyme avec ID -->
+            <p id="com_date">
+              {{ timestamp(com.date_crea) }} - {{ com.id_user }}
+            </p>
+            <!-- TO DO recupérer pseudonyme avec ID findUser()-->
             <p class="error" v-if="errors">
               {{ errors }}
             </p>
@@ -81,12 +94,11 @@
 
 <script>
 import moment from "moment";
+import BtnWhite from "../components/BtnWhite.vue";
 
-let userJson = localStorage.getItem("user");
-let user = JSON.parse(userJson);
-let token = user.token;
 export default {
   name: "FilActu",
+  components: { BtnWhite },
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
@@ -98,7 +110,7 @@ export default {
         media: "",
         date_crea: "",
       },
-      commentaires: null,
+      commentaires: "",
       commentaire: {
         titre: "",
         text: "",
@@ -106,20 +118,50 @@ export default {
       errors: null,
       valid: null,
       click: false,
-      userJson: localStorage.getItem("user"),
-      user: JSON.parse(userJson),
-      token: user.token,
-      idArticleCom: [],
-      idArticle: "",
+      showUpdate: false,
+      displayCom: false,
       media: "",
-      click: false,
     };
   },
-  computed: {},
-  mounted() {
+  // watch: {
+  //   commentaire: function (val){
+  //     console.log(val);
+  //   }
+  // },
+  computed: {
+    findUser() {
+      // creer requete avec l id user et recupère le pseudo
+      console.log("find");
+      return true;
+    },
+    // getComment() {
+    // // Recupération des commentaires de l'article
+    // let user = JSON.parse(localStorage.getItem("user"));
+    // let token = user.token;
+    // let $id = this.$route.params.id;
+    // return this.axios
+    //   .get(`http://localhost:3000/api/comment/${$id}`, {
+    //     headers: {
+    //       Authorization: "Bearer " + token,
+    //     },
+    //   })
+    //   .then((allCommentaires) => {
+    //     this.commentaires = allCommentaires.data;
+    //     console.log(this.commentaires);
+    //   })
+    //   .catch((e) => {
+    //     console.log("mounted", e);
+    //     this.errors = e;
+    //   });
+    // }
+  },
+  created() {
+    let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
     let $id = this.$route.params.id;
+    // Récupération des données de l'article
     this.axios
-      .get(`http://localhost:3000/api/article/` + $id, {
+      .get(`http://localhost:3000/api/article//${$id}`, {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -130,15 +172,33 @@ export default {
           (this.article.titre = article.data.articleFound.titre),
           (this.article.text = article.data.articleFound.text),
           (this.article.media = article.data.articleFound.media),
-          (this.article.date_crea = article.data.articleFound.date_crea),
-          console.log("data", article.data.articleFound);
+          (this.article.date_crea = article.data.articleFound.date_crea);
       })
       .catch((e) => {
+        this.errors = e;
+        console.log(e);
+      });
+    // Recupération des commentaires de l'article
+    this.axios
+      .get(`http://localhost:3000/api/comment/${$id}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((allCommentaires) => {
+        this.commentaires = allCommentaires.data;
+        console.log(this.commentaires);
+      })
+      .catch((e) => {
+        console.log("mounted", e);
         this.errors = e;
       });
   },
 
   methods: {
+    displayComment() {
+      this.displayCom = true;
+    },
     timestamp(date) {
       return moment(date, "YYYYMMDD").fromNow();
     },
@@ -146,9 +206,11 @@ export default {
       return moment(date).format("DD-MM-YYYY");
     },
     show() {
-      this.click = true;
+      this.showUpdate = true;
     },
     update() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
       let $id = this.$route.params.id;
       this.axios
         .put(
@@ -164,10 +226,8 @@ export default {
           }
         )
         .then((response) => {
-          // console.log("update ok", response.data);
-          this.click = false;
+          this.showUpdate = false;
           this.valid = response.data;
-          // this.$router.push({ name: "FilActu" });
         })
         .catch((e) => {
           console.log("log erreur", e.response.data);
@@ -177,12 +237,12 @@ export default {
     },
     updateImage() {
       let $id = this.$route.params.id;
-      console.log("update image");
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
       const data = new FormData();
       data.append("image", this.media);
       console.log(data);
+      console.log(this.media);
       if (this.media) {
         this.axios
           .put(`http://localhost:3000/api/article/image/` + $id, data, {
@@ -192,38 +252,34 @@ export default {
             },
           })
           .then((response) => {
-            console.log("requete ok", response.data);
-            // this.$router.push({ name: "FilActu" });
+            alert(response.data);
           })
           .catch((e) => {
-            console.log(data);
             console.log("log erreur", e);
+            alert(e.response.data);
             // console.log(e.response.config.data);
             //  this.errors = e.response.data.error;
           });
       }
     },
     deleteArticle() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
       let $id = this.$route.params.id;
-      confirm("Voulez vous supprimer cet article ?")
-       this.axios
-        .delete(
-          `http://localhost:3000/api/article/` + $id,
-          {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          }
-        )
+      confirm("Voulez vous supprimer cet article ?");
+      this.axios
+        .delete(`http://localhost:3000/api/article/` + $id, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
         .then((response) => {
-          console.log("delete ok", response.data);
-          alert("article supprimé")
+          alert(response.data);
           this.$router.push({ name: "FilActu" });
         })
         .catch((e) => {
-          console.log("log erreur", e.response.data);
+          alert(e.response.data);
           // console.log(e.response.config.data);
-          this.errors = e.response.data;
         });
     },
     fileChange(e) {
@@ -231,29 +287,13 @@ export default {
       this.media = files[0];
       console.log(this.media);
     },
-    newComment() {
+    displayNewComment() {
       this.click = true;
-      console.log("nouveau com", document.getElementById("com"));
     },
-    displayCommentaires() {
-      this.axios
-        .get(`http://localhost:3000/api/comment/${this.$route.params.id}`, {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((allCommentaires) => {
-          this.commentaires = allCommentaires.data;
-        })
-
-        .catch((e) => {
-          console.log(e);
-          this.errors = e;
-        });
-    },
-
     createCommentaire() {
-      console.log("create com");
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
+      if (this.commentaire.titre.length >= 3 && this.commentaire.text.length >= 3){
       this.axios
         .post(
           `http://localhost:3000/api/comment/${this.$route.params.id}`,
@@ -268,12 +308,39 @@ export default {
           }
         )
         .then((response) => {
-          console.log(response.data);
+          this.click = false;
+          alert(response.data);
         })
         .catch((e) => {
           console.log(e);
           this.errors = e;
         });
+      } else {
+        this.errors = "Fields incomplete min 3 characters";
+      }
+    },
+    deleteCom(index) {
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
+      let $id = this.commentaires[index].id_commentaire;
+      const valid = confirm("Voulez vous supprimer ce commentaire ?");
+      if (valid) {
+        this.axios
+          .delete(`http://localhost:3000/api/comment/` + $id, {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          })
+          .then((response) => {
+            alert(response.data);
+            window.location.reload();
+          })
+          .catch((e) => {
+            console.log("log erreur", e.response.data);
+            // console.log(e.response.config.data);
+            this.errors = e.response.data;
+          });
+      }
     },
   },
 };
@@ -303,7 +370,7 @@ img {
   margin: 1em;
   object-fit: cover;
   border: outset;
-  /* border: 2px solid black; */
+  max-width: 100%;
 }
 #article_text,
 #article_author {
@@ -318,13 +385,21 @@ img {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-around;
-  /* width: 60%; */
   margin-left: auto;
   margin-right: auto;
   margin: 0.2em;
   padding: 0.2em;
   border: 2px solid #a7a7a7;
   border-radius: 1em;
+}
+#container_update {
+  padding: 0.5em;
+  margin: 0.5em;
+}
+#container_update > label,
+#container_update > input {
+  padding: 0.2em;
+  margin: 0.2em;
 }
 
 #container_comments {
