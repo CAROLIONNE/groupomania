@@ -9,7 +9,7 @@ require("dotenv").config();
 
 // Inscription
 module.exports.signup = async (req, res) => {
-  //Verifie que les champs sont remplis
+  // Verifie que les champs sont remplis
   if (
     req.body.mail == null ||
     req.body.mot_psw == null ||
@@ -17,7 +17,7 @@ module.exports.signup = async (req, res) => {
   ) {
     return res.status(400).json({ error: "Missing parameters" });
   }
-  //Verifie que la taille du pseudo
+  // Verifie la taille du pseudo
   if (req.body.pseudonyme.length <= 3 || req.body.pseudonyme.length >= 14) {
     return res.status(400).json({ error: "pseudonyme too long or too short" });
   }
@@ -37,14 +37,16 @@ module.exports.signup = async (req, res) => {
     return res.status(401).json({ error: "This email is already in use !" });
   } else {
     // Cryptage du mot de passe
-    bcrypt.hash(req.body.mot_psw, 10).then((hash) => {
+    bcrypt.hash(req.body.mot_psw, 10)
+    .then((hash) => {
       // Creer nouvel utilisateur
-      let user = Utilisateur.create({
+      Utilisateur.create({
         mail: req.body.mail,
         mot_psw: hash,
         pseudonyme: req.body.pseudonyme,
-      });
-      res.status(200).json({
+      })
+      .then(user => {
+      return res.status(201).json({
         // Creation du token et envoi coté client
         pseudo: user.pseudonyme,
         userID: user.id_user,
@@ -52,8 +54,12 @@ module.exports.signup = async (req, res) => {
           { id_user: user.id_user, role: user.role },
           process.env.SECRET,
           { expiresIn: "1h" }
-        ),
-      });
+          ),
+        });
+      })
+      .catch(err => {
+        return res.status(500).json({ error: err })
+    })
     });
   }
 };
@@ -92,17 +98,16 @@ exports.getOneUser = async (req, res, next) => {
   });
   if (userFound) {
     console.log(userFound);
-    res
-      .status(200)
-      .json({
-        user_id: userFound.id_user,
-        mail: userFound.mail,
-        poste: userFound.poste,
-        bureau: userFound.bureau,
-        pseudonyme: userFound.pseudonyme,
-        date_crea: userFound.date_crea,
-        avatar: process.env.img_avatar + userFound.avatar,
-      });
+    res.status(200).json({
+      user_id: userFound.id_user,
+      mail: userFound.mail,
+      poste: userFound.poste,
+      bureau: userFound.bureau,
+      pseudonyme: userFound.pseudonyme,
+      date_crea: userFound.date_crea,
+      avatar: process.env.img + userFound.avatar,
+      // avatar:  userFound.avatar,
+    });
   } else {
     res.status(404).json({ error: "User not found" });
   }
@@ -140,33 +145,33 @@ module.exports.updateUser = async (req, res) => {
 };
 
 // Modifier MDP utilisateur
-module.exports.updatePassword = async (req, res) => {
-  await Utilisateur.findOne({ where: { id_user: req.params.id } }).then(
-    (userFound) => {
-      // Verifie que l'utilisateur existe
-      if (!userFound) return res.status(404).json({ error: "User not found" });
-      // Acces autorisé admin ou utilisateur qui a créer le compte
-      if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
-        // Hachage du nouveau mot de passe
-        bcrypt.hash(req.body.mot_psw, 10).then((hash) => {
-          // Mettre a jour le mot de passe dans la base de donnée
-          Utilisateur.update(
-            {
-              mot_psw: hash,
-              date_mdp: new Date(),
-            },
-            {
-              where: { id_user: req.params.id },
-            }
-          );
-          return res.status(200).json(" Password update");
-        });
-      } else {
-        return res.status(500).json({ error: "Can't update Password" });
-      }
-    }
-  );
-};
+// module.exports.updatePassword = async (req, res) => {
+//   await Utilisateur.findOne({ where: { id_user: req.params.id } }).then(
+//     (userFound) => {
+//       // Verifie que l'utilisateur existe
+//       if (!userFound) return res.status(404).json({ error: "User not found" });
+//       // Acces autorisé admin ou utilisateur qui a créer le compte
+//       if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
+//         // Hachage du nouveau mot de passe
+//         bcrypt.hash(req.body.mot_psw, 10).then((hash) => {
+//           // Mettre a jour le mot de passe dans la base de donnée
+//           Utilisateur.update(
+//             {
+//               mot_psw: hash,
+//               date_mdp: new Date(),
+//             },
+//             {
+//               where: { id_user: req.params.id },
+//             }
+//           );
+//           return res.status(200).json(" Password update");
+//         });
+//       } else {
+//         return res.status(500).json({ error: "Can't update Password" });
+//       }
+//     }
+//   );
+// };
 
 // TO DO gestion des images
 // Modifier avatar d'un utilisateur
@@ -177,21 +182,30 @@ module.exports.updateAvatar = async (req, res) => {
       if (!userFound) return res.status(404).json({ error: "User not found" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
       if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
-        console.log("id verifié update avatar 1", req.body.avatar);
-        console.log("id verifié update avatar 2", req.body.image);
-        const avatarObject = JSON.parse(req.body.avatar);
-        console.log(avatarObject, "------");
-        // const avatarObject = req.body.avatar;
-        // delete avatarObject;
-        // Mettre à jour l'avatar
-        Utilisateur.update(
-          {
-            avatar: `${req.protocol}://${req.get("host")}/images/${req.body.avatar}`,
-          },
-          { where: { id_user: req.params.id } }
-          );
-          console.log(req.body.avatar);
-        return res.status(200).json(" Avatar update");
+        // Nom du fichier a supprimer
+        console.log("avatar", userFound.avatar);
+        // let filename = userFound.avatar.split("/images/")[1];
+        // console.log(filename);
+        // let filename = userFound.avatar;
+        if (userFound.avatar == "default.png") {
+          console.log(userFound.avatar);
+          console.log("img par default");
+        } else {
+          // Supprimer image du dossier
+          console.log("file a supprime", userFound.avatar);
+          fs.unlink(`images/${userFound.avatar}/`, () => {
+            // Mettre à jour l'avatar
+            Utilisateur.update(
+              {
+                // avatar: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+                avatar: req.file.filename,
+              },
+              { where: { id_user: req.params.id } }
+            );
+            console.log(req.file.filename);
+            return res.status(200).json(" Avatar update");
+          });
+        }
       } else {
         return res.status(500).json({ error: "Can't update Avatar" });
       }
@@ -200,29 +214,6 @@ module.exports.updateAvatar = async (req, res) => {
       console.log(err);
     });
 };
-
-// Modifier avatar d'un utilisateur
-// module.exports.updateAvatar = async (req, res) => {
-//   const avatarObject = JSON.parse(req.body.article);
-//   delete avatarObject.avatar;
-//   const utilisateur = await Utilisateur.update(
-//     {
-//       avatar: `${req.protocol}://${req.get("host")}/images/${
-//         req.file.filename}`,
-//     },
-//     {
-//       where: {
-//         id_user: req.params.id,
-//       },
-//     }
-//   );
-//   if (utilisateur) {
-//     return res.status(200).json(" Avatar update");
-//   } else {
-//     return res.status(500).json({ error: "Can't update avatar" });
-//   }
-// };
-
 
 
 // TO DO supprimer l'image si elle n'est pas par default
@@ -249,14 +240,14 @@ module.exports.deleteUser = async (req, res) => {
             res.status(201).json("User deleted with success");
           });
         } else {
-          console.log("img par default, filename");
+          console.log("img par default", filename);
           Utilisateur.destroy({
             where: {
               id_user: req.params.id,
             },
           });
           res.status(201).json("User deleted with success");
-        };
+        }
       } else {
         return res.status(401).json({ error: "Request non authorized" });
       }
