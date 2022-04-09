@@ -1,11 +1,10 @@
 <template>
   <div>
     <div id="container">
-      <!-- <form id="update_detail" method = "PUT" enctype="multipart/form-data"> -->
       <form id="update_detail">
         <fieldset>
           <legend><h2>Profil</h2></legend>
-          <p> Voici vos informations {{ userInfo.pseudonyme }} </p>
+          <p>Voici vos informations {{ userInfo.pseudonyme }}</p>
           <label>Adresse email : </label>
           <input type="email" v-model.trim="userInfo.mail" />
           <label>Pseudonyme : </label>
@@ -34,26 +33,19 @@
           </div>
         </fieldset>
       </form>
-      <!-- </div> -->
-      <!-------------------------------------------------------------------->
-      <form id="update_avatar" method="POST" enctype="multipart/form-data">
+      <!-- <form id="update_avatar" enctype="multipart/form-data"> -->
+      <form
+        id="update_avatar"
+        @submit.prevent="updateAvatar($event, userInfo.user_id)"
+      >
         <fieldset>
           <legend><h2>Avatar</h2></legend>
           <img :src="userInfo.avatar" />
-          <input
-            id="file"
-            type="file"
-            name="image"
-            v-on:change="fileChange"
-          />
-          <!-- <BtnWhite /> -->
+          <input id="file" type="file" name="image" v-on:change="fileChange" />
 
           <div id="btn">
-            <input
-              type="submit"
-              value="Sauvegarder"
-              v-on:click="updateUserAvatar()"
-            />
+            <!-- <input type="submit" value="Sauvegarder" v-on:click="updateUserAvatar()"/> -->
+            <input type="submit" value="Sauvegarder" />
             <input
               id="delete"
               type="submit"
@@ -69,10 +61,8 @@
 
 <script>
 import moment from "moment";
-// import BtnWhite from '../components/BtnWhite.vue';
 export default {
-  // name: "UserProfil",
-  // components: { BtnWhite },
+  name: "UserProfil",
   data() {
     return {
       userInfo: {
@@ -82,6 +72,7 @@ export default {
         bureau: "",
         avatar: "",
       },
+      newAvatar: "",
     };
   },
 
@@ -107,10 +98,35 @@ export default {
       });
   },
   methods: {
+    updateAvatar($event, id) {
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
+      // const postId = String(id);
+      const updatedPost = new FormData($event.target);
+      // console.log(updatedPost);
+      // console.log($event.target);
+      this.axios
+        .put(
+          `http://localhost:3000/api/user/avatar/${id}`, updatedPost,
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+              // "content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((e) => {
+          console.log(e);
+          this.errors = e;
+        });
+    },
     updateUser() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    let token = user.token;
-    let id = user.userID;
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
+      let id = user.userID;
       this.axios
         .put(
           `http://localhost:3000/api/user/${id}`,
@@ -135,84 +151,33 @@ export default {
         });
     },
 
-    updateUserAvatar() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    let token = user.token;
-    let id = user.userID;
-    // const data = new FormData();
-    //   data.append("image", this.userInfo.avatar);
-    //   console.log(data);
-      this.axios
-        .put(
-          `http://localhost:3000/api/user/avatar/${id}`, {
-            avatar : this.userInfo.avatar
-          },
-          {
+    deleteUser() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
+      let $id = this.$route.params.id;
+      const valid = confirm("Voulez vous supprimer votre compte ?");
+      if (valid) {
+        this.axios
+          .delete(`http://localhost:3000/api/user/` + $id, {
             headers: {
               Authorization: "Bearer " + token,
             },
-          }
-        )
-        .then((res) => {
-            console.log(res);
-        })
-        .catch((e) => {
-          console.log(e);
-          this.errors = e;
-        });
-    },
-    // updateUserAvatar() {
-    // let user = JSON.parse(localStorage.getItem("user"));
-    // let token = user.token;
-    // let id = user.userID;
-    // const data = new FormData();
-    //   data.append("image", this.userInfo.avatar);
-    //   console.log(data);
-    //   this.axios
-    //     .put(
-    //       `http://localhost:3000/api/user/avatar/${id}`, data,
-    //       {
-    //         headers: {
-    //           Authorization: "Bearer " + token,
-    //         },
-    //       }
-    //     )
-    //     .then((res) => {
-    //         console.log(res);
-    //     })
-    //     .catch((e) => {
-    //       console.log(e);
-    //       this.errors = e;
-    //     });
-    // },
-
-    deleteUser() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    let token = user.token;
-    let $id = this.$route.params.id;
-      const valid = confirm("Voulez vous supprimer votre compte ?");
-      if (valid) {
-      this.axios
-        .delete(`http://localhost:3000/api/user/` + $id, {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((response) => {
-          alert(response.data);
-          this.$router.push({ name: "Inscription" });
-        })
-        .catch((e) => {
-          console.log("log erreur", e.response.data);
-          // console.log(e.response.config.data);
-          this.errors = e.response.data;
-        });
+          })
+          .then((response) => {
+            alert(response.data);
+            this.$router.push({ name: "Inscription" });
+          })
+          .catch((e) => {
+            console.log("log erreur", e.response.data);
+            // console.log(e.response.config.data);
+            this.errors = e.response.data;
+          });
       }
     },
     fileChange(e) {
       let files = e.target.files || e.dataTransfer.files;
-      this.userInfo.avatar = files[0];
-      console.log("Avatar utilisateur", this.userInfo.avatar);
+      this.newAvatar = files[0];
+      console.log("Avatar utilisateur", this.newAvatar);
     },
   },
   computed: {
@@ -261,8 +226,8 @@ input {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-} 
+}
 p {
-  padding:0.2em;
+  padding: 0.2em;
 }
 </style>
