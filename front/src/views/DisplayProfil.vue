@@ -33,7 +33,6 @@
           </div>
         </fieldset>
       </form>
-      <!-- <form id="update_avatar" enctype="multipart/form-data"> -->
       <form
         id="update_avatar"
         @submit.prevent="updateAvatar($event, userInfo.user_id)"
@@ -41,16 +40,15 @@
         <fieldset>
           <legend><h2>Avatar</h2></legend>
           <img :src="userInfo.avatar" />
-          <input id="file" type="file" name="image" v-on:change="fileChange" />
+          <input id="file" type="file" name="image"  />
 
           <div id="btn">
-            <!-- <input type="submit" value="Sauvegarder" v-on:click="updateUserAvatar()"/> -->
             <input type="submit" value="Sauvegarder" />
             <input
               id="delete"
               type="submit"
               value="Supprimer"
-              v-on:click="deleteAvatar()"
+              v-on:click="deleteAvatar(userInfo.user_id)"
             />
           </div>
         </fieldset>
@@ -72,7 +70,6 @@ export default {
         bureau: "",
         avatar: "",
       },
-      newAvatar: "",
     };
   },
 
@@ -116,7 +113,8 @@ export default {
           }
         )
         .then((res) => {
-          console.log(res);
+          alert(res.data)
+          // console.log(res);
         })
         .catch((e) => {
           console.log(e);
@@ -168,17 +166,37 @@ export default {
             this.$router.push({ name: "Inscription" });
           })
           .catch((e) => {
-            console.log("log erreur", e.response.data);
+            alert("erreur", e.response.data);
             // console.log(e.response.config.data);
             this.errors = e.response.data;
           });
       }
     },
-    fileChange(e) {
-      let files = e.target.files || e.dataTransfer.files;
-      this.newAvatar = files[0];
-      console.log("Avatar utilisateur", this.newAvatar);
-    },
+    deleteAvatar(id) {
+      console.log("deleteAvatar");
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
+      const updatedPost = new FormData();
+      updatedPost.append("image", "default.png");
+      console.log(updatedPost);
+      this.axios
+        .put(
+          `http://localhost:3000/api/user/avatar/${id}`, updatedPost,
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        )
+        .then((res) => {
+          alert(res.data)
+          // console.log(res);
+        })
+        .catch((e) => {
+          console.log(e);
+          this.errors = e;
+        });
+    }
   },
   computed: {
     timestamp: function () {
@@ -191,7 +209,6 @@ export default {
 <style scoped>
 fieldset {
   width: 18em;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -209,6 +226,8 @@ fieldset {
 img {
   width: 90%;
   height: 13em;
+  /* object-fit: cover; */
+  border: outset;
 }
 
 input {

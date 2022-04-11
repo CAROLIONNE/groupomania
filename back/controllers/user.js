@@ -173,7 +173,6 @@ module.exports.updateUser = async (req, res) => {
 //   );
 // };
 
-// TO DO gestion des images
 // Modifier avatar d'un utilisateur
 module.exports.updateAvatar = async (req, res) => {
   await Utilisateur.findOne({ where: { id_user: req.params.id } })
@@ -186,10 +185,16 @@ module.exports.updateAvatar = async (req, res) => {
         console.log("avatar", userFound.avatar);
         // let filename = userFound.avatar.split("/images/")[1];
         // console.log(filename);
-        // let filename = userFound.avatar;
         if (userFound.avatar == "default.png") {
-          console.log(userFound.avatar);
-          console.log("img par default");
+          // Mettre à jour l'avatar en conservant img par default dans storage
+          Utilisateur.update(
+            {
+              // avatar: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+              avatar: req.file.filename,
+            },
+            { where: { id_user: req.params.id } }
+          );
+          return res.status(200).json(" Avatar update");
         } else {
           // Supprimer image du dossier
           console.log("file a supprime", userFound.avatar);
@@ -202,7 +207,6 @@ module.exports.updateAvatar = async (req, res) => {
               },
               { where: { id_user: req.params.id } }
             );
-            console.log(req.file.filename);
             return res.status(200).json(" Avatar update");
           });
         }
@@ -216,7 +220,6 @@ module.exports.updateAvatar = async (req, res) => {
 };
 
 
-// TO DO supprimer l'image si elle n'est pas par default
 // Supprimer un utilisateur
 module.exports.deleteUser = async (req, res) => {
   await Utilisateur.findOne({ where: { id_user: req.params.id } }).then(
@@ -227,8 +230,8 @@ module.exports.deleteUser = async (req, res) => {
       if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
         // Nom du fichier a supprimer
         if (userFound.avatar !== "default.png") {
-          const filename = userFound.avatar.split("/images/avatar/")[1];
-          console.log("avatar nom", filename);
+          // const filename = userFound.avatar.split("/images/")[1];
+          const filename = userFound.avatar
           // Supprimer avatar du dossier
           fs.unlink(`images/${filename}/`, () => {
             // Supprimer l'utilisateur de la BDD
@@ -240,7 +243,6 @@ module.exports.deleteUser = async (req, res) => {
             res.status(201).json("User deleted with success");
           });
         } else {
-          console.log("img par default", filename);
           Utilisateur.destroy({
             where: {
               id_user: req.params.id,
