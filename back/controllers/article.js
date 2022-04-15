@@ -35,7 +35,9 @@ module.exports.createArticle = async (req, res) => {
         id_user: req.auth.userId,
         titre: req.body.titre,
         text: req.body.text,
-        media: req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` : "",
+        media: req.file
+          ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+          : "",
       });
       return res.status(201).json("article created");
     } else {
@@ -50,27 +52,48 @@ module.exports.createArticle = async (req, res) => {
 
 // Mise a jour d'un article
 exports.updateArticle = async (req, res) => {
-  console.log("rentré dans fonction");
   let article = await Article.findOne({ where: { id_article: req.params.id } });
-  console.log("findOne article", article);
   // Verifie si l'article existe
   if (article) {
     // Acces admin ou utilisateur qui a créer le post
     if (req.auth.userId == article.id_user || req.auth.role == 1) {
-      // Mettre a jour texte, titre et date de l'article
-      Article.update(
-        {
-          titre: req.body.titre,
-          text: req.body.text,
-          date_mod: new Date(),
-        },
-        {
-          where: {
-            id_article: req.params.id,
+      // Nom du fichier a supprimer
+      const filename = article.media.split("/images/")[1];
+      // console.log("-------", filename);
+      if (req.file) {
+        fs.unlink(`images/${filename}`, () => {
+          Article.update(
+            {
+              media: `${req.protocol}://${req.get("host")}/images/${
+                req.file.filename
+              }`,
+              date_mod: new Date(),
+            },
+            {
+              where: {
+                id_article: req.params.id,
+              },
+            }
+          );
+        });
+      } else {
+        // Mettre a jour texte, titre et date de l'article
+        console.log("update sans img");
+        console.log(req.body);
+        Article.update(
+          {
+            titre: req.body.titre,
+            text: req.body.text,
+            date_mod: new Date(),
           },
-        }
-      );
-      res.status(201).json("Article updated with success");
+          {
+            where: {
+              id_article: req.params.id,
+            },
+          }
+        );
+      }
+      return res.status(201).json("Article updated with success");
     } else {
       res.status(500).json("Request non authorized");
     }
@@ -86,23 +109,24 @@ exports.updateImage = async (req, res) => {
   if (article) {
     // Acces admin ou utilisateur qui a créer le post
     if (req.auth.userId == article.id_user || req.auth.role == 1) {
-        // Nom du fichier a supprimer
-        const filename = article.media.split("/images/")[1];
-        // Supprimer image du dossier
-        fs.unlink(`images/${filename}/`, () => {
-      // Mettre a jour image de l'article
-      Article.update(
-        {
-          media: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
-          // media: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : '',
-          date_mod: new Date(),
-        },
-        { where: { id_article: req.params.id},
-        }
-      );
-      res.status(201).json("Article updated with success");
-    })
-   } else {
+      // Nom du fichier a supprimer
+      const filename = article.media.split("/images/")[1];
+      // Supprimer image du dossier
+      fs.unlink(`images/${filename}/`, () => {
+        // Mettre a jour image de l'article
+        Article.update(
+          {
+            media: `${req.protocol}://${req.get("host")}/images/${
+              req.file.filename
+            }`,
+            // media: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : '',
+            date_mod: new Date(),
+          },
+          { where: { id_article: req.params.id } }
+        );
+        res.status(201).json("Article updated with success");
+      });
+    } else {
       res.status(500).json("Request non authorized");
     }
   } else {
@@ -130,7 +154,7 @@ exports.deleteArticle = async (req, res) => {
         res.status(201).json("Article deleted with success");
       });
     } else {
-      res.status(401).json( "Request non authorized" );
+      res.status(401).json("Request non authorized");
     }
   } else {
     res.status(404).json("Article undefined");
