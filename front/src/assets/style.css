@@ -8,19 +8,15 @@ a {
   display: flex;
   height: 3rem;
   background-color: black;
-  
 }
 #img_logo {
   max-width: 11rem;
   height: 100%;
   margin-left: 1em;
 }
-#navigation {
+#navigation, #authentification {
     display: flex;
     align-items: center;
-}
-#authentification {
-  display: flex;
 }
 #inscription,
 #connexion, #fil_actu, #profil,#ancre_profil, #ancre_logout {
