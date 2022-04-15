@@ -6,29 +6,35 @@
         <!-- TO DO afficher seulement si c'est l'utilisateur qui l'a crée -->
         <div id="mod">
           <button id="update-btn" v-on:click="show()">
-            Modifier titre ou texte
+            Modifier l'article
           </button>
           <button id="delete-btn" v-on:click="deleteArticle()">
             Supprimer l'article
           </button>
-          <fieldset id="container_update" v-if="showUpdate">
-            <legend><h2>Modification</h2></legend>
-            <label>Titre : </label>
-            <input type="text" v-model.trim="article.titre" />
-            <label>Texte : </label>
-            <input type="text" v-model.trim="article.text" />
-            <input type="submit" value="Sauvegarder" @click="update()" />
-            <p class="error" v-if="errors">{{ errors }}</p>
-          </fieldset>
-          <p class="valid" v-if="valid">{{ valid }}</p>
+          <form @submit.prevent="updateAll($event, article.id)">
+            <fieldset id="container_update" v-if="showUpdate">
+              <legend><h2>Modification</h2></legend>
+              <label>Titre : </label>
+              <input type="text" v-model.trim="article.titre" />
+              <label>Texte : </label>
+              <input type="text" v-model.trim="article.text" />
+              <input
+                id="file"
+                type="file"
+                name="image"
+              />
+              <!-- <input type="submit" name="image" v-on:click="updateImage()" /> -->
+              <!-- <input type="submit" value="Sauvegarder" @click="update()" /> -->
+              <input type="submit" value="Sauvegarder" />
+              <p class="error" v-if="errors">{{ errors }}</p>
+              <p class="valid" v-if="valid">{{ valid }}</p>
+            </fieldset>
+          </form>
         </div>
         <img id="article_img" :src="article.media" v-if="article.media" />
-        <form id="new_article" method="put" enctype="multipart/form-data">
-        <!-- <form enctype="multipart/form-data" method="POST"> -->
+        <!-- <form id="new_article" method="put" enctype="multipart/form-data"> -->
         <!-- <form enctype="multipart/form-data" > -->
-          <input id="file" type="file" name="image" v-on:change="fileChange" />
-          <input type="submit" name="image" v-on:click="updateImage()" />
-        </form>
+        <!-- </form> -->
         <p id="article_text">{{ article.text }}</p>
         <p id="article_author">
           Créé par {{ article.id_user }}, le {{ timestamp2(article.date_crea) }}
@@ -37,12 +43,27 @@
           <!-- <button id="btn_new_com" @click="displayNewComment()">
             Commenter
           </button> -->
-          <BtnWhite  id="btn_new_com" nom="Commenter" @click="displayNewComment()"/>
-          <BtnWhite  id="btn_coms" v-on:click="displayComment()" v-if="commentaires" nom="Commentaire"/>
-          <button id="btn_coms" v-on:click="displayComment()" v-if="commentaires">
-            Commentaire<span v-if="commentaires.length > 1">s</span> ({{ commentaires.length }})
+          <BtnWhite
+            id="btn_new_com"
+            nom="Commenter"
+            @click="displayNewComment()"
+          />
+          <BtnWhite
+            id="btn_coms"
+            v-on:click="displayComment()"
+            v-if="commentaires"
+            nom="Commentaire"
+          />
+          <button
+            id="btn_coms"
+            v-on:click="displayComment()"
+            v-if="commentaires"
+          >
+            Commentaire<span v-if="commentaires.length > 1">s</span> ({{
+              commentaires.length
+            }})
           </button>
-          <p v-else> Soyez le premier a commenter </p>
+          <p v-else>Soyez le premier a commenter</p>
         </div>
         <div class="new_com" v-if="click">
           <h2>Titre :</h2>
@@ -73,9 +94,13 @@
           <div
             id="display_com"
             v-for="(com, index) in commentaires"
-            :key="com.id_commentaire"  
+            :key="com.id_commentaire"
           >
-            <i id="btn_delete-com" class="fa-solid fa-trash-can" @click="deleteCom(index)"></i>
+            <i
+              id="btn_delete-com"
+              class="fa-solid fa-trash-can"
+              @click="deleteCom(index)"
+            ></i>
             <h2 id="com_titre">{{ com.titre }}</h2>
             <div id="com_text">{{ com.text }}</div>
             <p id="com_date">
@@ -161,7 +186,7 @@ export default {
     let $id = this.$route.params.id;
     // Récupération des données de l'article
     this.axios
-      .get(`http://localhost:3000/api/article//${$id}`, {
+      .get(`http://localhost:3000/api/article/${$id}`, {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -208,6 +233,31 @@ export default {
     show() {
       this.showUpdate = true;
     },
+    updateAll($event, id) {
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
+      const updatedPost = new FormData($event.target);
+      // updatedPost.append(titre, this.article.titre)
+      console.log(updatedPost);
+      console.log($event.target);
+      console.log(this.article.titre);
+      this.axios
+        .put(`http://localhost:3000/api/article/${id}`, updatedPost, {
+          headers: {
+            'Content-type': 'application/json',
+            // "content-Type": "multipart/form-data",
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((res) => {
+          alert(res.data);
+          // console.log(res);
+        })
+        .catch((e) => {
+          console.log(e);
+          // this.errors = e;
+        });
+    },
     update() {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
@@ -252,6 +302,7 @@ export default {
             },
           })
           .then((response) => {
+            this.article.media = this.media;
             alert(response.data);
           })
           .catch((e) => {
@@ -282,39 +333,42 @@ export default {
           // console.log(e.response.config.data);
         });
     },
-    fileChange(e) {
-      let files = e.target.files || e.dataTransfer.files;
-      this.media = files[0];
-      console.log(this.media);
-    },
+    // fileChange(e) {
+    //   let files = e.target.files || e.dataTransfer.files;
+    //   this.media = files[0];
+    //   console.log(this.media);
+    // },
     displayNewComment() {
       this.click = true;
     },
     createCommentaire() {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      if (this.commentaire.titre.length >= 3 && this.commentaire.text.length >= 3){
-      this.axios
-        .post(
-          `http://localhost:3000/api/comment/${this.$route.params.id}`,
-          {
-            titre: this.commentaire.titre,
-            text: this.commentaire.text,
-          },
-          {
-            headers: {
-              Authorization: "Bearer " + token,
+      if (
+        this.commentaire.titre.length >= 3 &&
+        this.commentaire.text.length >= 3
+      ) {
+        this.axios
+          .post(
+            `http://localhost:3000/api/comment/${this.$route.params.id}`,
+            {
+              titre: this.commentaire.titre,
+              text: this.commentaire.text,
             },
-          }
-        )
-        .then((response) => {
-          this.click = false;
-          alert(response.data);
-        })
-        .catch((e) => {
-          console.log(e);
-          this.errors = e;
-        });
+            {
+              headers: {
+                Authorization: "Bearer " + token,
+              },
+            }
+          )
+          .then((response) => {
+            this.click = false;
+            alert(response.data);
+          })
+          .catch((e) => {
+            console.log(e);
+            this.errors = e;
+          });
       } else {
         this.errors = "Fields incomplete min 3 characters";
       }
