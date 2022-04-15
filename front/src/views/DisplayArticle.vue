@@ -11,20 +11,18 @@
           <button id="delete-btn" v-on:click="deleteArticle()">
             Supprimer l'article
           </button>
-          <form @submit.prevent="updateAll($event, article.id)">
+          <form @submit.prevent="update($event, article.id)">
             <fieldset id="container_update" v-if="showUpdate">
               <legend><h2>Modification</h2></legend>
-              <label>Titre : </label>
-              <input type="text" v-model.trim="article.titre" />
-              <label>Texte : </label>
-              <input type="text" v-model.trim="article.text" />
+              <label for="titre">Titre : </label>
+              <input type="text" v-model.trim="article.titre" name="titre"/>
+              <label for="text">Texte : </label>
+              <input type="text" v-model.trim="article.text" name="text"/>
               <input
                 id="file"
                 type="file"
                 name="image"
               />
-              <!-- <input type="submit" name="image" v-on:click="updateImage()" /> -->
-              <!-- <input type="submit" value="Sauvegarder" @click="update()" /> -->
               <input type="submit" value="Sauvegarder" />
               <p class="error" v-if="errors">{{ errors }}</p>
               <p class="valid" v-if="valid">{{ valid }}</p>
@@ -32,17 +30,24 @@
           </form>
         </div>
         <img id="article_img" :src="article.media" v-if="article.media" />
-        <!-- <form id="new_article" method="put" enctype="multipart/form-data"> -->
-        <!-- <form enctype="multipart/form-data" > -->
-        <!-- </form> -->
         <p id="article_text">{{ article.text }}</p>
         <p id="article_author">
           Créé par {{ article.id_user }}, le {{ timestamp2(article.date_crea) }}
         </p>
         <div id="btn">
-          <!-- <button id="btn_new_com" @click="displayNewComment()">
+          <button id="btn_new_com" @click="displayNewComment()">
             Commenter
-          </button> -->
+          </button>
+          <button
+            id="btn_coms"
+            v-on:click="displayComment()"
+            v-if="commentaires"
+          >
+            Commentaire<span v-if="commentaires.length > 1">s</span> ({{
+              commentaires.length
+            }})
+          </button>
+          <p v-else>Soyez le premier a commenter</p>
           <BtnWhite
             id="btn_new_com"
             nom="Commenter"
@@ -54,16 +59,6 @@
             v-if="commentaires"
             nom="Commentaire"
           />
-          <button
-            id="btn_coms"
-            v-on:click="displayComment()"
-            v-if="commentaires"
-          >
-            Commentaire<span v-if="commentaires.length > 1">s</span> ({{
-              commentaires.length
-            }})
-          </button>
-          <p v-else>Soyez le premier a commenter</p>
         </div>
         <div class="new_com" v-if="click">
           <h2>Titre :</h2>
@@ -159,26 +154,6 @@ export default {
       console.log("find");
       return true;
     },
-    // getComment() {
-    // // Recupération des commentaires de l'article
-    // let user = JSON.parse(localStorage.getItem("user"));
-    // let token = user.token;
-    // let $id = this.$route.params.id;
-    // return this.axios
-    //   .get(`http://localhost:3000/api/comment/${$id}`, {
-    //     headers: {
-    //       Authorization: "Bearer " + token,
-    //     },
-    //   })
-    //   .then((allCommentaires) => {
-    //     this.commentaires = allCommentaires.data;
-    //     console.log(this.commentaires);
-    //   })
-    //   .catch((e) => {
-    //     console.log("mounted", e);
-    //     this.errors = e;
-    //   });
-    // }
   },
   created() {
     let user = JSON.parse(localStorage.getItem("user"));
@@ -224,6 +199,24 @@ export default {
     displayComment() {
       this.displayCom = true;
     },
+    getComment() {
+    // Recupération des commentaires de l'article
+    let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
+    let $id = this.$route.params.id;
+    return this.axios
+      .get(`http://localhost:3000/api/comment/${$id}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((allCommentaires) => {
+        this.commentaires = allCommentaires.data;
+      })
+      .catch((e) => {
+        this.errors = e;
+      });
+    },
     timestamp(date) {
       return moment(date, "YYYYMMDD").fromNow();
     },
@@ -233,85 +226,23 @@ export default {
     show() {
       this.showUpdate = true;
     },
-    updateAll($event, id) {
+    update($event, id) {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
       const updatedPost = new FormData($event.target);
-      // updatedPost.append(titre, this.article.titre)
-      console.log(updatedPost);
-      console.log($event.target);
-      console.log(this.article.titre);
       this.axios
-        .put(`http://localhost:3000/api/article/${id}`, updatedPost, {
+        .put(`http://localhost:3000/api/article/${id}`, updatedPost,{
           headers: {
-            'Content-type': 'application/json',
-            // "content-Type": "multipart/form-data",
+            "Content-Type": "multipart/form-data",
             Authorization: "Bearer " + token,
           },
         })
         .then((res) => {
           alert(res.data);
-          // console.log(res);
         })
         .catch((e) => {
-          console.log(e);
-          // this.errors = e;
+          alert(e.response.data);
         });
-    },
-    update() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
-      let $id = this.$route.params.id;
-      this.axios
-        .put(
-          `http://localhost:3000/api/article/` + $id,
-          {
-            titre: this.article.titre,
-            text: this.article.text,
-          },
-          {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          }
-        )
-        .then((response) => {
-          this.showUpdate = false;
-          this.valid = response.data;
-        })
-        .catch((e) => {
-          console.log("log erreur", e.response.data);
-          // console.log(e.response.config.data);
-          this.errors = e.response.data;
-        });
-    },
-    updateImage() {
-      let $id = this.$route.params.id;
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
-      const data = new FormData();
-      data.append("image", this.media);
-      console.log(data);
-      console.log(this.media);
-      if (this.media) {
-        this.axios
-          .put(`http://localhost:3000/api/article/image/` + $id, data, {
-            headers: {
-              Authorization: "Bearer " + token,
-              "content-Type": "multipart/form-data",
-            },
-          })
-          .then((response) => {
-            this.article.media = this.media;
-            alert(response.data);
-          })
-          .catch((e) => {
-            console.log("log erreur", e);
-            alert(e.response.data);
-            // console.log(e.response.config.data);
-            //  this.errors = e.response.data.error;
-          });
-      }
     },
     deleteArticle() {
       let user = JSON.parse(localStorage.getItem("user"));
@@ -333,11 +264,7 @@ export default {
           // console.log(e.response.config.data);
         });
     },
-    // fileChange(e) {
-    //   let files = e.target.files || e.dataTransfer.files;
-    //   this.media = files[0];
-    //   console.log(this.media);
-    // },
+
     displayNewComment() {
       this.click = true;
     },
@@ -363,11 +290,13 @@ export default {
           )
           .then((response) => {
             this.click = false;
+            // TODO appeler fonction pour actualiser les commentaires
+            this.getComment();
             alert(response.data);
           })
           .catch((e) => {
             console.log(e);
-            this.errors = e;
+            this.errors = e.response.data;
           });
       } else {
         this.errors = "Fields incomplete min 3 characters";
@@ -380,19 +309,19 @@ export default {
       const valid = confirm("Voulez vous supprimer ce commentaire ?");
       if (valid) {
         this.axios
-          .delete(`http://localhost:3000/api/comment/` + $id, {
+          .delete(`http://localhost:3000/api/comment/${$id}`, {
             headers: {
               Authorization: "Bearer " + token,
             },
           })
           .then((response) => {
             alert(response.data);
-            window.location.reload();
+            this.getComment();
           })
           .catch((e) => {
-            console.log("log erreur", e.response.data);
+            console.log("log erreur delete", e.response);
+            alert(e.response.data);
             // console.log(e.response.config.data);
-            this.errors = e.response.data;
           });
       }
     },

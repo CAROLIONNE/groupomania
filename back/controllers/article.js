@@ -67,6 +67,8 @@ exports.updateArticle = async (req, res) => {
               media: `${req.protocol}://${req.get("host")}/images/${
                 req.file.filename
               }`,
+              titre: req.body.titre,
+              text: req.body.text,
               date_mod: new Date(),
             },
             {
@@ -78,8 +80,7 @@ exports.updateArticle = async (req, res) => {
         });
       } else {
         // Mettre a jour texte, titre et date de l'article
-        console.log("update sans img");
-        console.log(req.body);
+        console.log("body",req.body);
         Article.update(
           {
             titre: req.body.titre,
@@ -95,7 +96,7 @@ exports.updateArticle = async (req, res) => {
       }
       return res.status(201).json("Article updated with success");
     } else {
-      res.status(500).json("Request non authorized");
+      return res.status(401).json("Request non authorized");
     }
   } else {
     res.status(404).json("Article undefined");
