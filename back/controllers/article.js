@@ -3,7 +3,7 @@ const fs = require("fs");
 
 // Afficher tout les articles
 exports.viewAllArticles = (req, res, next) => {
-  Article.findAll()
+  Article.findAll({ order: [['date_crea', 'DESC']] })
     .then((articles) => {
       if (!articles || articles.length === 0) {
         res.status(404).json({ error: "Can't find any articles" });
@@ -44,7 +44,6 @@ module.exports.createArticle = async (req, res) => {
       return res.status(401).json({ error: `can't create a new article ` });
     }
   } catch (err) {
-    console.log("filefound", req.file);
     console.log("---------", err);
     return res.status(500).json({ error: `can't create a new article ` });
   }
