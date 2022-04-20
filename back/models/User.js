@@ -60,7 +60,7 @@ const Utilisateur = db.define(
     // Other model options go here
     db, // We need to pass the connection instance
     modelName: "Utilisateur", // We need to choose the model name
-    tableName: "utilisateur",
+    tableName: "utilisateurs",
     timestamps: false,
   }
 );

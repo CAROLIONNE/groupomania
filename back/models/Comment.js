@@ -43,7 +43,7 @@ const Comment = db.define(
     // Other model options go here
     db, // We need to pass the connection instance
     modelName: "Comment", // We need to choose the model name
-    tableName: "commentaire",
+    tableName: "commentaires",
     timestamps: false,
   }
   );
