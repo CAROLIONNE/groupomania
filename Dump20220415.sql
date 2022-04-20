@@ -33,7 +33,7 @@ CREATE TABLE `article` (
   PRIMARY KEY (`id_article`),
   UNIQUE KEY `id_article` (`id_article`),
   KEY `id_user` (`id_user`),
-  CONSTRAINT `article_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `utilisateur` (`ID_USER`)
+  CONSTRAINT `article_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `utilisateur` (`ID_USER`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
