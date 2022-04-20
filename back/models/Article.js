@@ -41,21 +41,21 @@ const Article = db.define(
     // Other model options go here
     db, // We need to pass the connection instance
     modelName: "Article",
-    tableName: "article",
+    tableName: "articles",
     timestamps: false,
   }
 );
-// Article.associate = (models) => {
-//   Article.hasMany(models.Comment, {
-//     onDelete: "cascade",
-//   });
-//   // Article.hasOne(models.Utilisateur, {
-//   //  foreignKey: 'id_user',onDelete: "cascade",
-//   // });
-//   Article.belongsTo(models.Utilisateur, {
-//     foreignKey: 'id_user',onDelete: "cascade",
-//   });
-// };
+Article.associate = (models) => {
+  Article.hasMany(models.Comment, {
+    foreignKey: 'id_article', onDelete: "cascade",
+  });
+  Article.hasOne(models.Utilisateur, {
+   foreignKey: 'id_user',onDelete: "cascade",
+  });
+  Article.belongsTo(models.Utilisateur, {
+    foreignKey: 'id_user',onDelete: "cascade",
+  });
+};
 
 
 module.exports = Article;

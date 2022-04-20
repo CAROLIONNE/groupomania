@@ -1,27 +1,28 @@
-// const Article = require("../models/Article");
-// const Utilisateur = require("../models/User");
+const Article = require("../models/Article");
+const Utilisateur = require("../models/User");
 const fs = require("fs");
-const models = require('../models/index');
+// const models = require('../models/index');
 
 // Afficher tout les articles
 exports.viewAllArticles = (req, res, next) => {
-  models.Article.findAll({ order: [['date_crea', 'DESC']] })
+  Article.findAll({ order: [['date_crea', 'DESC']] })
     .then((articles) => {
       if (!articles || articles.length === 0) {
         res.status(404).json({ error: "Aucun article pour le moment 🧐" });
       }
       res.status(200).json(articles);
     })
-    // .catch((error) => {
-    //   res.status(500).json({error: "Une erreur est survenue 😕"});
-    // });
+    .catch((error) => {
+      console.log("catch findAll", error);
+      res.status(500).json({error: "Une erreur est survenue 😕"});
+    });
 };
 
 // Afficher un article
 exports.ViewArticle = async (req, res) => {
   const articleFound = await Article.findOne({
     where: { id_article: req.params.id }, 
-    include: [{model: Utilisateur}]
+    // include: [Utilisateur]
   });
   if (articleFound) {
     res.status(200).json({ articleFound });
