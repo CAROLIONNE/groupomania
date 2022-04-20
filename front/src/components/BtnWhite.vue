@@ -1,16 +1,12 @@
 <template>
-<button> Commentaires </button>
+<button @click="addComment"> {{ nom }} </button>
 
 </template>
 
 <script>
 export default {
   name: 'BtnWhite',
-  data: function () {
-    return {
-      // count: 0
-    }
-  }
+  props: ['nom', 'show', 'addComment'],
 }
 </script>
 
@@ -44,8 +40,6 @@ button {
 }
 
 button {
-  /* box-shadow: #222222 0 0 0 2px, rgba(255, 255, 255, 0.8) 0 0 0 4px; */
-  /* transition: box-shadow 0.2s; */
   border: 2px solid black
 }
 
