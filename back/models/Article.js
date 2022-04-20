@@ -1,7 +1,7 @@
-const sequelize = require("../db.js");
+const db = require("../db.js");
 const { Sequelize, Model, DataTypes } = require("sequelize");
 
-const Article = sequelize.define(
+const Article = db.define(
   "Article",
   {
     id_article: {
@@ -39,23 +39,23 @@ const Article = sequelize.define(
   },
   {
     // Other model options go here
-    sequelize, // We need to pass the connection instance
+    db, // We need to pass the connection instance
     modelName: "Article",
     tableName: "article",
     timestamps: false,
   }
 );
-Article.associate = (models) => {
-  Article.hasMany(models.Comment, {
-    onDelete: "cascade",
-  });
-  Article.hasOne(models.Utilisateur, {
-    onDelete: "cascade",
-  });
-  Article.id_user = Article.belongsTo(models.Utilisateur, {
-    foreignKey: "id_user",
-  });
-};
+// Article.associate = (models) => {
+//   Article.hasMany(models.Comment, {
+//     onDelete: "cascade",
+//   });
+//   // Article.hasOne(models.Utilisateur, {
+//   //  foreignKey: 'id_user',onDelete: "cascade",
+//   // });
+//   Article.belongsTo(models.Utilisateur, {
+//     foreignKey: 'id_user',onDelete: "cascade",
+//   });
+// };
 
 
 module.exports = Article;

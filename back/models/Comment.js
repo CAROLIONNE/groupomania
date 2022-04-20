@@ -1,7 +1,7 @@
-const sequelize = require("../db.js");
+const db = require("../db.js");
 const { Sequelize, Model, DataTypes } = require("sequelize");
 
-const Comment = sequelize.define(
+const Comment = db.define(
   "Comment",
   {
     id_commentaire: {
@@ -41,7 +41,7 @@ const Comment = sequelize.define(
   },
   {
     // Other model options go here
-    sequelize, // We need to pass the connection instance
+    db, // We need to pass the connection instance
     modelName: "Comment", // We need to choose the model name
     tableName: "commentaire",
     timestamps: false,
@@ -52,13 +52,13 @@ const Comment = sequelize.define(
     Comment.hasOne(models.Article, {
       onDelete: "cascade",
     });
-    Comment.id_article = Comment.belongsTo(models.Article, {
+    Comment.belongsTo(models.Article, {
       foreignKey: "id_article",
     })
     Comment.hasOne(models.Utilisateur, {
       onDelete: "cascade",
     });
-    Comment.user_id = Comment.belongsTo(models.Utilisateur, {
+    Comment.belongsTo(models.Utilisateur, {
       foreignKey: "id_user",
     });
   }
