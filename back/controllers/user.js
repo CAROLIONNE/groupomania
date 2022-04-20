@@ -15,18 +15,18 @@ module.exports.signup = async (req, res) => {
     req.body.mot_psw == null ||
     req.body.pseudonyme == null
   ) {
-    return res.status(400).json({ error: "Missing parameters" });
+    return res.status(400).json({ error: "Merçi de remplir tout les champs correctement 🙏" });
   }
   // Verifie la taille du pseudo
   if (req.body.pseudonyme.length <= 3 || req.body.pseudonyme.length >= 14) {
-    return res.status(400).json({ error: "pseudonyme too long or too short" });
+    return res.status(400).json({ error: "Pseudonyme trop long ou trop court ❌" });
   }
   // Contrôle adresse email
   if (!EMAIL_REGEX.test(req.body.mail)) {
-    return res.status(400).json({ error: "Invalid email" });
+    return res.status(400).json({ error: "Email invalide ❌" });
   }
   if (req.body.pseudonyme.length == 0) {
-    return res.status(401).json({ error: "Pseudonyme required" });
+    return res.status(401).json({ error: "Pseudonyme requis ❌" });
   }
   const utilisateur = await Utilisateur.findOne({
     attributes: ["mail"],
@@ -34,7 +34,7 @@ module.exports.signup = async (req, res) => {
   });
   // si l'utilisateur a un compte avec cet email
   if (utilisateur) {
-    return res.status(401).json({ error: "This email is already in use !" });
+    return res.status(401).json({ error: "Cet email est deja utilisé ❌" });
   } else {
     // Cryptage du mot de passe
     bcrypt.hash(req.body.mot_psw, 10)
@@ -70,12 +70,12 @@ module.exports.login = async (req, res) => {
   const userFound = await Utilisateur.findOne({ where: { mail: mail } });
   // Verifie que l'utilisateur existe avec l'adresse email
   if (!userFound) {
-    res.status(404).json({ error: "User not found" });
+    res.status(404).json({ error: "Utilisateur introuvable 🧐" });
   } else {
     // Verification mot de passe
     bcrypt.compare(mot_psw, userFound.mot_psw).then(async (verify) => {
       if (!verify) {
-        res.status(404).json({ error: " Email and password do not match " });
+        res.status(404).json({ error: "L'email ou le pseudonyme est incorrect ❌" });
       }
       res.status(200).json({
         // Creation du token et envoi coté client
@@ -97,7 +97,6 @@ exports.getOneUser = async (req, res, next) => {
     where: { id_user: req.params.id },
   });
   if (userFound) {
-    console.log(userFound);
     res.status(200).json({
       user_id: userFound.id_user,
       mail: userFound.mail,
@@ -109,7 +108,7 @@ exports.getOneUser = async (req, res, next) => {
       // avatar:  userFound.avatar,
     });
   } else {
-    res.status(404).json({ error: "User not found" });
+    res.status(404).json({ error: "Utilisateur introuvable 🧐" });
   }
 };
 
@@ -118,7 +117,7 @@ module.exports.updateUser = async (req, res) => {
   await Utilisateur.findOne({ where: { id_user: req.params.id } }).then(
     (userFound) => {
       // Verifie que l'utilisateur existe
-      if (!userFound) return res.status(404).json({ error: "User not found" });
+      if (!userFound) return res.status(404).json({ error: "Utilisateur introuvable 🧐" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
       if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
         // Mettre a jour les infos utilisateurs dans la base de donnée
@@ -136,9 +135,9 @@ module.exports.updateUser = async (req, res) => {
             },
           }
         );
-        return res.status(200).json(" User update");
+        return res.status(200).json(" Vos infos ont bien été prise en compte 😉");
       } else {
-        return res.status(500).json({ error: "Request non authorized" });
+        return res.status(500).json({ error: "Requête non authorisée ⛔" });
       }
     }
   );
@@ -178,11 +177,10 @@ module.exports.updateAvatar = async (req, res) => {
   await Utilisateur.findOne({ where: { id_user: req.params.id } })
     .then((userFound) => {
       // Verifie que l'utilisateur existe
-      if (!userFound) return res.status(404).json({ error: "User not found" });
+      if (!userFound) return res.status(404).json({ error: "Utilisateur introuvable 🧐" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
       if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
         // Nom du fichier a supprimer
-        console.log("avatar", userFound.avatar);
         // let filename = userFound.avatar.split("/images/")[1];
         // console.log(filename);
         if (userFound.avatar == "default.png") {
@@ -194,7 +192,7 @@ module.exports.updateAvatar = async (req, res) => {
             },
             { where: { id_user: req.params.id } }
           );
-          return res.status(200).json(" Avatar update");
+          return res.status(200).json("Avatar mis à jour 😊");
         } else {
           // Supprimer image du dossier
           console.log("file a supprime", userFound.avatar);
@@ -207,11 +205,11 @@ module.exports.updateAvatar = async (req, res) => {
               },
               { where: { id_user: req.params.id } }
             );
-            return res.status(200).json(" Avatar update");
+            return res.status(200).json("Avatar mis à jour 😊");
           });
         }
       } else {
-        return res.status(500).json({ error: "Can't update Avatar" });
+        return res.status(500).json({ error: "Requête non authorisée ⛔" });
       }
     })
     .catch((err) => {
@@ -222,10 +220,11 @@ module.exports.updateAvatar = async (req, res) => {
 
 // Supprimer un utilisateur
 module.exports.deleteUser = async (req, res) => {
-  await Utilisateur.findOne({ where: { id_user: req.params.id } }).then(
+  await Utilisateur.findOne({ where: { id_user: req.params.id } })
+  .then(
     (userFound) => {
       // Verifie que l'utilisateur existe
-      if (!userFound) return res.status(404).json({ error: "User not found" });
+      if (!userFound) return res.status(404).json({ error: "Utilisateur introuvable 🧐" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
       if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
         // Nom du fichier a supprimer
@@ -240,7 +239,7 @@ module.exports.deleteUser = async (req, res) => {
                 id_user: req.params.id,
               },
             });
-            res.status(201).json("User deleted with success");
+            res.status(201).json("Votre compte est supprimé 👋");
           });
         } else {
           Utilisateur.destroy({
@@ -248,11 +247,14 @@ module.exports.deleteUser = async (req, res) => {
               id_user: req.params.id,
             },
           });
-          res.status(201).json("User deleted with success");
+          res.status(201).json("Votre compte est supprimé 👋");
         }
       } else {
-        return res.status(401).json({ error: "Request non authorized" });
+        return res.status(401).json({ error: "Requête non authorisée ⛔" });
       }
     }
-  );
+  ).catch(function(e) {
+    console.error(e);
+  })
+
 };

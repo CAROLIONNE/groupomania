@@ -8,23 +8,9 @@ exports.ViewComment = async (req, res) => {
   if (commentFound.length >= 1) {
     res.status(200).json( commentFound );
   } else {
-    console.log("else", commentFound)
-    res.status(404).json({error : "No comment for this article for the moment" });
+    console.log("0 commentaire trouvé")
+    res.status(404).json({error : "Pour l'instant, pas de commentaire sur cet article 🙄" });
   }
-};
-
-// Afficher tous les commentaires
-exports.ViewAllComment = (req, res) => {
-  Comment.findAll()
-    .then((commentaires) => {
-      if (!commentaires || commentaires.length === 0) {
-        res.status(404).json({ error: "Can't find any commentaires" });
-      }
-      res.status(200).json(commentaires);
-    })
-    .catch((error) => {
-      res.status(500).json( error );
-    });
 };
 
 // Créer un commentaire
@@ -36,10 +22,10 @@ module.exports.createComment = async (req, res) => {
     titre: req.body.titre,
     text: req.body.text,
   });
-  res.status(201).json("Comment created");
+  res.status(201).json("Commentaire créé 😉");
 } catch (error) {
   console.log(error);
-  res.status(401).json("Comment not created");
+  res.status(401).json("Merçi de remplir tout les champs correctement 🙏");
 }
 }
 
@@ -50,7 +36,7 @@ module.exports.updateComment = async (req, res) => {
     where: { id_commentaire: req.params.id },
   });
   if (!com) {
-    return res.status(404).json({ err: "Comment undefined" });
+    return res.status(404).json({ err: "Commentaire introuvable 🧐" });
   }
   // Acces admin ou utilisateur qui a créer le post
   if (req.auth.userId == com.id_user || req.auth.role == 1) {
@@ -61,9 +47,9 @@ module.exports.updateComment = async (req, res) => {
         where: { id_commentaire: req.params.id },
       }
     );
-    res.status(201).json("comment update");
+    res.status(201).json("Commentaire mis à jour 😊");
   } else {
-    res.status(401).json({ error: "Request non authorized" });
+    res.status(401).json({ error: "Requête non authorisée ⛔" });
   }
 };
 
@@ -74,9 +60,8 @@ exports.deleteComment = async (req, res) => {
     where: { id_commentaire: req.params.id },
   });
   if (!com) {
-    return res.status(404).json({ err: "Comment undefined" });
+    return res.status(404).json({ err: "Commentaire introuvable 🧐" });
   }
-  console.log(com);
   // Acces admin ou utilisateur qui a créer le post
   if (req.auth.userId == com.id_user || req.auth.role == 1) {
     // Supression
@@ -87,6 +72,6 @@ exports.deleteComment = async (req, res) => {
     });
     res.status(201).json("Comment deleted with success");
   } else {
-    res.status(401).json({ error: "Request non authorized" });
+    res.status(401).json("Requête non authorisée ⛔");
   }
 };
