@@ -16,7 +16,7 @@ export default {
 </script>
 <style scoped>
 #bloc-modale {
-    /* width: 100%; */
+    z-index: 10;
     position: fixed;
     top: 0;
     bottom: 0;

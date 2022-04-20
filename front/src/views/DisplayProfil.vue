@@ -33,6 +33,7 @@
           </div>
         </fieldset>
       </form>
+      <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
       <form
         id="update_avatar"
         @submit.prevent="updateAvatar($event, userInfo.user_id)"
@@ -41,7 +42,6 @@
           <legend><h2>Avatar</h2></legend>
           <img :src="userInfo.avatar" />
           <input id="file" type="file" name="image"  />
-
           <div id="btn">
             <input type="submit" value="Sauvegarder" />
             <input
@@ -59,8 +59,10 @@
 
 <script>
 import moment from "moment";
+import Modale from "../components/ModaleBox.vue";
 export default {
   name: "UserProfil",
+  components: { Modale },
   data() {
     return {
       userInfo: {
@@ -70,6 +72,8 @@ export default {
         bureau: "",
         avatar: "",
       },
+      show: false,
+      message: null,
     };
   },
 
@@ -85,23 +89,35 @@ export default {
       })
       .then((user) => {
         this.userInfo = user.data;
-        this.mail = this.userInfo.mail;
-        this.pseudonyme = this.userInfo.pseudonyme;
-        this.poste = this.userInfo.poste;
-        this.bureau = this.userInfo.bureau;
       })
       .catch((e) => {
         this.errors = e;
       });
   },
   methods: {
+    toggleModale() {
+      this.show = !this.show
+    },
+    getUser() {
+    let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
+    this.axios
+      .get(`http://localhost:3000/api/user/${this.$route.params.id}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((user) => {
+        return this.userInfo = user.data;
+      })
+      .catch((e) => {
+        this.errors = e;
+      });
+    },
     updateAvatar($event, id) {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      // const postId = String(id);
       const updatedPost = new FormData($event.target);
-      // console.log(updatedPost);
-      // console.log($event.target);
       this.axios
         .put(
           `http://localhost:3000/api/user/avatar/${id}`, updatedPost,
@@ -113,21 +129,22 @@ export default {
           }
         )
         .then((res) => {
-          alert(res.data)
-          // console.log(res);
+          setTimeout(() => {
+            this.getUser()           
+          }, 499);
+          console.log(res);
         })
         .catch((e) => {
           console.log(e);
-          this.errors = e;
+          // this.errors = e;
         });
     },
     updateUser() {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      let id = user.userID;
       this.axios
         .put(
-          `http://localhost:3000/api/user/${id}`,
+          `http://localhost:3000/api/user/${this.$route.params.id}`,
           {
             mail: this.userInfo.mail,
             pseudonyme: this.userInfo.pseudonyme,
@@ -141,7 +158,8 @@ export default {
           }
         )
         .then((response) => {
-          alert(response.data);
+          this.message = response.data + " 👍"
+          this.toggleModale()
         })
         .catch((e) => {
           console.log(e);
@@ -152,23 +170,24 @@ export default {
     deleteUser() {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      let $id = this.$route.params.id;
       const valid = confirm("Voulez vous supprimer votre compte ?");
       if (valid) {
         this.axios
-          .delete(`http://localhost:3000/api/user/` + $id, {
+          .delete(`http://localhost:3000/api/user/${this.$route.params.id}` , {
             headers: {
               Authorization: "Bearer " + token,
             },
           })
           .then((response) => {
             alert(response.data);
+            localStorage.clear();
             this.$router.push({ name: "Inscription" });
           })
           .catch((e) => {
-            alert("erreur", e.response.data);
+            this.message = e.response.data + " 👎";
+            this.toggleModale();
+            // alert("erreur", e.response.data);
             // console.log(e.response.config.data);
-            this.errors = e.response.data;
           });
       }
     },

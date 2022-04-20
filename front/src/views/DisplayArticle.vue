@@ -5,13 +5,13 @@
         <h1>{{ article.titre }}</h1>
         <!-- TO DO afficher seulement si c'est l'utilisateur qui l'a crée -->
         <div id="mod">
-          <button id="update-btn" v-on:click="show()">
+          <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
           <button id="delete-btn" v-on:click="deleteArticle()">
             Supprimer l'article
           </button>
-          <form @submit.prevent="update($event, article.id)">
+          <form @submit.prevent="update($event)">
             <fieldset id="container_update" v-if="showUpdate">
               <legend><h2>Modification</h2></legend>
               <label for="titre">Titre : </label>
@@ -35,24 +35,23 @@
           Créé par {{ article.id_user }}, le {{ timestamp2(article.date_crea) }}
         </p>
         <div id="btn">
-          <button id="btn_new_com" @click="displayNewComment()">
+          <!-- <button id="btn_new_com" @click="displayNewComment()">
             Commenter
-          </button>
+          </button> -->
+          <BtnWhite
+            id="btn_new_com"
+            nom="Commenter"
+            :addComment="displayNewComment"
+            :show="click"
+          />
           <button
             id="btn_coms"
             v-on:click="displayComment()"
             v-if="commentaires"
           >
-            Commentaire<span v-if="commentaires.length > 1">s</span> ({{
-              commentaires.length
-            }})
+            Commentaire<span v-if="commentaires.length > 1">s</span> ({{commentaires.length}})
           </button>
           <p v-else>Soyez le premier a commenter</p>
-          <BtnWhite
-            id="btn_new_com"
-            nom="Commenter"
-            @click="displayNewComment()"
-          />
           <BtnWhite
             id="btn_coms"
             v-on:click="displayComment()"
@@ -105,6 +104,7 @@
             <p class="error" v-if="errors">
               {{ errors }}
             </p>
+            <Modale :show="show" :toggleModale="toggleModale"/>
           </div>
         </div>
       </div>
@@ -115,21 +115,15 @@
 <script>
 import moment from "moment";
 import BtnWhite from "../components/BtnWhite.vue";
+import Modale from "../components/ModaleBox.vue";
 
 export default {
-  name: "FilActu",
-  components: { BtnWhite },
+  name: "DisplayArticle",
+  components: { BtnWhite, Modale },
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
-      article: {
-        id_user: "",
-        id: "",
-        titre: "",
-        text: "",
-        media: "",
-        date_crea: "",
-      },
+      article: null,
       commentaires: "",
       commentaire: {
         titre: "",
@@ -141,6 +135,8 @@ export default {
       showUpdate: false,
       displayCom: false,
       media: "",
+      show: false,
+      message: null
     };
   },
   // watch: {
@@ -158,21 +154,15 @@ export default {
   created() {
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
-    let $id = this.$route.params.id;
     // Récupération des données de l'article
     this.axios
-      .get(`http://localhost:3000/api/article/${$id}`, {
+      .get(`http://localhost:3000/api/article/${this.$route.params.id}`, {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
       .then((article) => {
-        (this.article.id = article.data.articleFound.id_article),
-          (this.article.id_user = article.data.articleFound.id_user),
-          (this.article.titre = article.data.articleFound.titre),
-          (this.article.text = article.data.articleFound.text),
-          (this.article.media = article.data.articleFound.media),
-          (this.article.date_crea = article.data.articleFound.date_crea);
+        (this.article= article.data.articleFound)
       })
       .catch((e) => {
         this.errors = e;
@@ -180,24 +170,25 @@ export default {
       });
     // Recupération des commentaires de l'article
     this.axios
-      .get(`http://localhost:3000/api/comment/${$id}`, {
+      .get(`http://localhost:3000/api/comment/${this.$route.params.id}`, {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
       .then((allCommentaires) => {
         this.commentaires = allCommentaires.data;
-        console.log(this.commentaires);
       })
       .catch((e) => {
-        console.log("mounted", e);
-        this.errors = e;
+        console.log("get comment", e);
       });
   },
 
   methods: {
+      toggleModale() {
+      this.show = !this.show
+    },
     displayComment() {
-      this.displayCom = true;
+      this.displayCom = !this.displayCom;
     },
     getComment() {
     // Recupération des commentaires de l'article
@@ -223,22 +214,43 @@ export default {
     timestamp2(date) {
       return moment(date).format("DD-MM-YYYY");
     },
-    show() {
-      this.showUpdate = true;
+    showDisplayUpdate() {
+      this.showUpdate = !this.showUpdate;
     },
-    update($event, id) {
+    getArticle() {
+    let $id = this.$route.params.id;
+    let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
+    // Récupération des données de l'article
+    this.axios
+      .get(`http://localhost:3000/api/article/${$id}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((article) => {
+        (this.article = article.data.articleFound)
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    },
+    update($event) {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
       const updatedPost = new FormData($event.target);
       this.axios
-        .put(`http://localhost:3000/api/article/${id}`, updatedPost,{
+        .put(`http://localhost:3000/api/article/${this.$route.params.id}`, updatedPost,{
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: "Bearer " + token,
           },
         })
         .then((res) => {
+          // TODO actualiser img
           alert(res.data);
+          this.getArticle()
+          
         })
         .catch((e) => {
           alert(e.response.data);
@@ -250,7 +262,7 @@ export default {
       let $id = this.$route.params.id;
       confirm("Voulez vous supprimer cet article ?");
       this.axios
-        .delete(`http://localhost:3000/api/article/` + $id, {
+        .delete(`http://localhost:3000/api/article/${$id}`, {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -266,7 +278,7 @@ export default {
     },
 
     displayNewComment() {
-      this.click = true;
+      this.click = !this.click;
     },
     createCommentaire() {
       let user = JSON.parse(localStorage.getItem("user"));
@@ -290,7 +302,6 @@ export default {
           )
           .then((response) => {
             this.click = false;
-            // TODO appeler fonction pour actualiser les commentaires
             this.getComment();
             alert(response.data);
           })
@@ -315,11 +326,13 @@ export default {
             },
           })
           .then((response) => {
-            alert(response.data);
-            this.getComment();
+            // alert(response.data);
+          this.message = response.data
+          this.toggleModale()
+          this.getComment();
           })
           .catch((e) => {
-            console.log("log erreur delete", e.response);
+            console.log("log erreur delete", e);
             alert(e.response.data);
             // console.log(e.response.config.data);
           });
@@ -339,7 +352,7 @@ export default {
   border: 1px solid black;
   margin: 3em;
   margin-bottom: 6em;
-  border-radius: 20px;
+  border-radius: 4em;
   box-shadow: 0.3em 0.3em 8px #a8a7a7;
   background: rgb(144, 140, 153);
   background: linear-gradient(
