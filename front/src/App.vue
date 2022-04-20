@@ -46,11 +46,16 @@
 
 <script>
 // deconnexion auto au bout de 30 minutes
-setTimeout(function () {
-  this.logOut();
-}, 1800000);
+// setTimeout(function () {
+//   this.logOut();
+// }, 1800000);
 
-// setTimeout(this.logOut(), 1200000);
+// setTimeout(function () {
+//       localStorage.clear();
+//       // this.$router.push({ name: "Connect" });
+//       window.location.href
+//       this.user=false
+// }, 1800000);
 
 export default {
   name: "App",
@@ -59,6 +64,7 @@ export default {
       user: false,
     };
   },
+
   computed: {
     //   GetUser2() {
     //     let user = JSON.parse(localStorage.getItem("user"))
