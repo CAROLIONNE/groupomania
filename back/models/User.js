@@ -1,14 +1,9 @@
-const sequelize = require("../db.js");
+const db = require("../db.js");
+// const db = require("../config/config");
 const { Sequelize, Model, DataTypes } = require("sequelize");
 
-class Utilisateur extends Model {
-  associate(models) {
-    // define association here
-    this.hasMany(models.Comment);
-    this.hasMany(models.Article);
-  }
-}
-Utilisateur.init(
+const Utilisateur = db.define(
+  "Utilisateur",
   {
     id_user: {
       type: DataTypes.INTEGER,
@@ -63,11 +58,18 @@ Utilisateur.init(
   },
   {
     // Other model options go here
-    sequelize, // We need to pass the connection instance
+    db, // We need to pass the connection instance
     modelName: "Utilisateur", // We need to choose the model name
     tableName: "utilisateur",
     timestamps: false,
   }
 );
+
+Utilisateur.associate = (models)=> {
+    //Utilisateur.hasMany(models.Comment, {onDelete: 'cascade', hooks:true});
+    //Utilisateur.hasMany(models.Article, {onDelete: 'cascade', hooks:true});
+    Utilisateur.hasMany(models.Comment, {foreignKey: 'id_user', onDelete: 'cascade', hooks:true});
+    Utilisateur.hasMany(models.Article, {foreignKey: 'id_user', onDelete: 'cascade', hooks:true});
+  }
 
 module.exports = Utilisateur;
