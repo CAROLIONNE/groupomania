@@ -1,29 +1,32 @@
-const Article = require("../models/Article");
+// const Article = require("../models/Article");
+// const Utilisateur = require("../models/User");
 const fs = require("fs");
+const models = require('../models/index');
 
 // Afficher tout les articles
 exports.viewAllArticles = (req, res, next) => {
-  Article.findAll({ order: [['date_crea', 'DESC']] })
+  models.Article.findAll({ order: [['date_crea', 'DESC']] })
     .then((articles) => {
       if (!articles || articles.length === 0) {
-        res.status(404).json({ error: "Can't find any articles" });
+        res.status(404).json({ error: "Aucun article pour le moment 🧐" });
       }
       res.status(200).json(articles);
     })
-    .catch((error) => {
-      res.status(500).json(error, "cannot access to DB");
-    });
+    // .catch((error) => {
+    //   res.status(500).json({error: "Une erreur est survenue 😕"});
+    // });
 };
 
 // Afficher un article
 exports.ViewArticle = async (req, res) => {
   const articleFound = await Article.findOne({
-    where: { id_article: req.params.id },
+    where: { id_article: req.params.id }, 
+    include: [{model: Utilisateur}]
   });
   if (articleFound) {
     res.status(200).json({ articleFound });
   } else {
-    res.status(404).json({ error: "Article not found" });
+    res.status(404).json({ error: "Article introuvable 🧐" });
   }
 };
 
@@ -39,13 +42,13 @@ module.exports.createArticle = async (req, res) => {
           ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
           : "",
       });
-      return res.status(201).json("article created");
+      return res.status(201).json("Article créé 👍");
     } else {
-      return res.status(401).json({ error: `can't create a new article ` });
+      return res.status(401).json({ error: "Merçi de remplir tout les champs correctement 🙏" });
     }
   } catch (err) {
     console.log("---------", err);
-    return res.status(500).json({ error: `can't create a new article ` });
+    return res.status(500).json({ error: "Une erreur est survenue 😕" });
   }
 };
 
@@ -93,12 +96,12 @@ exports.updateArticle = async (req, res) => {
           }
         );
       }
-      return res.status(201).json("Article updated with success");
+      return res.status(201).json("L'article est mis a jour 👍");
     } else {
-      return res.status(401).json("Request non authorized");
+      return res.status(401).json("Requête non authorisée ⛔");
     }
   } else {
-    res.status(404).json("Article undefined");
+    res.status(404).json("Article introuvable 🧐");
   }
 };
 
@@ -124,13 +127,13 @@ exports.updateImage = async (req, res) => {
           },
           { where: { id_article: req.params.id } }
         );
-        res.status(201).json("Article updated with success");
+        res.status(201).json("L'article est mis a jour 👍");
       });
     } else {
-      res.status(500).json("Request non authorized");
+      res.status(500).json("Requête non authorisée ⛔");
     }
   } else {
-    res.status(404).json("Article undefined");
+    res.status(404).json("Article introuvable 🧐");
   }
 };
 
@@ -151,12 +154,12 @@ exports.deleteArticle = async (req, res) => {
             id_article: req.params.id,
           },
         });
-        res.status(201).json("Article deleted with success");
+        res.status(201).json("L'article a été supprimé 👍");
       });
     } else {
-      res.status(401).json("Request non authorized");
+      res.status(401).json("Requête non authorisée ⛔");
     }
   } else {
-    res.status(404).json("Article undefined");
+    res.status(404).json("Article introuvable 🧐");
   }
 };
