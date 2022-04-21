@@ -23,6 +23,10 @@ exports.ViewArticle = async (req, res) => {
   const articleFound = await Article.findOne({
     where: { id_article: req.params.id }, 
     // include: [Utilisateur]
+  //   include: {
+  //     model: Utilisateur,
+  //     attributes:['pseudonyme']
+  // }
   });
   if (articleFound) {
     res.status(200).json({ articleFound });

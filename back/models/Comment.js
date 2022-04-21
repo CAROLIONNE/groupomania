@@ -49,15 +49,15 @@ const Comment = db.define(
   );
   
   Comment.associate = (models) => {
-    Comment.hasOne(models.Article, {
-      onDelete: "cascade",
-    });
+    // Comment.hasOne(models.Article, {
+    //   onDelete: "cascade",
+    // });
     Comment.belongsTo(models.Article, {
-      foreignKey: "id_article",
+      onDelete: "cascade", foreignKey: "id_article",
     })
-    Comment.hasOne(models.Utilisateur, {
-      onDelete: "cascade",
-    });
+    // Comment.hasOne(models.Utilisateur, {
+    //   onDelete: "cascade",
+    // });
     Comment.belongsTo(models.Utilisateur, {
       foreignKey: "id_user",
     });

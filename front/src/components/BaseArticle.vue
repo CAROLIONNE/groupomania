@@ -6,7 +6,7 @@
     <!-- TO DO afficher UpdateArticle.vue si c'est l'utilisateur qui l'a créer -->
     <img id="article_img" :src="article.media" v-if="article.media"/>
     <p id="article_text">{{ article.text }}</p>
-    <p id="article_author">Créé par {{ article.id_user }} le {{ timestamp2(article.date_crea) }} <span v-if="article.date_crea != article.date_mod">, Modifié le {{ timestamp2(article.date_mod) }}</span> </p>
+    <p id="article_author">Créé par {{ author }} le {{ timestamp2(article.date_crea) }} <span v-if="article.date_crea != article.date_mod">, Modifié le {{ timestamp2(article.date_mod) }}</span> </p>
     <div id="btn">
           <button id="btn_new_com" @click="displayNewComment()">
             Commenter
@@ -102,9 +102,12 @@ export default {
       media: "",
       message: null,
       show: false,
+      author: null,
     };
   },
   mounted() {
+
+    // Recupération des commentaires
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
       let idArticle = this.article.id_article;
@@ -122,6 +125,23 @@ export default {
           console.log(e.response.data.error);
           // this.errors = e.response.data.error;
         })
+    // Recupération des pseudonymes
+    let idUser = this.article.id_user;
+      this.axios
+        .get(`http://localhost:3000/api/user/${idUser}`, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((user) => {
+            this.author = user.data.pseudonyme;
+        })
+        .catch((e) => {
+          console.log(e.response.data.error);
+          // this.errors = e.response.data.error;
+        })
+
+
   },
   methods: {
     toggleModale() {
@@ -134,11 +154,11 @@ export default {
       return moment(date).format("DD-MM-YYYY");
     },
     displayNewComment() {
-      this.click = true;
+      this.click = !this.click;
     },
     // Afficher les commentaires d'un article
     displayCommentaires() {
-      this.displayCom = true;
+      this.displayCom = !this.displayCom;
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
       let idArticle = this.article.id_article;
@@ -150,20 +170,19 @@ export default {
         })
         .then((foundCommentaires) => {
             this.commentaires = foundCommentaires.data;
-            console.log("commentaires", this.commentaires);
-            // if (this.commentaires.length = 0) {console.log("youhou")}
-            // console.log(this.commentaires.length)
         })
         .catch((e) => {
           console.log(e.response.data.error);
           // this.errors = e.response.data.error;
-          console.log(this.commentaires.length)
-          console.log(this.commentaires)
         });
     },
     createCommentaire() {
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
+    if (
+        this.commentaire.titre.length >= 3 &&
+        this.commentaire.text.length >= 3
+      ) {
       this.axios
         .post(
           `http://localhost:3000/api/comment/${this.article.id_article}`,
@@ -178,7 +197,6 @@ export default {
           }
         )
         .then((response) => {
-          
           this.click = false;
           this.commentaire= ""
           this.message = response.data 
@@ -186,9 +204,13 @@ export default {
           this.displayCommentaires()
         })
         .catch((e) => {
-          console.log(e);
           this.errors = e;
         });
+        } else {
+          this.message = "Merçi de remplir tout les champs correctement 🙏" 
+          this.toggleModale()
+          this.displayCommentaires()
+      }
     },
 
     deleteCom(index) {
@@ -204,17 +226,15 @@ export default {
             },
           })
           .then((response) => {
-            console.log(response);
-            this.displayCommentaires();
-            // this.commentaires.splice()
-            console.log(this.commentaires);
-            console.log(this.commentaires.length);
+          this.message = response.data 
+          this.toggleModale()
+          this.displayCommentaires();
             // if(this.commentaires.length == 0) { this.displayCom = false}
-            alert(response.data);
           })
           .catch((e) => {
-            console.log("log erreur delete", e.response);
-            alert(e.response.data);
+          this.message = e.response.data
+          this.toggleModale()
+          console.log("log erreur delete", e.response);
           });
       }
     },

@@ -5,9 +5,11 @@ import InscriptionUser from '@/views/Inscription'
 import FilActu from '@/views/FilActu'
 import NewArticle from '@/views/NewArticle'
 import DisplayArticle from '@/views/DisplayArticle'
+import DisplayArticle2 from '@/views/DisplayArticle2'
 import DisplayProfil from '@/views/DisplayProfil'
 import NotFound from '@/views/NotFound'
-import displayTest from '@/views/displayTest'
+
+
 
 Vue.use(VueRouter)
 
@@ -38,15 +40,15 @@ const routes = [
     component: DisplayArticle
   },    
   {
+    path: '/articletest/:id',
+    name: 'DisplayArticle2',
+    component: DisplayArticle2
+  },    
+  {
     path: '/profil/:id',
     name: 'DisplayProfil',
     component: DisplayProfil
-  },    
-  {
-    path: '/test',
-    name: 'displayTest',
-    component: displayTest
-  },    
+  },      
   {
     path: '/*',
     name: 'NotFound',
@@ -61,5 +63,22 @@ const routes = [
 const router = new VueRouter({
   routes
 })
+
+let user = JSON.parse(localStorage.getItem("user"));
+console.log(user);
+
+// router.beforeEach(async (to) => {
+//   if (
+//     // make sure the user is authenticated
+//     !user 
+//   ) {
+//     console.log("ROUTER if");
+//     // redirect the user to the login page
+//     return '/'
+//   } else {
+//     console.log("router else")
+//   }
+// })
+
 
 export default router

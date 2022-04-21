@@ -151,7 +151,7 @@ export default {
       return true;
     },
   },
-  created() {
+  mounted() {
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
     // Récupération des données de l'article
@@ -184,7 +184,7 @@ export default {
   },
 
   methods: {
-      toggleModale() {
+    toggleModale() {
       this.show = !this.show
     },
     displayComment() {

@@ -49,7 +49,7 @@ Article.associate = (models) => {
   Article.hasMany(models.Comment, {
     foreignKey: 'id_article', onDelete: "cascade",
   });
-  Article.hasOne(models.Utilisateur, {
+  Article.belongsTo(models.Utilisateur, {
    foreignKey: 'id_user',onDelete: "cascade",
   });
   Article.belongsTo(models.Utilisateur, {
