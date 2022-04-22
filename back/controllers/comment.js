@@ -78,7 +78,7 @@ exports.deleteComment = async (req, res) => {
         id_commentaire: req.params.id,
       },
     });
-    res.status(201).json("Comment deleted with success");
+    res.status(201).json("Commentaire supprimé 👍");
   } else {
     res.status(401).json("Requête non authorisée ⛔");
   }

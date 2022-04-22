@@ -50,6 +50,7 @@ module.exports.signup = async (req, res) => {
         // Creation du token et envoi coté client
         pseudo: user.pseudonyme,
         userID: user.id_user,
+        role: user.role,
         token: jwt.sign(
           { id_user: user.id_user, role: user.role },
           process.env.SECRET,
@@ -79,6 +80,7 @@ module.exports.login = async (req, res) => {
       }
       res.status(200).json({
         // Creation du token et envoi coté client
+        role: userFound.role,
         pseudo: userFound.pseudonyme,
         userID: userFound.id_user,
         token: jwt.sign(

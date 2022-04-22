@@ -3,8 +3,7 @@
     <div id="container">
       <div id="article">
         <h1>{{ article.titre }}</h1>
-        <!-- TO DO afficher seulement si c'est l'utilisateur qui l'a crée -->
-        <div id="mod">
+        <div id="mod" v-if="article.id_user == user.userID || user.role == 1">
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
@@ -136,7 +135,8 @@ export default {
       displayCom: false,
       media: "",
       show: false,
-      message: null
+      message: null,
+      user: {},
     };
   },
   // watch: {
@@ -154,6 +154,7 @@ export default {
   mounted() {
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
+    this.user = user;
     // Récupération des données de l'article
     this.axios
       .get(`http://localhost:3000/api/article/${this.$route.params.id}`, {
