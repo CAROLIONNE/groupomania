@@ -39,7 +39,7 @@
           </button> -->
           <BtnWhite
             id="btn_new_com"
-            nom="Commenter"
+            name="Commenter"
             :addComment="displayNewComment"
             :show="click"
           />
@@ -55,7 +55,7 @@
             id="btn_coms"
             v-on:click="displayComment()"
             v-if="commentaires"
-            nom="Commentaire"
+            name="Commentaire"
           />
         </div>
         <div class="new_com" v-if="click">
@@ -122,7 +122,7 @@ export default {
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
-      article: null,
+      article: {},
       commentaires: "",
       commentaire: {
         titre: "",
