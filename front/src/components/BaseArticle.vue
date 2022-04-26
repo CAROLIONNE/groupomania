@@ -14,14 +14,12 @@
           <button
             id="btn_coms"
             v-if="commentaires"
-            v-on:click="displayCommentaires(index)"
+            v-on:click="displayCommentaires(article.id_article)"
           >Commentaire<span v-if="commentaires.length >1">s</span> ({{commentaires.length}})
           </button>
           <p v-else>Soyez le premier a commenter</p>
         </div>
     <div class="new_com" v-if="click">
-          <h2>Titre :</h2>
-          <input type="text" class="com_title" v-model="commentaire.titre" />
           <h2>Texte :</h2>
           <textarea
             id="com_text"
@@ -48,22 +46,21 @@
           <div
             id="display_com"
             v-for="(com, index) in commentaires"
-            :key="com.id_commentaire"
+            :key="com.id"
           >
-            <i
+          <BaseCommentaire :commentaire="com" :index="index" :getComment="displayCommentaires"/>
+            <!-- <i
               id="btn_delete-com"
               class="fa-solid fa-trash-can"
               @click="deleteCom(index)"
             ></i>
-            <h2 id="com_titre">{{ com.titre }}</h2>
             <div id="com_text">{{ com.text }}</div>
             <p id="com_date">
               {{ timestamp(com.date_crea) }} - {{ com.id_user }}
             </p>
-            <!-- TO DO recupérer pseudonyme avec ID findUser() -->
             <p class="error" v-if="errors">
               {{ errors }}
-            </p>
+            </p> -->
           </div>
         </div>
         
@@ -73,9 +70,11 @@
 <script>
 import moment from "moment";
 import Modale from "./ModaleBox.vue";
+import BaseCommentaire from "../components/BaseCommentaire.vue";
+
 export default {
   name: "BaseArticle",
-  components: { Modale },
+  components: { Modale, BaseCommentaire },
   props: {
     article : {
       type: Object,
@@ -91,7 +90,6 @@ export default {
     return {
       commentaires: "",
       commentaire: {
-        titre: "",
         text: "",
       },
       errors: null,
@@ -106,7 +104,6 @@ export default {
     };
   },
   mounted() {
-
     // Recupération des commentaires
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
@@ -157,13 +154,13 @@ export default {
       this.click = !this.click;
     },
     // Afficher les commentaires d'un article
-    displayCommentaires() {
+    displayCommentaires(id) {
       this.displayCom = !this.displayCom;
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      let idArticle = this.article.id_article;
+      // let idArticle = this.article.id_article;
       this.axios
-        .get(`http://localhost:3000/api/comment/${idArticle}`, {
+        .get(`http://localhost:3000/api/comment/${id}`, {
           headers: {
             Authorization: "Bearer " + token,
           },
@@ -179,15 +176,11 @@ export default {
     createCommentaire() {
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
-    if (
-        this.commentaire.titre.length >= 3 &&
-        this.commentaire.text.length >= 3
-      ) {
+    if (this.commentaire.text.length >= 3) {
       this.axios
         .post(
           `http://localhost:3000/api/comment/${this.article.id_article}`,
           {
-            titre: this.commentaire.titre,
             text: this.commentaire.text,
           },
           {
@@ -301,11 +294,10 @@ img {
   margin-right: auto;
   /* border: antiquewhite 2px solid; */
   border: 2px solid #a7a7a7;
-
-  border-radius: 2em;
-  width: 65%;
+  border-radius: 1em;
+  max-width: 80%;
+  background: whitesmoke;
 }
-#com_titre,
 #com_text,
 #com_date {
   padding: 0.2em;

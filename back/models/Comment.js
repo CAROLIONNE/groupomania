@@ -29,11 +29,6 @@ const Comment = db.define(
       defaultValue: DataTypes.NOW,
 
     },
-    titre: {
-      type: DataTypes.STRING(150),
-      defaultValue: "title",
-      allowNull: false,
-    },
     text: {
       type: DataTypes.TEXT,
       allowNull: false,

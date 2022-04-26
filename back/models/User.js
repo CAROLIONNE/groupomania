@@ -66,10 +66,10 @@ const Utilisateur = db.define(
 );
 
 Utilisateur.associate = (models)=> {
-    Utilisateur.hasMany(models.Comment, {onDelete: 'cascade'});
-    Utilisateur.hasMany(models.Article, {onDelete: 'cascade'});
-    // Utilisateur.hasMany(models.Comment, {foreignKey: 'id_user', onDelete: 'cascade', hooks:true});
-    // Utilisateur.hasMany(models.Article, {foreignKey: 'id_user', onDelete: 'cascade', hooks:true});
+    // Utilisateur.hasMany(models.Comment, {onDelete: 'cascade'});
+    // Utilisateur.hasMany(models.Article, {onDelete: 'cascade'});
+    Utilisateur.hasMany(models.Comment, {foreignKey: 'id_user', onDelete: 'cascade'});
+    Utilisateur.hasMany(models.Article, {foreignKey: 'id_article', onDelete: 'cascade'});
   }
 
 module.exports = Utilisateur;

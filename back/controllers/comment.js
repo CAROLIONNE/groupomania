@@ -18,12 +18,11 @@ exports.ViewComment = async (req, res) => {
 
 // Créer un commentaire
 module.exports.createComment = async (req, res) => {
-  if (req.body.titre !== null && req.body.text !== null) {
+  if (req.body.text !== null) {
     try {
       await Comment.create({
         id_article: req.params.id,
         id_user: req.auth.userId,
-        titre: req.body.titre,
         text: req.body.text,
       });
       res.status(201).json("Commentaire créé 😉");
@@ -37,7 +36,7 @@ module.exports.createComment = async (req, res) => {
   }
 };
 
-// Modifier titre et/ou texte d'un commentaire
+// Modifier texte d'un commentaire
 module.exports.updateComment = async (req, res) => {
   // Verifie que l'id du commentaire existe
   let com = await Comment.findOne({
@@ -50,7 +49,7 @@ module.exports.updateComment = async (req, res) => {
   if (req.auth.userId == com.id_user || req.auth.role == 1) {
     // Mise à jour du commentaire
     Comment.update(
-      { titre: req.body.titre, text: req.body.text, date_mod: new Date() },
+      {text: req.body.text, date_mod: new Date() },
       {
         where: { id_commentaire: req.params.id },
       }

@@ -112,7 +112,6 @@ export default {
     deleteCom(id, id_article) {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      console.log(id_article);
       const valid = confirm("Voulez vous supprimer ce commentaire ?");
       if (valid) {
         this.axios
@@ -153,8 +152,8 @@ export default {
 }
 #btn_delete-com {
     position: relative;
-    right: -49%;
-    top: -3.8em;
+    right: -47%;
+    top: -1em;
     cursor: pointer;
     border: black solid 1px;
     border-radius: 50%;
@@ -162,12 +161,17 @@ export default {
 }
 #btn_update-com {
     position: relative;
-    right: -38%;
-    top: -3.8em;
+    right: -36%;
+    top: -1em;
     cursor: pointer;
     border: black solid 1px;
     border-radius: 50%;
     padding: 0.3em;
+}
+#com_text {
+        font-weight: bold;
+        margin: 0.1em;
+        padding-top: 0.3em;
 }
 #com_date {
     position: relative;

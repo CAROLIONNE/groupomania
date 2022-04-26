@@ -1,5 +1,5 @@
 <template>
-<button @click="addComment"> {{ name }} {{}}</button>
+<button @click="show"> {{ name }} </button>
 
 </template>
 

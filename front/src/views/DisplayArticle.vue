@@ -40,8 +40,7 @@
           <BtnWhite
             id="btn_new_com"
             name="Commenter"
-            :addComment="displayNewComment"
-            :show="click"
+            :show="displayNewComment"
           />
           <button
             id="btn_coms"
@@ -51,20 +50,18 @@
             Commentaire<span v-if="commentaires.length > 1">s</span> ({{commentaires.length}})
           </button>
           <p v-else>Soyez le premier a commenter</p>
-          <BtnWhite
+          <!-- <BtnWhite
             id="btn_coms"
             v-on:click="displayComment()"
             v-if="commentaires"
             name="Commentaire"
-          />
+          /> -->
         </div>
         <div class="new_com" v-if="click">
-          <h2>Titre :</h2>
-          <input type="text" class="com_title" v-model="commentaire.titre" />
           <h2>Texte :</h2>
           <textarea
             id="com_text"
-            v-model="commentaire.text"
+            v-model="commentaire"
             name="text"
             rows="2"
             cols="33"
@@ -89,20 +86,19 @@
             v-for="(com, index) in commentaires"
             :key="com.id_commentaire"
           >
-            <i
+           <BaseCommentaire :commentaire="com" :index="index" :getComment="getComment"/>
+            <!-- <i
               id="btn_delete-com"
               class="fa-solid fa-trash-can"
               @click="deleteCom(index)"
             ></i>
-            <h2 id="com_titre">{{ com.titre }}</h2>
             <div id="com_text">{{ com.text }}</div>
             <p id="com_date">
               {{ timestamp(com.date_crea) }} - {{ com.id_user }}
             </p>
-            <!-- TO DO recupérer pseudonyme avec ID findUser()-->
             <p class="error" v-if="errors">
               {{ errors }}
-            </p>
+            </p> -->
             <Modale :show="show" :toggleModale="toggleModale"/>
           </div>
         </div>
@@ -115,19 +111,17 @@
 import moment from "moment";
 import BtnWhite from "../components/BtnWhite.vue";
 import Modale from "../components/ModaleBox.vue";
+import BaseCommentaire from "../components/BaseCommentaire.vue";
 
 export default {
   name: "DisplayArticle",
-  components: { BtnWhite, Modale },
+  components: { BtnWhite, Modale, BaseCommentaire },
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
       article: {},
       commentaires: "",
-      commentaire: {
-        titre: "",
-        text: "",
-      },
+      commentaire: "",
       errors: null,
       valid: null,
       click: false,
@@ -248,7 +242,6 @@ export default {
           },
         })
         .then((res) => {
-          // TODO actualiser img
           alert(res.data);
           this.getArticle()
           
@@ -284,16 +277,12 @@ export default {
     createCommentaire() {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      if (
-        this.commentaire.titre.length >= 3 &&
-        this.commentaire.text.length >= 3
-      ) {
+      if ( this.commentaire.length >= 3) {
         this.axios
           .post(
             `http://localhost:3000/api/comment/${this.$route.params.id}`,
             {
-              titre: this.commentaire.titre,
-              text: this.commentaire.text,
+              text: this.commentaire,
             },
             {
               headers: {
@@ -302,6 +291,8 @@ export default {
             }
           )
           .then((response) => {
+            // TODO Ajouter modale
+            this.commentaire= "";
             this.click = false;
             this.getComment();
             alert(response.data);
@@ -314,31 +305,31 @@ export default {
         this.errors = "Fields incomplete min 3 characters";
       }
     },
-    deleteCom(index) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
-      let $id = this.commentaires[index].id_commentaire;
-      const valid = confirm("Voulez vous supprimer ce commentaire ?");
-      if (valid) {
-        this.axios
-          .delete(`http://localhost:3000/api/comment/${$id}`, {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          })
-          .then((response) => {
-            // alert(response.data);
-          this.message = response.data
-          this.toggleModale()
-          this.getComment();
-          })
-          .catch((e) => {
-            console.log("log erreur delete", e);
-            alert(e.response.data);
-            // console.log(e.response.config.data);
-          });
-      }
-    },
+    // deleteCom(index) {
+    //   let user = JSON.parse(localStorage.getItem("user"));
+    //   let token = user.token;
+    //   let $id = this.commentaires[index].id_commentaire;
+    //   const valid = confirm("Voulez vous supprimer ce commentaire ?");
+    //   if (valid) {
+    //     this.axios
+    //       .delete(`http://localhost:3000/api/comment/${$id}`, {
+    //         headers: {
+    //           Authorization: "Bearer " + token,
+    //         },
+    //       })
+    //       .then((response) => {
+    //         // alert(response.data);
+    //       this.message = response.data
+    //       this.toggleModale()
+    //       this.getComment();
+    //       })
+    //       .catch((e) => {
+    //         console.log("log erreur delete", e);
+    //         alert(e.response.data);
+    //         // console.log(e.response.config.data);
+    //       });
+    //   }
+    // },
   },
 };
 </script>
@@ -417,7 +408,7 @@ img {
   border-radius: 2em;
   width: 65%;
 }
-#com_titre,
+
 #com_text,
 #com_date {
   padding: 0.2em;
