@@ -258,5 +258,7 @@ module.exports.deleteUser = async (req, res) => {
   ).catch(function(e) {
     console.error(e);
   })
-
+};
+module.exports.authentificate = (req, res, next) => {
+  res.status(200).json({ message: "token valide !" })
 };

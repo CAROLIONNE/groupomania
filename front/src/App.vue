@@ -64,15 +64,28 @@ export default {
       user: false,
     };
   },
-
-  computed: {
-    //   GetUser2() {
-    //     let user = JSON.parse(localStorage.getItem("user"))
-    //     if (user) {
-    //       return this.user=true
-    //     }
-    //  },
-  },
+mounted() {
+  // tentative de requete pour token valide
+   let user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      let token = user.token
+      console.log('2', user)
+      console.log(token)
+      this.axios.get('http://localhost:3000/api/user/auth', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }).then((res) => {
+        console.log(res)
+      }).catch((err) => {
+        console.log(err)
+        })
+    } else {
+      // localStorage.clear();
+      this.$router.push({ name: "Connect" });
+      this.user=false
+    }
+},
   methods: {
     Profil() {
       let user = JSON.parse(localStorage.getItem("user"));
