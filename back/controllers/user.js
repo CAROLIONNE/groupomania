@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
-const Utilisateur = require("../models/User");
+const models = require("../models/index"); 
+// const Utilisateur = require("../models/User");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const EMAIL_REGEX =
@@ -28,7 +29,7 @@ module.exports.signup = async (req, res) => {
   if (req.body.pseudonyme.length == 0) {
     return res.status(401).json({ error: "Pseudonyme requis ❌" });
   }
-  const utilisateur = await Utilisateur.findOne({
+  const utilisateur = await models.Utilisateur.findOne({
     attributes: ["mail"],
     where: { mail: req.body.mail },
   });
@@ -40,7 +41,7 @@ module.exports.signup = async (req, res) => {
     bcrypt.hash(req.body.mot_psw, 10)
     .then((hash) => {
       // Creer nouvel utilisateur
-      Utilisateur.create({
+      models.Utilisateur.create({
         mail: req.body.mail,
         mot_psw: hash,
         pseudonyme: req.body.pseudonyme,
@@ -49,15 +50,16 @@ module.exports.signup = async (req, res) => {
       return res.status(201).json({
         // Creation du token et envoi coté client
         pseudo: user.pseudonyme,
-        userID: user.id_user,
+        userID: user.id,
         token: jwt.sign(
-          { id_user: user.id_user, role: user.role },
+          { id: user.id, isAdmin: user.isAdmin },
           "TEST",
           { expiresIn: "1h" }
           ),
         });
       })
       .catch(err => {
+        console.log(err);
         return res.status(500).json({ error: err })
     })
     });
@@ -67,7 +69,7 @@ module.exports.signup = async (req, res) => {
 // Connexion
 module.exports.login = async (req, res) => {
   const { mail, mot_psw } = req.body;
-  const userFound = await Utilisateur.findOne({ where: { mail: mail } });
+  const userFound = await models.Utilisateur.findOne({ where: { mail: mail } });
   // Verifie que l'utilisateur existe avec l'adresse email
   if (!userFound) {
     res.status(404).json({ error: "Utilisateur introuvable 🧐" });
@@ -80,10 +82,11 @@ module.exports.login = async (req, res) => {
       res.status(200).json({
         // Creation du token et envoi coté client
         pseudo: userFound.pseudonyme,
-        userID: userFound.id_user,
+        userID: userFound.id,
         token: jwt.sign(
-          { id_user: userFound.id_user, role: userFound.role },
-          "TEST",
+          { id: userFound.id, isAdmin: userFound.isAdmin },
+          // "TEST",
+          process.env.SECRET,
           { expiresIn: "1h" }
         ),
       });
@@ -93,12 +96,12 @@ module.exports.login = async (req, res) => {
 
 // Trouve un utilisateur avec son id
 exports.getOneUser = async (req, res, next) => {
-  const userFound = await Utilisateur.findOne({
-    where: { id_user: req.params.id },
+  const userFound = await models.Utilisateur.findOne({
+    where: { id: req.params.id },
   });
   if (userFound) {
     res.status(200).json({
-      user_id: userFound.id_user,
+      user_id: userFound.id,
       mail: userFound.mail,
       poste: userFound.poste,
       bureau: userFound.bureau,
@@ -114,12 +117,12 @@ exports.getOneUser = async (req, res, next) => {
 
 // Modifier infos utilisateur
 module.exports.updateUser = async (req, res) => {
-  await Utilisateur.findOne({ where: { id_user: req.params.id } }).then(
+  await models.Utilisateur.findOne({ where: { id: req.params.id } }).then(
     (userFound) => {
       // Verifie que l'utilisateur existe
       if (!userFound) return res.status(404).json({ error: "Utilisateur introuvable 🧐" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
-      if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
+      if (userFound.id == req.auth.userId || req.auth.isAdmin == 1) {
         // Mettre a jour les infos utilisateurs dans la base de donnée
         Utilisateur.update(
           {
@@ -131,7 +134,7 @@ module.exports.updateUser = async (req, res) => {
           },
           {
             where: {
-              id_user: req.params.id,
+              id: req.params.id,
             },
           }
         );
@@ -174,23 +177,23 @@ module.exports.updateUser = async (req, res) => {
 
 // Modifier avatar d'un utilisateur
 module.exports.updateAvatar = async (req, res) => {
-  await Utilisateur.findOne({ where: { id_user: req.params.id } })
+  await models.Utilisateur.findOne({ where: { id: req.params.id } })
     .then((userFound) => {
       // Verifie que l'utilisateur existe
       if (!userFound) return res.status(404).json({ error: "Utilisateur introuvable 🧐" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
-      if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
+      if (userFound.id == req.auth.userId || req.auth.isAdmin == 1) {
         // Nom du fichier a supprimer
         // let filename = userFound.avatar.split("/images/")[1];
         // console.log(filename);
         if (userFound.avatar == "default.png") {
           // Mettre à jour l'avatar en conservant img par default dans storage
-          Utilisateur.update(
+          models.Utilisateur.update(
             {
               // avatar: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
               avatar: req.file.filename,
             },
-            { where: { id_user: req.params.id } }
+            { where: { id: req.params.id } }
           );
           return res.status(200).json("Avatar mis à jour 😊");
         } else {
@@ -198,12 +201,12 @@ module.exports.updateAvatar = async (req, res) => {
           console.log("file a supprime", userFound.avatar);
           fs.unlink(`images/${userFound.avatar}/`, () => {
             // Mettre à jour l'avatar
-            Utilisateur.update(
+            models.Utilisateur.update(
               {
                 // avatar: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
                 avatar: req.file.filename,
               },
-              { where: { id_user: req.params.id } }
+              { where: { id: req.params.id } }
             );
             return res.status(200).json("Avatar mis à jour 😊");
           });
@@ -220,13 +223,13 @@ module.exports.updateAvatar = async (req, res) => {
 
 // Supprimer un utilisateur
 module.exports.deleteUser = async (req, res) => {
-  await Utilisateur.findOne({ where: { id_user: req.params.id } })
+  await models.Utilisateur.findOne({ where: { id: req.params.id } })
   .then(
     (userFound) => {
       // Verifie que l'utilisateur existe
       if (!userFound) return res.status(404).json({ error: "Utilisateur introuvable 🧐" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
-      if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
+      if (userFound.id == req.auth.userId || req.auth.isAdmin == 1) {
         // Nom du fichier a supprimer
         if (userFound.avatar !== "default.png") {
           // const filename = userFound.avatar.split("/images/")[1];
@@ -234,17 +237,17 @@ module.exports.deleteUser = async (req, res) => {
           // Supprimer avatar du dossier
           fs.unlink(`images/${filename}/`, () => {
             // Supprimer l'utilisateur de la BDD
-            Utilisateur.destroy({
+            models.Utilisateur.destroy({
               where: {
-                id_user: req.params.id,
+                id: req.params.id,
               },
             });
             res.status(201).json("Votre compte est supprimé 👋");
           });
         } else {
-          Utilisateur.destroy({
+          models.Utilisateur.destroy({
             where: {
-              id_user: req.params.id,
+              id: req.params.id,
             },
           });
           res.status(201).json("Votre compte est supprimé 👋");

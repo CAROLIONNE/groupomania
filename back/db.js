@@ -5,11 +5,11 @@ require("dotenv").config();
 const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(
-  "groupomania",
-  "root",
-  "root",
+  process.env.database,
+  process.env.user_sql,
+  process.env.password_sql,
   {
-    host: "localhost",
+    host: process.env.host_sql,
     dialect: "mysql",
   }
 );

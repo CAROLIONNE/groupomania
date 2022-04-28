@@ -1,41 +1,41 @@
 const db = require("../db.js");
-const { Sequelize, Model, DataTypes } = require("sequelize");
+const Sequelize = require('sequelize');
 
 const Utilisateur = db.define(
-  "utilisateur",
+  "utilisateurs",
   {
     mail: {
-      type: DataTypes.STRING(75),
+      type: Sequelize.STRING(75),
       allowNull: false,
     },
-    role: {
-      type: DataTypes.STRING(10),
-      defaultValue: "0",
+    isAdmin: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
       allowNull: false,
     },
     mot_psw: {
-      type: DataTypes.STRING(70),
+      type: Sequelize.STRING(70),
       allowNull: false,
     },
     temp_psw: {
-      type: DataTypes.BOOLEAN,
+      type: Sequelize.BOOLEAN,
       defaultValue: false,
       allowNull: false,
     },
     avatar: {
-      type: DataTypes.STRING(75),
+      type: Sequelize.STRING(75),
       defaultValue: "default.png",
       allowNull: false,
     },
     pseudonyme: {
-      type: DataTypes.STRING(30),
+      type: Sequelize.STRING(30),
       allowNull: false,
     },
     poste: {
-      type: DataTypes.STRING(25),
+      type: Sequelize.STRING(25),
     },
     bureau: {
-      type: DataTypes.STRING(15),
+      type: Sequelize.STRING(15),
     },
   }
 );

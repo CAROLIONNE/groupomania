@@ -1,9 +1,10 @@
-const Comment = require("../models/Comment");
+// const Comment = require("../models/Comment");
+const models = require("../models/index"); 
 
 // Afficher commentaires d'un article
 exports.ViewComment = async (req, res) => {
-  const commentFound = await Comment.findAll({
-    where: { id_article: req.params.id },
+  const commentFound = await models.Comment.findAll({
+    where: { articleId: req.params.id },
   })
   if (commentFound.length >= 1) {
     res.status(200).json( commentFound );
@@ -16,10 +17,9 @@ exports.ViewComment = async (req, res) => {
 // Créer un commentaire
 module.exports.createComment = async (req, res) => {
   try {
-  await Comment.create({
-    id_article: req.params.id,
-    id_user: req.auth.userId,
-    titre: req.body.titre,
+  await models.Comment.create({
+    articleId: req.params.id,
+    utilisateurId: req.auth.userId,
     text: req.body.text,
   });
   res.status(201).json("Commentaire créé 😉");
@@ -32,19 +32,19 @@ module.exports.createComment = async (req, res) => {
 // Modifier titre et/ou texte d'un commentaire
 module.exports.updateComment = async (req, res) => {
     // Verifie que l'id du commentaire existe
-  let com = await Comment.findOne({
-    where: { id_commentaire: req.params.id },
+  let com = await models.Comment.findOne({
+    where: { id: req.params.id },
   });
   if (!com) {
     return res.status(404).json({ err: "Commentaire introuvable 🧐" });
   }
   // Acces admin ou utilisateur qui a créer le post
-  if (req.auth.userId == com.id_user || req.auth.role == 1) {
+  if (req.auth.userId == com.utilisateurId || req.auth.isAdmin == 1) {
     // Mise à jour du commentaire
-    Comment.update(
-      { titre: req.body.titre, text: req.body.text, date_mod: new Date() },
+    models.Comment.update(
+      { text: req.body.text, updatedAt: new Date() },
       {
-        where: { id_commentaire: req.params.id },
+        where: { id: req.params.id },
       }
     );
     res.status(201).json("Commentaire mis à jour 😊");
@@ -56,21 +56,21 @@ module.exports.updateComment = async (req, res) => {
 // Suprimer un commentaire
 exports.deleteComment = async (req, res) => {
   // Verifie que l'id du commentaire existe
-  let com = await Comment.findOne({
-    where: { id_commentaire: req.params.id },
+  let com = await models.Comment.findOne({
+    where: { id: req.params.id },
   });
   if (!com) {
     return res.status(404).json({ err: "Commentaire introuvable 🧐" });
   }
   // Acces admin ou utilisateur qui a créer le post
-  if (req.auth.userId == com.id_user || req.auth.role == 1) {
+  if (req.auth.userId == com.utilisateurId || req.auth.isAdmin == 1) {
     // Supression
-    await Comment.destroy({
+    await models.Comment.destroy({
       where: {
-        id_commentaire: req.params.id,
+        id: req.params.id,
       },
     });
-    res.status(201).json("Comment deleted with success");
+    res.status(201).json("Commentaire supprimé 😊");
   } else {
     res.status(401).json("Requête non authorisée ⛔");
   }
