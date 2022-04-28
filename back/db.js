@@ -7,7 +7,7 @@ const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(
   "groupomania",
   "root",
-  "rootroot",
+  "root",
   {
     host: "localhost",
     dialect: "mysql",

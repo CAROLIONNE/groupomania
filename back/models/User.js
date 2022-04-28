@@ -22,16 +22,6 @@ const Utilisateur = db.define(
       defaultValue: false,
       allowNull: false,
     },
-    date_crea: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      allowNull: false,
-    },
-    date_mdp: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      allowNull: false,
-    },
     avatar: {
       type: DataTypes.STRING(75),
       defaultValue: "default.png",

@@ -31,10 +31,13 @@ exports.ViewArticle = async (req, res) => {
 
 // Créer un article
 module.exports.createArticle = async (req, res) => {
+  console.log('req.auth.userId => ', req.auth.userId);
+  console.log('body => ', req.body);
+  // TODO ERREUR ICI REQ.AUTH.USERID ne recupere pas l'id de l'utilisateur
   try {
     if (req.body.titre !== null && req.body.text !== null) {
       await models.Article.create({
-        id_user: req.auth.userId,
+        utilisateurId: req.auth.userId,
         titre: req.body.titre,
         text: req.body.text,
         media: req.file
