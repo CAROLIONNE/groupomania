@@ -52,7 +52,7 @@ module.exports.signup = async (req, res) => {
         userID: user.id_user,
         token: jwt.sign(
           { id_user: user.id_user, role: user.role },
-          process.env.SECRET,
+          "TEST",
           { expiresIn: "1h" }
           ),
         });
@@ -83,7 +83,7 @@ module.exports.login = async (req, res) => {
         userID: userFound.id_user,
         token: jwt.sign(
           { id_user: userFound.id_user, role: userFound.role },
-          process.env.SECRET,
+          "TEST",
           { expiresIn: "1h" }
         ),
       });

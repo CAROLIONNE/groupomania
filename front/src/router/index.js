@@ -6,8 +6,7 @@ import FilActu from '@/views/FilActu'
 import NewArticle from '@/views/NewArticle'
 import DisplayArticle from '@/views/DisplayArticle'
 import DisplayProfil from '@/views/DisplayProfil'
-import NotFound from '@/views/NotFound'
-import displayTest from '@/views/displayTest'
+import NotFound from '@/views/NotFound' 
 
 Vue.use(VueRouter)
 
@@ -41,12 +40,7 @@ const routes = [
     path: '/profil/:id',
     name: 'DisplayProfil',
     component: DisplayProfil
-  },    
-  {
-    path: '/test',
-    name: 'displayTest',
-    component: displayTest
-  },    
+  },     
   {
     path: '/*',
     name: 'NotFound',
