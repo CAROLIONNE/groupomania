@@ -3,7 +3,9 @@ const fs = require("fs");
 
 // Afficher tout les articles
 exports.viewAllArticles = (req, res, next) => {
-  models.Article.findAll({ order: [['createdAt', 'DESC']]})
+  models.Article.findAll({ 
+    include: [models.Utilisateur],
+    order: [['createdAt', 'DESC']]})
     .then((articles) => {
       if (!articles || articles.length === 0) {
         res.status(404).json({ error: "Aucun article pour le moment 🧐" });
@@ -21,7 +23,7 @@ exports.viewAllArticles = (req, res, next) => {
 exports.ViewArticle = async (req, res) => {
   const articleFound = await models.Article.findOne({
     where: { id: req.params.id }, 
-    include: [Utilisateur]
+    include: [models.Utilisateur]
   });
   if (articleFound) {
     res.status(200).json({ articleFound });
@@ -32,9 +34,6 @@ exports.ViewArticle = async (req, res) => {
 
 // Créer un article
 module.exports.createArticle = async (req, res) => {
-  console.log('req.auth.userId => ', req.auth.userId);
-  console.log('body => ', req.body);
-  // TODO ERREUR ICI REQ.AUTH.USERID ne recupere pas l'id de l'utilisateur
   try {
     if (req.body.titre !== null && req.body.text !== null) {
       await models.Article.create({
