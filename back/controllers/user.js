@@ -124,13 +124,12 @@ module.exports.updateUser = async (req, res) => {
       // Acces autorisé admin ou utilisateur qui a créer le compte
       if (userFound.id == req.auth.userId || req.auth.isAdmin == 1) {
         // Mettre a jour les infos utilisateurs dans la base de donnée
-        Utilisateur.update(
+        models.Utilisateur.update(
           {
             mail: req.body.mail,
             pseudonyme: req.body.pseudonyme,
             poste: req.body.poste,
             bureau: req.body.bureau,
-            // media:`${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
           },
           {
             where: {

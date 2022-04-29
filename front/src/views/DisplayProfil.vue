@@ -36,7 +36,7 @@
       <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
       <form
         id="update_avatar"
-        @submit.prevent="updateAvatar($event, userInfo.user_id)"
+        @submit.prevent="updateAvatar($event, userInfo.id)"
       >
         <fieldset>
           <legend><h2>Avatar</h2></legend>
@@ -48,7 +48,7 @@
               id="delete"
               type="submit"
               value="Supprimer"
-              v-on:click="deleteAvatar(userInfo.user_id)"
+              v-on:click="deleteAvatar(userInfo.id)"
             />
           </div>
         </fieldset>
@@ -219,7 +219,7 @@ export default {
   },
   computed: {
     timestamp: function () {
-      return moment(this.userInfo.date_crea).format("DD-MM-YYYY");
+      return moment(this.userInfo.createdAt).format("DD-MM-YYYY");
     },
   },
 };

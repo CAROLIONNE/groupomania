@@ -2,7 +2,6 @@
   <div>
     <h1>Créez votre publication ici</h1>
     <form id="new_article" method="post" enctype="multipart/form-data">
-      <!-- <h2>Titre</h2> -->
       <input
         type="text"
         name="titre"
@@ -47,7 +46,6 @@ export default {
     fileChange(e) {
       let files = e.target.files || e.dataTransfer.files;
       this.media = files[0];
-      console.log(this.media);
     },
     createArticle() {
       let user = JSON.parse(localStorage.getItem("user"));
@@ -56,7 +54,6 @@ export default {
       data.append("titre", this.titre);
       data.append("text", this.text);
       data.append("image", this.media);
-      console.log(data);
       if (this.titre.length >= 3 && this.text.length >= 3) {
         this.axios
           .post(`http://localhost:3000/api/article`, data, {
@@ -66,17 +63,16 @@ export default {
             },
           })
           .then((response) => {
-            console.log("requete ok", response.data);
+            alert(response.data)
             this.$router.push({ name: "FilActu" });
           })
           .catch((e) => {
-            console.log(data);
-            console.log("log erreur", e);
+            console.log("erreur", e);
             // console.log(e.response.config.data);
-            //  this.errors = e.response.data.error;
+             this.errors = e.response.data.error;
           });
       } else {
-        this.errors = "Fields incomplete min 3 characters";
+        this.errors = "Merçi de remplir tout les champs correctement 🙏";
       }
     },
   },

@@ -1,12 +1,12 @@
 <template>
-<button @click="addComment"> {{ nom }} </button>
+<button @click="show"> {{ name }} </button>
 
 </template>
 
 <script>
 export default {
   name: 'BtnWhite',
-  props: ['nom', 'show', 'addComment'],
+  props: ['name', 'show', 'addComment'],
 }
 </script>
 
