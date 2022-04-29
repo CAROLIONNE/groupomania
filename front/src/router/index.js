@@ -5,6 +5,7 @@ import InscriptionUser from '@/views/Inscription'
 import FilActu from '@/views/FilActu'
 import NewArticle from '@/views/NewArticle'
 import DisplayArticle from '@/views/DisplayArticle'
+import DisplayArticle2 from '@/views/DisplayArticle2'
 import DisplayProfil from '@/views/DisplayProfil'
 import NotFound from '@/views/NotFound' 
 
@@ -36,6 +37,11 @@ const routes = [
     name: 'DisplayArticle',
     component: DisplayArticle
   },    
+  {
+    path: '/articletest/:id',
+    name: 'DisplayArticle2',
+    component: DisplayArticle2
+  },
   {
     path: '/profil/:id',
     name: 'DisplayProfil',
