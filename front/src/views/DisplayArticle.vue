@@ -3,8 +3,7 @@
     <div id="container">
       <div id="article">
         <h1>{{ article.titre }}</h1>
-        <!-- TO DO afficher seulement si c'est l'utilisateur qui l'a crée -->
-        <div id="mod">
+        <div id="mod" v-if="article.utilisateurId == user.userID || user.isAdmin == 1">
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
@@ -32,17 +31,13 @@
         <img id="article_img" :src="article.media" v-if="article.media" />
         <p id="article_text">{{ article.text }}</p>
         <p id="article_author">
-          Créé par {{ article.id_user }}, le {{ timestamp2(article.date_crea) }}
+          Créé par {{ article.utilisateur.pseudonyme }}, le {{ timestamp2(article.createdAt) }}
         </p>
         <div id="btn">
-          <!-- <button id="btn_new_com" @click="displayNewComment()">
-            Commenter
-          </button> -->
           <BtnWhite
             id="btn_new_com"
-            nom="Commenter"
-            :addComment="displayNewComment"
-            :show="click"
+            name="Commenter"
+            :show="displayNewComment"
           />
           <button
             id="btn_coms"
@@ -52,25 +47,22 @@
             Commentaire<span v-if="commentaires.length > 1">s</span> ({{commentaires.length}})
           </button>
           <p v-else>Soyez le premier a commenter</p>
-          <BtnWhite
+          <!-- <BtnWhite
             id="btn_coms"
-            v-on:click="displayComment()"
+            :show="displayComment()"
             v-if="commentaires"
-            nom="Commentaire"
-          />
+            name="Commentaire"
+          /> -->
         </div>
         <div class="new_com" v-if="click">
-          <h2>Titre :</h2>
-          <input type="text" class="com_title" v-model="commentaire.titre" />
           <h2>Texte :</h2>
           <textarea
             id="com_text"
-            v-model="commentaire.text"
+            v-model="commentaire"
             name="text"
             rows="2"
             cols="33"
           >
-          Ecrivez votre commentaire ici
           </textarea>
           <input
             type="submit"
@@ -88,22 +80,9 @@
           <div
             id="display_com"
             v-for="(com, index) in commentaires"
-            :key="com.id_commentaire"
+            :key="com.id"
           >
-            <i
-              id="btn_delete-com"
-              class="fa-solid fa-trash-can"
-              @click="deleteCom(index)"
-            ></i>
-            <h2 id="com_titre">{{ com.titre }}</h2>
-            <div id="com_text">{{ com.text }}</div>
-            <p id="com_date">
-              {{ timestamp(com.date_crea) }} - {{ com.id_user }}
-            </p>
-            <!-- TO DO recupérer pseudonyme avec ID findUser()-->
-            <p class="error" v-if="errors">
-              {{ errors }}
-            </p>
+           <BaseCommentaire :commentaire="com" :index="index" :getComment="getComment"/>
             <Modale :show="show" :toggleModale="toggleModale"/>
           </div>
         </div>
@@ -116,19 +95,17 @@
 import moment from "moment";
 import BtnWhite from "../components/BtnWhite.vue";
 import Modale from "../components/ModaleBox.vue";
+import BaseCommentaire from "../components/BaseCommentaire.vue";
 
 export default {
   name: "DisplayArticle",
-  components: { BtnWhite, Modale },
+  components: { BtnWhite, Modale, BaseCommentaire },
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
-      article: null,
+      article: {},
       commentaires: "",
-      commentaire: {
-        titre: "",
-        text: "",
-      },
+      commentaire: "",
       errors: null,
       valid: null,
       click: false,
@@ -136,24 +113,14 @@ export default {
       displayCom: false,
       media: "",
       show: false,
-      message: null
+      message: null,
+      user: {},
     };
-  },
-  // watch: {
-  //   commentaire: function (val){
-  //     console.log(val);
-  //   }
-  // },
-  computed: {
-    findUser() {
-      // creer requete avec l id user et recupère le pseudo
-      console.log("find");
-      return true;
-    },
   },
   created() {
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
+    this.user = user;
     // Récupération des données de l'article
     this.axios
       .get(`http://localhost:3000/api/article/${this.$route.params.id}`, {
@@ -162,7 +129,7 @@ export default {
         },
       })
       .then((article) => {
-        (this.article= article.data.articleFound)
+        (this.article = article.data.articleFound)
       })
       .catch((e) => {
         this.errors = e;
@@ -184,7 +151,7 @@ export default {
   },
 
   methods: {
-      toggleModale() {
+    toggleModale() {
       this.show = !this.show
     },
     displayComment() {
@@ -247,7 +214,8 @@ export default {
           },
         })
         .then((res) => {
-          // TODO actualiser img
+          // TODO MODALE 
+          this.showUpdate = false;
           alert(res.data);
           this.getArticle()
           
@@ -283,16 +251,12 @@ export default {
     createCommentaire() {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      if (
-        this.commentaire.titre.length >= 3 &&
-        this.commentaire.text.length >= 3
-      ) {
+      if ( this.commentaire.length >= 3) {
         this.axios
           .post(
             `http://localhost:3000/api/comment/${this.$route.params.id}`,
             {
-              titre: this.commentaire.titre,
-              text: this.commentaire.text,
+              text: this.commentaire,
             },
             {
               headers: {
@@ -301,6 +265,8 @@ export default {
             }
           )
           .then((response) => {
+            // TODO Ajouter modale et refresh ne fonctionne pas
+            this.commentaire= "";
             this.click = false;
             this.getComment();
             alert(response.data);
@@ -313,46 +279,49 @@ export default {
         this.errors = "Fields incomplete min 3 characters";
       }
     },
-    deleteCom(index) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
-      let $id = this.commentaires[index].id_commentaire;
-      const valid = confirm("Voulez vous supprimer ce commentaire ?");
-      if (valid) {
-        this.axios
-          .delete(`http://localhost:3000/api/comment/${$id}`, {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          })
-          .then((response) => {
-            // alert(response.data);
-          this.message = response.data
-          this.toggleModale()
-          this.getComment();
-          })
-          .catch((e) => {
-            console.log("log erreur delete", e);
-            alert(e.response.data);
-            // console.log(e.response.config.data);
-          });
-      }
-    },
+    // deleteCom(index) {
+    //   let user = JSON.parse(localStorage.getItem("user"));
+    //   let token = user.token;
+    //   let $id = this.commentaires[index].id_commentaire;
+    //   const valid = confirm("Voulez vous supprimer ce commentaire ?");
+    //   if (valid) {
+    //     this.axios
+    //       .delete(`http://localhost:3000/api/comment/${$id}`, {
+    //         headers: {
+    //           Authorization: "Bearer " + token,
+    //         },
+    //       })
+    //       .then((response) => {
+    //         // alert(response.data);
+    //       this.message = response.data
+    //       this.toggleModale()
+    //       this.getComment();
+    //       })
+    //       .catch((e) => {
+    //         console.log("log erreur delete", e);
+    //         alert(e.response.data);
+    //         // console.log(e.response.config.data);
+    //       });
+    //   }
+    // },
   },
 };
 </script>
 
 <style scoped>
 #article {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 1em;
   border: 1px solid black;
-  margin: 3em;
+  margin-top: 3em;
   margin-bottom: 6em;
-  border-radius: 4em;
+  border-radius: 2em;
   box-shadow: 0.3em 0.3em 8px #a8a7a7;
   background: rgb(144, 140, 153);
   background: linear-gradient(
@@ -410,13 +379,12 @@ img {
   margin: 0.5em;
   margin-left: auto;
   margin-right: auto;
-  /* border: antiquewhite 2px solid; */
   border: 2px solid #a7a7a7;
-
-  border-radius: 2em;
-  width: 65%;
+  border-radius: 1em;
+  width: 80%;
+  background: whitesmoke;
 }
-#com_titre,
+
 #com_text,
 #com_date {
   padding: 0.2em;
