@@ -1,12 +1,16 @@
 <template>
   <div>
-    <router-link id="ancre_article" :to="{ name: 'DisplayArticle', params: { id: article.id_article }}"><h2>{{ article.titre }}</h2>
+    <router-link id="ancre_article" :to="{ name: 'DisplayArticle', params: { id: article.id }}"><h2>{{ article.titre }}</h2>
     </router-link>
     <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
+
     <!-- TO DO afficher UpdateArticle.vue si c'est l'utilisateur qui l'a créer -->
+    <UpdateArticle :article='article'/>
+
+
     <img id="article_img" :src="article.media" v-if="article.media"/>
     <p id="article_text">{{ article.text }}</p>
-    <p id="article_author">Créé par {{ article.id_user }} le {{ timestamp2(article.date_crea) }} <span v-if="article.date_crea != article.date_mod">, Modifié le {{ timestamp2(article.date_mod) }}</span> </p>
+    <p id="article_author">Créé par {{ article.utilisateur.pseudonyme }}, le {{ timestamp2(article.createdAt) }} <span v-if="article.createdAt != article.updatedAt">, Modifié le {{ timestamp2(article.updatedAt) }}</span> </p>
     <div id="btn">
           <button id="btn_new_com" @click="displayNewComment()">
             Commenter
@@ -14,14 +18,12 @@
           <button
             id="btn_coms"
             v-if="commentaires"
-            v-on:click="displayCommentaires(index)"
-          >Commentaire<span v-if="commentaires.length >1">s</span> ({{commentaires.length}})
+            v-on:click="displayCommentaires(article.id)"
+          >Commentaire<span v-if="commentaires.length >1">s</span> ({{ commentaires.length }})
           </button>
           <p v-else>Soyez le premier a commenter</p>
         </div>
     <div class="new_com" v-if="click">
-          <h2>Titre :</h2>
-          <input type="text" class="com_title" v-model="commentaire.titre" />
           <h2>Texte :</h2>
           <textarea
             id="com_text"
@@ -30,7 +32,6 @@
             rows="2"
             cols="33"
           >
-          Ecrivez votre commentaire ici
           </textarea>
           <input
             type="submit"
@@ -43,27 +44,13 @@
             {{ errors }}
           </p>
         </div>
-
-    <div id="container_comments" v-if="displayCom">
+    <div id="container_comments" v-if="displayCom" >
           <div
             id="display_com"
             v-for="(com, index) in commentaires"
-            :key="com.id_commentaire"
+            :key="com.id"
           >
-            <i
-              id="btn_delete-com"
-              class="fa-solid fa-trash-can"
-              @click="deleteCom(index)"
-            ></i>
-            <h2 id="com_titre">{{ com.titre }}</h2>
-            <div id="com_text">{{ com.text }}</div>
-            <p id="com_date">
-              {{ timestamp(com.date_crea) }} - {{ com.id_user }}
-            </p>
-            <!-- TO DO recupérer pseudonyme avec ID findUser() -->
-            <p class="error" v-if="errors">
-              {{ errors }}
-            </p>
+          <BaseCommentaire :commentaire="com" :index="index" :getComment="displayCommentaires"/>
           </div>
         </div>
         
@@ -73,9 +60,12 @@
 <script>
 import moment from "moment";
 import Modale from "./ModaleBox.vue";
+import BaseCommentaire from "../components/BaseCommentaire.vue";
+import UpdateArticle from "../components/UpdateArticle.vue";
+
 export default {
   name: "BaseArticle",
-  components: { Modale },
+  components: { Modale, BaseCommentaire, UpdateArticle },
   props: {
     article : {
       type: Object,
@@ -83,15 +73,14 @@ export default {
     index : {
       type: Number,
     },
-    // commentaire : {
-    //   type: Object,
-    // }
+    coms : {
+      type: Object,
+    }
   },
   data() {
     return {
       commentaires: "",
       commentaire: {
-        titre: "",
         text: "",
       },
       errors: null,
@@ -105,9 +94,10 @@ export default {
     };
   },
   mounted() {
+    // Recupération des commentaires
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      let idArticle = this.article.id_article;
+      let idArticle = this.article.id;
       this.axios
         .get(`http://localhost:3000/api/comment/${idArticle}`, {
           headers: {
@@ -125,7 +115,7 @@ export default {
   },
   methods: {
     toggleModale() {
-      this.show = !this.show
+      this.show = !this.show;
     },
     timestamp(date) {
       return moment(date, "YYYYMMDD").fromNow();
@@ -134,41 +124,37 @@ export default {
       return moment(date).format("DD-MM-YYYY");
     },
     displayNewComment() {
-      this.click = true;
+      this.click = !this.click;
     },
     // Afficher les commentaires d'un article
-    displayCommentaires() {
-      this.displayCom = true;
+    displayCommentaires(id) {
+      this.displayCom = !this.displayCom;
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      let idArticle = this.article.id_article;
+      // let idArticle = this.article.id_article;
       this.axios
-        .get(`http://localhost:3000/api/comment/${idArticle}`, {
+        .get(`http://localhost:3000/api/comment/${id}`, {
           headers: {
             Authorization: "Bearer " + token,
           },
         })
         .then((foundCommentaires) => {
             this.commentaires = foundCommentaires.data;
-            console.log("commentaires", this.commentaires);
-            // if (this.commentaires.length = 0) {console.log("youhou")}
-            // console.log(this.commentaires.length)
+            console.log("in");
         })
         .catch((e) => {
           console.log(e.response.data.error);
           // this.errors = e.response.data.error;
-          console.log(this.commentaires.length)
-          console.log(this.commentaires)
         });
     },
     createCommentaire() {
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
+    if (this.commentaire.text.length >= 3) {
       this.axios
         .post(
-          `http://localhost:3000/api/comment/${this.article.id_article}`,
+          `http://localhost:3000/api/comment/${this.article.id}`,
           {
-            titre: this.commentaire.titre,
             text: this.commentaire.text,
           },
           {
@@ -178,19 +164,21 @@ export default {
           }
         )
         .then((response) => {
-          
           this.click = false;
           this.commentaire= ""
           this.message = response.data 
           this.toggleModale()
-          this.displayCommentaires()
+          this.displayCommentaires(this.article.id)
         })
         .catch((e) => {
-          console.log(e);
           this.errors = e;
         });
+        } else {
+          this.message = "3 caractères minimum 🙏" 
+          this.toggleModale()
+          this.displayCommentaires()
+      }
     },
-
     deleteCom(index) {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
@@ -204,17 +192,15 @@ export default {
             },
           })
           .then((response) => {
-            console.log(response);
-            this.displayCommentaires();
-            // this.commentaires.splice()
-            console.log(this.commentaires);
-            console.log(this.commentaires.length);
+          this.message = response.data 
+          this.toggleModale()
+          this.displayCommentaires();
             // if(this.commentaires.length == 0) { this.displayCom = false}
-            alert(response.data);
           })
           .catch((e) => {
-            console.log("log erreur delete", e.response);
-            alert(e.response.data);
+          this.message = e.response.data
+          this.toggleModale()
+          console.log("log erreur delete", e.response);
           });
       }
     },
@@ -279,13 +265,11 @@ img {
   margin: 0.5em;
   margin-left: auto;
   margin-right: auto;
-  /* border: antiquewhite 2px solid; */
   border: 2px solid #a7a7a7;
-
-  border-radius: 2em;
-  width: 65%;
+  border-radius: 1em;
+  width: 80%;
+  background: whitesmoke;
 }
-#com_titre,
 #com_text,
 #com_date {
   padding: 0.2em;
