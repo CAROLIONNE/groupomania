@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="com_text">{{ commentaire.text }}</div>
-    <p id="com_date">Posté il y a {{ timestamp(commentaire.createdAt) }} par {{ getUser(commentaire.utilisateurId) }} {{ author }} <span v-if="commentaire.createdAt != commentaire.updatedAt">- Modifié le {{ timestamp2(commentaire.updatedAt) }} </span>
+    <p id="com_date">Posté le {{ timestamp2(commentaire.createdAt) }} par {{ getUser(commentaire.utilisateurId) }} {{ author }} <span v-if="commentaire.createdAt != commentaire.updatedAt">- Modifié le {{ timestamp2(commentaire.updatedAt) }} </span>
     </p>    
     <i
       id="btn_delete-com"
@@ -24,7 +24,10 @@
 
 <script>
 import moment from "moment";
+// moment().tz("Europe/Paris").format();
 import Modale from "./ModaleBox.vue";
+var serverTime = moment().utcOffset(-2);
+
 export default {
   name: "BaseCommentaire",
   components: {Modale},
@@ -54,7 +57,9 @@ export default {
   },
   methods: {
     timestamp(date) {
-      return moment(date, "YYYYMMDD").fromNow();
+      // return moment(date, "YYYYMMDD").fromNow();
+      console.log(date);
+      return moment(date, "YYYYMMDD").from("2022-05-01 17:31:15");
     },
     timestamp2(date) {
       return moment(date).format("DD-MM-YYYY");
@@ -100,7 +105,7 @@ export default {
             this.commentaireUpdate = ""
             this.message = response.data
             this.toggleModale()
-            // refresh ne fonctionne pas
+            // refresh ne fonctionne pas pour displayArticle
             this.getComment(idArticle);
           })
           .catch((e) => {

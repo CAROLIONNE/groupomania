@@ -53,7 +53,7 @@ module.exports.signup = async (req, res) => {
         userID: user.id,
         token: jwt.sign(
           { id: user.id, isAdmin: user.isAdmin },
-          "TEST",
+          process.env.SECRET,
           { expiresIn: "1h" }
           ),
         });
@@ -85,7 +85,6 @@ module.exports.login = async (req, res) => {
         userID: userFound.id,
         token: jwt.sign(
           { id: userFound.id, isAdmin: userFound.isAdmin },
-          // "TEST",
           process.env.SECRET,
           { expiresIn: "1h" }
         ),
@@ -182,11 +181,8 @@ module.exports.updateAvatar = async (req, res) => {
       if (!userFound) return res.status(404).json({ error: "Utilisateur introuvable 🧐" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
       if (userFound.id == req.auth.userId || req.auth.isAdmin == 1) {
-        // Nom du fichier a supprimer
-        // let filename = userFound.avatar.split("/images/")[1];
-        // console.log(filename);
         if (userFound.avatar == "default.png") {
-          // Mettre à jour l'avatar en conservant img par default dans storage
+          // Mettre à jour l'avatar en conservant img par default dans stockage serveur
           models.Utilisateur.update(
             {
               // avatar: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
@@ -197,7 +193,6 @@ module.exports.updateAvatar = async (req, res) => {
           return res.status(200).json("Avatar mis à jour 😊");
         } else {
           // Supprimer image du dossier
-          console.log("file a supprime", userFound.avatar);
           fs.unlink(`images/${userFound.avatar}/`, () => {
             // Mettre à jour l'avatar
             models.Utilisateur.update(
@@ -218,7 +213,6 @@ module.exports.updateAvatar = async (req, res) => {
       console.log(err);
     });
 };
-
 
 // Supprimer un utilisateur
 module.exports.deleteUser = async (req, res) => {
@@ -258,5 +252,9 @@ module.exports.deleteUser = async (req, res) => {
   ).catch(function(e) {
     console.error(e);
   })
+};
 
+module.exports.authentificate = (req, res, next) => {
+  console.log("verification token")
+  res.status(200).json({ message: "token valide !" })
 };

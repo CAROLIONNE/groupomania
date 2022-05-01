@@ -28,8 +28,6 @@ export default {
     return {
       articles: null,
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
-      errors: null,
-      valid: null,
       show: false,
     };
   },
@@ -48,7 +46,6 @@ export default {
       })
       .catch((e) => {
         console.log(e);
-        this.errors = e;
       });
   },
   methods: {
@@ -86,7 +83,7 @@ h2 {
   padding: 1em;
   border: 1px solid black;
   margin-bottom: 3em;
-  border-radius: 20px;
+  border-radius: 2em;
   box-shadow: 0.3em 0.3em 8px #a8a7a7;
   background: rgb(144, 140, 153);
   background: linear-gradient(
@@ -108,10 +105,6 @@ h2 {
 
 .error {
   color: red;
-  padding: 0.5em;
-}
-.valid {
-  color: #003ba2;
   padding: 0.5em;
 }
 </style>

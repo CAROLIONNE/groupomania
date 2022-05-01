@@ -3,7 +3,7 @@
       <h1>{{ intro }}</h1>
     <div id="container">
       <div id="article">
-        <BaseArticle :article="article" />
+        <BaseArticle :article="article"/>
       </div>
     </div>
   </div>
@@ -18,12 +18,12 @@ export default {
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
-      article: null,
-      commentaires: "",
+      article: {},
+      commentaires: {},
       message: null
     };
   },
-  created() {
+  mounted() {
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
     // let $id = this.$route.params.id;
@@ -36,6 +36,7 @@ export default {
       })
       .then((article) => {
         (this.article= article.data.articleFound)
+        console.log("article fetch");
       })
       .catch((e) => {
         this.errors = e;

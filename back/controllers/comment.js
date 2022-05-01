@@ -6,7 +6,7 @@ exports.ViewComment = async (req, res) => {
   const commentFound = await models.Comment.findAll({
     where: { articleId: req.params.id },
   })
-  if (commentFound.length >= 1) {
+  if (commentFound.length > 0) {
     res.status(200).json( commentFound );
   } else {
     console.log("0 commentaire trouvé")
