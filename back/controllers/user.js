@@ -50,12 +50,7 @@ module.exports.signup = async (req, res) => {
       return res.status(201).json({
         // Creation du token et envoi coté client
         pseudo: user.pseudonyme,
-<<<<<<< HEAD
-        userID: user.id_user,
-        role: user.role,
-=======
         userID: user.id,
->>>>>>> feat/sequelize
         token: jwt.sign(
           { id: user.id, isAdmin: user.isAdmin },
           process.env.SECRET,
@@ -258,12 +253,6 @@ module.exports.deleteUser = async (req, res) => {
   ).catch(function(e) {
     console.error(e);
   })
-<<<<<<< HEAD
-};
-module.exports.authentificate = (req, res, next) => {
-  res.status(200).json({ message: "token valide !" })
-=======
->>>>>>> feat/sequelize
 };
 
 module.exports.authentificate = (req, res, next) => {

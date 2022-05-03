@@ -40,14 +40,4 @@ const Utilisateur = db.define(
   }
 );
 
-<<<<<<< HEAD
-Utilisateur.associate = (models)=> {
-    // Utilisateur.hasMany(models.Comment, {onDelete: 'cascade'});
-    // Utilisateur.hasMany(models.Article, {onDelete: 'cascade'});
-    Utilisateur.hasMany(models.Comment, {foreignKey: 'id_user', onDelete: 'cascade'});
-    Utilisateur.hasMany(models.Article, {foreignKey: 'id_article', onDelete: 'cascade'});
-  }
-
-=======
->>>>>>> feat/sequelize
 module.exports = Utilisateur;

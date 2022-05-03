@@ -21,20 +21,6 @@ const Article = db.define(
     },
   }
 );
-<<<<<<< HEAD
-Article.associate = (models) => {
-  Article.hasMany(models.Comment, {
-    foreignKey: 'id_article', onDelete: "cascade",
-  });
-  Article.belongsTo(models.Utilisateur, {
-   foreignKey: 'id_user',onDelete: "cascade",
-  });
-  Article.belongsTo(models.Utilisateur, {
-    foreignKey: 'id_user',onDelete: "cascade",
-  });
-};
-=======
->>>>>>> feat/sequelize
 
 
 module.exports = Article;

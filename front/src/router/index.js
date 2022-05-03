@@ -7,13 +7,9 @@ import NewArticle from '@/views/NewArticle'
 import DisplayArticle from '@/views/DisplayArticle'
 import DisplayArticle2 from '@/views/DisplayArticle2'
 import DisplayProfil from '@/views/DisplayProfil'
-<<<<<<< HEAD
 import NotFound from '@/views/NotFound'
 
 
-=======
-import NotFound from '@/views/NotFound' 
->>>>>>> feat/sequelize
 
 Vue.use(VueRouter)
 
@@ -90,21 +86,13 @@ const routes = [
     path: '/articletest/:id',
     name: 'DisplayArticle2',
     component: DisplayArticle2
-<<<<<<< HEAD
-  },    
-=======
   },
->>>>>>> feat/sequelize
   {
     path: '/profil/:id',
     name: 'DisplayProfil',
     beforeEnter : isAuthenticated, 
-    component: DisplayProfil
-<<<<<<< HEAD
-  },      
-=======
+    component: DisplayProfil  
   },     
->>>>>>> feat/sequelize
   {
     path: '/*',
     name: 'NotFound',

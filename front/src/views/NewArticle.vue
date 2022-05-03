@@ -91,22 +91,14 @@ export default {
             },
           })
           .then((response) => {
-<<<<<<< HEAD
-            alert(response.data)
-=======
             // modale ne fonctionne pas
             // alert(response.data)
             this.message = response.data
             this.toggleModale()
->>>>>>> feat/sequelize
             this.$router.push({ name: "FilActu" });
           })
           .catch((e) => {
             console.log("erreur", e);
-<<<<<<< HEAD
-            // console.log(e.response.config.data);
-=======
->>>>>>> feat/sequelize
              this.errors = e.response.data.error;
           });
       } else {

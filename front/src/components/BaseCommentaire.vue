@@ -1,38 +1,21 @@
 <template>
   <div>
     <div id="com_text">{{ commentaire.text }}</div>
-<<<<<<< HEAD
-    <p id="com_date">Posté il y a {{ timestamp(commentaire.date_crea) }} par {{ getUser(commentaire.id_user) }} {{ author }} <span v-if="commentaire.date_crea != commentaire.date_mod">, Modifié le {{ timestamp2(commentaire.date_mod) }} </span>
-    </p>
-        
-            <i
-      id="btn_delete-com"
-      class="fa-solid fa-trash-can"
-      @click="deleteCom(commentaire.id_commentaire, commentaire.id_article)"
-=======
     <p id="com_date">Posté le {{ timestamp2(commentaire.createdAt) }} par {{ getUser(commentaire.utilisateurId) }} {{ author }} <span v-if="commentaire.createdAt != commentaire.updatedAt">- Modifié le {{ timestamp2(commentaire.updatedAt) }} </span>
     </p>    
     <i
       id="btn_delete-com"
       class="fa-solid fa-trash-can"
       @click="deleteCom(commentaire.id, commentaire.articleId)"
->>>>>>> feat/sequelize
     ></i>
     <i id="btn_update-com" class="fa-solid fa-pencil" @click="showUp()"></i>
     <form
       id="update_com"
       v-if="showUpdateCom"
-<<<<<<< HEAD
-      @submit.prevent="updateCom(commentaire.id_commentaire, commentaire.id_article)"
-    >
-      <label for="text">Texte : </label>
-      <input type="text" v-model.trim="commentaireUpdate.text" name="text" /><br/>
-=======
       @submit.prevent="updateCom(commentaire.id, commentaire.articleId)"
     >
       <label for="text">Texte : </label>
       <input type="text" v-model.trim="commentaireUpdate" name="text" /><br/>
->>>>>>> feat/sequelize
       <input type="submit" value="Envoyer" />
     </form>
     <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
@@ -42,10 +25,6 @@
 <script>
 import moment from "moment";
 import Modale from "./ModaleBox.vue";
-<<<<<<< HEAD
-=======
-
->>>>>>> feat/sequelize
 export default {
   name: "BaseCommentaire",
   components: {Modale},
@@ -68,24 +47,16 @@ export default {
         displayCom: false,
         showUpdateCom: false,
         show: false,
-<<<<<<< HEAD
-        commentaireUpdate: {},
-=======
         commentaireUpdate: "",
->>>>>>> feat/sequelize
         message: null,
         author: "",
       }
   },
   methods: {
     timestamp(date) {
-<<<<<<< HEAD
-      return moment(date, "YYYYMMDD").fromNow();
-=======
       // return moment(date, "YYYYMMDD").fromNow();
       console.log(date);
       return moment(date, "YYYYMMDD").from("2022-05-01 17:31:15");
->>>>>>> feat/sequelize
     },
     timestamp2(date) {
       return moment(date).format("DD-MM-YYYY");
@@ -114,21 +85,13 @@ export default {
           // this.errors = e.response.data.error;
         })
   },
-<<<<<<< HEAD
-    updateCom(id, id_article) {
-=======
     updateCom(id, idArticle) {
->>>>>>> feat/sequelize
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
         this.axios
           .put(`http://localhost:3000/api/comment/${id}`,
           {
-<<<<<<< HEAD
-            text : this.commentaireUpdate.text
-=======
             text : this.commentaireUpdate
->>>>>>> feat/sequelize
           }
           , {
             headers: {
@@ -136,17 +99,11 @@ export default {
             },
           })
           .then((response) => {
-<<<<<<< HEAD
-            this.message = response.data
-            this.toggleModale()
-            this.getComment(id_article);
-=======
             this.commentaireUpdate = ""
             this.message = response.data
             this.toggleModale()
             // refresh ne fonctionne pas pour displayArticle
             this.getComment(idArticle);
->>>>>>> feat/sequelize
           })
           .catch((e) => {
             console.log("log erreur update", e);
@@ -155,11 +112,7 @@ export default {
           });
       
     },
-<<<<<<< HEAD
-    deleteCom(id, id_article) {
-=======
     deleteCom(id, idArticle) {
->>>>>>> feat/sequelize
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
       const valid = confirm("Voulez vous supprimer ce commentaire ?");
@@ -171,16 +124,9 @@ export default {
             },
           })
           .then((response) => {
-<<<<<<< HEAD
-            alert(response.data);
-          this.message = response.data
-          this.toggleModale()
-          this.getComment(id_article);
-=======
           this.message = response.data
           this.toggleModale()
           this.getComment(idArticle);
->>>>>>> feat/sequelize
           })
           .catch((e) => {
             console.log("log erreur delete", e);

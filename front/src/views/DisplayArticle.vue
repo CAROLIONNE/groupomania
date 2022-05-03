@@ -3,11 +3,7 @@
     <div id="container">
       <div id="article">
         <h1>{{ article.titre }}</h1>
-<<<<<<< HEAD
-        <div id="mod" v-if="article.id_user == user.userID || user.role == 1">
-=======
         <div id="mod" v-if="article.utilisateurId == user.userID || user.isAdmin == 1">
->>>>>>> feat/sequelize
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
@@ -87,21 +83,6 @@
             :key="com.id"
           >
            <BaseCommentaire :commentaire="com" :index="index" :getComment="getComment"/>
-<<<<<<< HEAD
-            <!-- <i
-              id="btn_delete-com"
-              class="fa-solid fa-trash-can"
-              @click="deleteCom(index)"
-            ></i>
-            <div id="com_text">{{ com.text }}</div>
-            <p id="com_date">
-              {{ timestamp(com.date_crea) }} - {{ com.id_user }}
-            </p>
-            <p class="error" v-if="errors">
-              {{ errors }}
-            </p> -->
-=======
->>>>>>> feat/sequelize
             <Modale :show="show" :toggleModale="toggleModale"/>
           </div>
         </div>
@@ -136,23 +117,7 @@ export default {
       user: {},
     };
   },
-<<<<<<< HEAD
-  // watch: {
-  //   commentaire: function (val){
-  //     console.log(val);
-  //   }
-  // },
-  computed: {
-    findUser() {
-      // creer requete avec l id user et recupère le pseudo
-      console.log("find");
-      return true;
-    },
-  },
-  mounted() {
-=======
   created() {
->>>>>>> feat/sequelize
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
     this.user = user;
@@ -249,11 +214,8 @@ export default {
           },
         })
         .then((res) => {
-<<<<<<< HEAD
-=======
           // TODO MODALE 
           this.showUpdate = false;
->>>>>>> feat/sequelize
           alert(res.data);
           this.getArticle()
           
@@ -303,11 +265,7 @@ export default {
             }
           )
           .then((response) => {
-<<<<<<< HEAD
-            // TODO Ajouter modale
-=======
             // TODO Ajouter modale et refresh ne fonctionne pas
->>>>>>> feat/sequelize
             this.commentaire= "";
             this.click = false;
             this.getComment();

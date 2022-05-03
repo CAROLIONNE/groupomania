@@ -21,19 +21,9 @@ exports.viewAllArticles = (req, res, next) => {
 
 // Afficher un article
 exports.ViewArticle = async (req, res) => {
-<<<<<<< HEAD
-  const articleFound = await Article.findOne({
-    where: { id_article: req.params.id }, 
-    // include: [Utilisateur]
-  //   include: {
-  //     model: Utilisateur,
-  //     attributes:['pseudonyme']
-  // }
-=======
   const articleFound = await models.Article.findOne({
     where: { id: req.params.id }, 
     include: [models.Utilisateur]
->>>>>>> feat/sequelize
   });
   if (articleFound) {
     res.status(200).json({ articleFound });

@@ -10,11 +10,7 @@
 
     <img id="article_img" :src="article.media" v-if="article.media"/>
     <p id="article_text">{{ article.text }}</p>
-<<<<<<< HEAD
-    <p id="article_author">Créé par {{ author }} le {{ timestamp2(article.date_crea) }} <span v-if="article.date_crea != article.date_mod">, Modifié le {{ timestamp2(article.date_mod) }}</span> </p>
-=======
     <p id="article_author">Créé par {{ article.utilisateur.pseudonyme }}, le {{ timestamp2(article.createdAt) }} <span v-if="article.createdAt != article.updatedAt">, Modifié le {{ timestamp2(article.updatedAt) }}</span> </p>
->>>>>>> feat/sequelize
     <div id="btn">
           <button id="btn_new_com" @click="displayNewComment()">
             Commenter
@@ -22,13 +18,8 @@
           <button
             id="btn_coms"
             v-if="commentaires"
-<<<<<<< HEAD
-            v-on:click="displayCommentaires(article.id_article)"
-          >Commentaire<span v-if="commentaires.length >1">s</span> ({{commentaires.length}})
-=======
             v-on:click="displayCommentaires(article.id)"
           >Commentaire<span v-if="commentaires.length >1">s</span> ({{ commentaires.length }})
->>>>>>> feat/sequelize
           </button>
           <p v-else>Soyez le premier a commenter</p>
         </div>
@@ -60,21 +51,6 @@
             :key="com.id"
           >
           <BaseCommentaire :commentaire="com" :index="index" :getComment="displayCommentaires"/>
-<<<<<<< HEAD
-            <!-- <i
-              id="btn_delete-com"
-              class="fa-solid fa-trash-can"
-              @click="deleteCom(index)"
-            ></i>
-            <div id="com_text">{{ com.text }}</div>
-            <p id="com_date">
-              {{ timestamp(com.date_crea) }} - {{ com.id_user }}
-            </p>
-            <p class="error" v-if="errors">
-              {{ errors }}
-            </p> -->
-=======
->>>>>>> feat/sequelize
           </div>
         </div>
         
@@ -85,18 +61,11 @@
 import moment from "moment";
 import Modale from "./ModaleBox.vue";
 import BaseCommentaire from "../components/BaseCommentaire.vue";
-<<<<<<< HEAD
-
-export default {
-  name: "BaseArticle",
-  components: { Modale, BaseCommentaire },
-=======
 import UpdateArticle from "../components/UpdateArticle.vue";
 
 export default {
   name: "BaseArticle",
   components: { Modale, BaseCommentaire, UpdateArticle },
->>>>>>> feat/sequelize
   props: {
     article : {
       type: Object,
@@ -189,10 +158,7 @@ export default {
         })
         .then((foundCommentaires) => {
             this.commentaires = foundCommentaires.data;
-<<<<<<< HEAD
-=======
             console.log("in");
->>>>>>> feat/sequelize
         })
         .catch((e) => {
           console.log(e.response.data.error);
@@ -226,11 +192,7 @@ export default {
           this.errors = e;
         });
         } else {
-<<<<<<< HEAD
-          this.message = "Merçi de remplir tout les champs correctement 🙏" 
-=======
           this.message = "3 caractères minimum 🙏" 
->>>>>>> feat/sequelize
           this.toggleModale()
           this.displayCommentaires()
       }
@@ -323,11 +285,7 @@ img {
   margin-right: auto;
   border: 2px solid #a7a7a7;
   border-radius: 1em;
-<<<<<<< HEAD
-  max-width: 80%;
-=======
   width: 80%;
->>>>>>> feat/sequelize
   background: whitesmoke;
 }
 #com_text,
