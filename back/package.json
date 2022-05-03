@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/CAROLIONNE/groupomania#readme",
   "dependencies": {
+    "@tinymce/tinymce-vue": "^3.2.8",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
