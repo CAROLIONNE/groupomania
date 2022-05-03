@@ -9,7 +9,6 @@
           <form @submit.prevent="update($event, article.id)">
             <fieldset id="container_update" v-if="showUpdate">
               <legend><h2>Modification</h2></legend>
-                <!-- TODO  -->
               <label for="titre">Titre : </label>
               <input type="text" v-model.trim="article.titre" name="titre"/>
               <label for="text">Texte : </label>
@@ -69,8 +68,8 @@ export default {
         });
     },
     getArticles() {
-        let user = JSON.parse(localStorage.getItem("user"));
-    let token = user.token;
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
      this.axios
       .get(`http://localhost:3000/api/article`, {
         headers: {
@@ -79,6 +78,7 @@ export default {
       })
       .then((allArticles) => {
         this.articles = allArticles.data;
+        console.log("getArticles", this.articles);
       })
       .catch((e) => {
         console.log(e);

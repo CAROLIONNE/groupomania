@@ -24,9 +24,7 @@
 
 <script>
 import moment from "moment";
-// moment().tz("Europe/Paris").format();
 import Modale from "./ModaleBox.vue";
-var serverTime = moment().utcOffset(-2);
 
 export default {
   name: "BaseCommentaire",

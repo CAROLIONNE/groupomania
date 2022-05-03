@@ -182,6 +182,7 @@ export default {
             alert(response.data);
             localStorage.clear();
             this.$router.push({ name: "Inscription" });
+            // store user false
           })
           .catch((e) => {
             this.message = e.response.data + " 👎";
