@@ -11,7 +11,6 @@
       <div id="article" v-for="(article, index) in articles" :key="article.id">
         <BaseArticle :article="article" :index="index"/>
       </div>
-      <Modale :show="show" :toggleModale="toggleModale"/>
 
     </div>
   </div>
@@ -19,11 +18,10 @@
 
 <script>
 import BaseArticle from "../components/BaseArticle.vue";
-import Modale from "../components/ModaleBox.vue";
 
 export default {
   name: "FilActu",
-  components: { BaseArticle, Modale },
+  components: { BaseArticle },
   data() {
     return {
       articles: null,
@@ -43,18 +41,16 @@ export default {
       })
       .then((allArticles) => {
         this.articles = allArticles.data;
+
       })
       .catch((e) => {
-        console.log(e);
+        console.log(e.response.data);
       });
   },
   methods: {
     createArticle() {
       this.$router.push({ name: "NewArticle" });
     },
-    toggleModale() {
-      this.show = !this.show
-    }
   }
 }
 </script>

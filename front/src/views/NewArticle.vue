@@ -9,7 +9,6 @@
         placeholder="Votre titre"
         v-model="titre"
       />
-      <!-- <Editor :v-model="text"/> -->
     <editor
       api-key="b7vz3gtuzy2c28rt2axsmshdeh5dfh1vftz3x9tvoqg12057"
       :init="{
@@ -40,22 +39,25 @@
         Publier
       </button>
     </form>
+    <Modale :show="show" :toggleModale="toggleModale"/>
   </div>
 </template>
 
 <script>
+import Modale from "../components/ModaleBox.vue";
 // import Editor from "../components/TinyMCE.vue";
-
 import Editor from '@tinymce/tinymce-vue'
 export default {
   name: "NewArticle",
-  components: {'editor': Editor },
+  components: {'editor': Editor, Modale },
   data() {
     return {
       titre: "",
       text: "",
       media: "",
       errors: "",
+      show: false,
+      message: null,
     };
   },
   mounted() {
@@ -63,6 +65,9 @@ export default {
   console.log(editor.value);
 },
   methods: {
+    toggleModale() {
+      this.show = !this.show
+    },
     fileChange(e) {
       let files = e.target.files || e.dataTransfer.files;
       this.media = files[0];
@@ -86,12 +91,14 @@ export default {
             },
           })
           .then((response) => {
-            alert(response.data)
+            // modale ne fonctionne pas
+            // alert(response.data)
+            this.message = response.data
+            this.toggleModale()
             this.$router.push({ name: "FilActu" });
           })
           .catch((e) => {
             console.log("erreur", e);
-            // console.log(e.response.config.data);
              this.errors = e.response.data.error;
           });
       } else {

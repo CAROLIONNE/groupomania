@@ -86,7 +86,8 @@ export default {
         this.userInfo = user.data;
       })
       .catch((e) => {
-        this.errors = e;
+        this.message = e.response.data ;
+        this.toggleModale();
       });
   },
   methods: {
@@ -106,7 +107,8 @@ export default {
         return this.userInfo = user.data;
       })
       .catch((e) => {
-        this.errors = e;
+          this.message = e.response.data ;
+          this.toggleModale();
       });
     },
     updateAvatar($event, id) {
@@ -123,19 +125,19 @@ export default {
             },
           }
         )
-        .then((res) => {
+        .then(() => {
           // reset input
           document.getElementById("avatar").value = "";
           // refresh infos utilisateur
           setTimeout(() => {
             this.getUser()           
           }, 499);
-          // TODO modale
-          console.log(res);
         })
         .catch((e) => {
           console.log(e);
-          // this.errors = e;
+          // Message de confirmation
+          this.message = e.response.data 
+          this.toggleModale()
         });
     },
     updateUser(id) {
@@ -162,7 +164,8 @@ export default {
         })
         .catch((e) => {
           console.log(e);
-          this.errors = e;
+          this.message = e.response.data ;
+          this.toggleModale();
         });
     },
 
@@ -178,14 +181,16 @@ export default {
             },
           })
           .then((response) => {
-            // TODO modale
-            alert(response.data);
+            // TODO modale ne fonctionne pas
+            // alert(response.data);
+            this.message = response.data
+            this.toggleModale()
             localStorage.clear();
             this.$router.push({ name: "Inscription" });
             // store user false
           })
           .catch((e) => {
-            this.message = e.response.data + " 👎";
+            this.message = e.response.data ;
             this.toggleModale();
             // alert("erreur", e.response.data);
             // console.log(e.response.config.data);

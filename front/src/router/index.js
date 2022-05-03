@@ -46,8 +46,8 @@ function isAuthenticated(to, from, next) {
   if(isAuthenticated) { 
     next(); // permet d'entrer la route 
   } else{ 
-    // next('/'); // aller à la page de connexion; 
-    this.$router.push({ name: "Connect" });
+    next('/'); // aller à la page de connexion; 
+    // this.$router.push({ name: "Connect" });
   } 
 }
 
