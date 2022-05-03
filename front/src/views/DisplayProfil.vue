@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="container">
-      <form id="update_detail">
+      <form id="update_detail" @submit="updateUser(userInfo.user_id)">
         <fieldset>
           <legend><h2>Profil</h2></legend>
           <p>Voici vos informations {{ userInfo.pseudonyme }}</p>
@@ -23,7 +23,7 @@
           />
           <p>Inscrit depuis le {{ timestamp }}</p>
           <div id="btn">
-            <input type="submit" value="Modifier" v-on:click="updateUser()" />
+            <input type="submit" value="Modifier" />
             <input
               id="delete"
               type="submit"
@@ -41,15 +41,10 @@
         <fieldset>
           <legend><h2>Avatar</h2></legend>
           <img :src="userInfo.avatar" />
-          <input id="file" type="file" name="image"  />
+          <input id="avatar" type="file" name="image"  />
           <div id="btn">
             <input type="submit" value="Sauvegarder" />
-            <input
-              id="delete"
-              type="submit"
-              value="Supprimer"
-              v-on:click="deleteAvatar(userInfo.user_id)"
-            />
+
           </div>
         </fieldset>
       </form>
@@ -91,7 +86,8 @@ export default {
         this.userInfo = user.data;
       })
       .catch((e) => {
-        this.errors = e;
+        this.message = e.response.data ;
+        this.toggleModale();
       });
   },
   methods: {
@@ -111,7 +107,8 @@ export default {
         return this.userInfo = user.data;
       })
       .catch((e) => {
-        this.errors = e;
+          this.message = e.response.data ;
+          this.toggleModale();
       });
     },
     updateAvatar($event, id) {
@@ -128,23 +125,27 @@ export default {
             },
           }
         )
-        .then((res) => {
+        .then(() => {
+          // reset input
+          document.getElementById("avatar").value = "";
+          // refresh infos utilisateur
           setTimeout(() => {
             this.getUser()           
           }, 499);
-          console.log(res);
         })
         .catch((e) => {
           console.log(e);
-          // this.errors = e;
+          // Message de confirmation
+          this.message = e.response.data 
+          this.toggleModale()
         });
     },
-    updateUser() {
+    updateUser(id) {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
       this.axios
         .put(
-          `http://localhost:3000/api/user/${this.$route.params.id}`,
+          `http://localhost:3000/api/user/${id}`,
           {
             mail: this.userInfo.mail,
             pseudonyme: this.userInfo.pseudonyme,
@@ -158,12 +159,13 @@ export default {
           }
         )
         .then((response) => {
-          this.message = response.data + " 👍"
+          this.message = response.data 
           this.toggleModale()
         })
         .catch((e) => {
           console.log(e);
-          this.errors = e;
+          this.message = e.response.data ;
+          this.toggleModale();
         });
     },
 
@@ -179,47 +181,26 @@ export default {
             },
           })
           .then((response) => {
-            alert(response.data);
+            // TODO modale ne fonctionne pas
+            // alert(response.data);
+            this.message = response.data
+            this.toggleModale()
             localStorage.clear();
             this.$router.push({ name: "Inscription" });
+            // store user false
           })
           .catch((e) => {
-            this.message = e.response.data + " 👎";
+            this.message = e.response.data ;
             this.toggleModale();
             // alert("erreur", e.response.data);
             // console.log(e.response.config.data);
           });
       }
     },
-    deleteAvatar(id) {
-      console.log("deleteAvatar");
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
-      const updatedPost = new FormData();
-      updatedPost.append("image", "default.png");
-      console.log(updatedPost);
-      this.axios
-        .put(
-          `http://localhost:3000/api/user/avatar/${id}`, updatedPost,
-          {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          }
-        )
-        .then((res) => {
-          alert(res.data)
-          // console.log(res);
-        })
-        .catch((e) => {
-          console.log(e);
-          this.errors = e;
-        });
-    }
   },
   computed: {
     timestamp: function () {
-      return moment(this.userInfo.date_crea).format("DD-MM-YYYY");
+      return moment(this.userInfo.createdAt).format("DD-MM-YYYY");
     },
   },
 };
@@ -253,11 +234,6 @@ input {
   padding: 0.2em;
   margin: 0.2em;
   border-radius: 0.5em;
-}
-#delete {
-  background-color: orange;
-  border: 1px solid black;
-  cursor: pointer;
 }
 #container {
   display: flex;

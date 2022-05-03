@@ -11,7 +11,6 @@
       <div id="article" v-for="(article, index) in articles" :key="article.id">
         <BaseArticle :article="article" :index="index"/>
       </div>
-      <Modale :show="show" :toggleModale="toggleModale"/>
 
     </div>
   </div>
@@ -19,17 +18,14 @@
 
 <script>
 import BaseArticle from "../components/BaseArticle.vue";
-import Modale from "../components/ModaleBox.vue";
 
 export default {
   name: "FilActu",
-  components: { BaseArticle, Modale },
+  components: { BaseArticle },
   data() {
     return {
       articles: null,
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
-      errors: null,
-      valid: null,
       show: false,
     };
   },
@@ -45,19 +41,16 @@ export default {
       })
       .then((allArticles) => {
         this.articles = allArticles.data;
+
       })
       .catch((e) => {
-        console.log(e);
-        this.errors = e;
+        console.log(e.response.data);
       });
   },
   methods: {
     createArticle() {
       this.$router.push({ name: "NewArticle" });
     },
-    toggleModale() {
-      this.show = !this.show
-    }
   }
 }
 </script>
@@ -86,7 +79,7 @@ h2 {
   padding: 1em;
   border: 1px solid black;
   margin-bottom: 3em;
-  border-radius: 20px;
+  border-radius: 2em;
   box-shadow: 0.3em 0.3em 8px #a8a7a7;
   background: rgb(144, 140, 153);
   background: linear-gradient(
@@ -108,10 +101,6 @@ h2 {
 
 .error {
   color: red;
-  padding: 0.5em;
-}
-.valid {
-  color: #003ba2;
   padding: 0.5em;
 }
 </style>

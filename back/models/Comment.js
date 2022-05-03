@@ -1,16 +1,14 @@
 const db = require("../db.js");
-const { Sequelize, Model, DataTypes } = require("sequelize");
+const Sequelize = require('sequelize');
 
 const Comment = db.define(
-  "Comment",
+  "commentaires",
   {
-    id_commentaire: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-      unique: true,
+    articleId: {
+      type: Sequelize.INTEGER,
       allowNull: false,
     },
+<<<<<<< HEAD
     id_article: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -29,20 +27,20 @@ const Comment = db.define(
       defaultValue: DataTypes.NOW,
 
     },
+=======
+    utilisateurId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+>>>>>>> feat/sequelize
     text: {
-      type: DataTypes.TEXT,
+      type: Sequelize.TEXT,
       allowNull: false,
     },
   },
-  {
-    // Other model options go here
-    db, // We need to pass the connection instance
-    modelName: "Comment", // We need to choose the model name
-    tableName: "commentaires",
-    timestamps: false,
-  }
   );
   
+<<<<<<< HEAD
   Comment.associate = (models) => {
     // Comment.hasOne(models.Article, {
     //   onDelete: "cascade",
@@ -57,6 +55,8 @@ const Comment = db.define(
       foreignKey: "id_user",
     });
   }
+=======
+>>>>>>> feat/sequelize
 
   module.exports = Comment;
   

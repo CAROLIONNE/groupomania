@@ -3,7 +3,11 @@
     <div id="container">
       <div id="article">
         <h1>{{ article.titre }}</h1>
+<<<<<<< HEAD
         <div id="mod" v-if="article.id_user == user.userID || user.role == 1">
+=======
+        <div id="mod" v-if="article.utilisateurId == user.userID || user.isAdmin == 1">
+>>>>>>> feat/sequelize
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
@@ -31,12 +35,9 @@
         <img id="article_img" :src="article.media" v-if="article.media" />
         <p id="article_text">{{ article.text }}</p>
         <p id="article_author">
-          Créé par {{ article.id_user }}, le {{ timestamp2(article.date_crea) }}
+          Créé par {{ article.utilisateur.pseudonyme }}, le {{ timestamp2(article.createdAt) }}
         </p>
         <div id="btn">
-          <!-- <button id="btn_new_com" @click="displayNewComment()">
-            Commenter
-          </button> -->
           <BtnWhite
             id="btn_new_com"
             name="Commenter"
@@ -52,7 +53,7 @@
           <p v-else>Soyez le premier a commenter</p>
           <!-- <BtnWhite
             id="btn_coms"
-            v-on:click="displayComment()"
+            :show="displayComment()"
             v-if="commentaires"
             name="Commentaire"
           /> -->
@@ -66,7 +67,6 @@
             rows="2"
             cols="33"
           >
-          Ecrivez votre commentaire ici
           </textarea>
           <input
             type="submit"
@@ -84,9 +84,10 @@
           <div
             id="display_com"
             v-for="(com, index) in commentaires"
-            :key="com.id_commentaire"
+            :key="com.id"
           >
            <BaseCommentaire :commentaire="com" :index="index" :getComment="getComment"/>
+<<<<<<< HEAD
             <!-- <i
               id="btn_delete-com"
               class="fa-solid fa-trash-can"
@@ -99,6 +100,8 @@
             <p class="error" v-if="errors">
               {{ errors }}
             </p> -->
+=======
+>>>>>>> feat/sequelize
             <Modale :show="show" :toggleModale="toggleModale"/>
           </div>
         </div>
@@ -133,6 +136,7 @@ export default {
       user: {},
     };
   },
+<<<<<<< HEAD
   // watch: {
   //   commentaire: function (val){
   //     console.log(val);
@@ -146,6 +150,9 @@ export default {
     },
   },
   mounted() {
+=======
+  created() {
+>>>>>>> feat/sequelize
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
     this.user = user;
@@ -157,7 +164,7 @@ export default {
         },
       })
       .then((article) => {
-        (this.article= article.data.articleFound)
+        (this.article = article.data.articleFound)
       })
       .catch((e) => {
         this.errors = e;
@@ -242,6 +249,11 @@ export default {
           },
         })
         .then((res) => {
+<<<<<<< HEAD
+=======
+          // TODO MODALE 
+          this.showUpdate = false;
+>>>>>>> feat/sequelize
           alert(res.data);
           this.getArticle()
           
@@ -291,7 +303,11 @@ export default {
             }
           )
           .then((response) => {
+<<<<<<< HEAD
             // TODO Ajouter modale
+=======
+            // TODO Ajouter modale et refresh ne fonctionne pas
+>>>>>>> feat/sequelize
             this.commentaire= "";
             this.click = false;
             this.getComment();
@@ -336,15 +352,18 @@ export default {
 
 <style scoped>
 #article {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 1em;
   border: 1px solid black;
-  margin: 3em;
+  margin-top: 3em;
   margin-bottom: 6em;
-  border-radius: 4em;
+  border-radius: 2em;
   box-shadow: 0.3em 0.3em 8px #a8a7a7;
   background: rgb(144, 140, 153);
   background: linear-gradient(
@@ -402,11 +421,10 @@ img {
   margin: 0.5em;
   margin-left: auto;
   margin-right: auto;
-  /* border: antiquewhite 2px solid; */
   border: 2px solid #a7a7a7;
-
-  border-radius: 2em;
-  width: 65%;
+  border-radius: 1em;
+  width: 80%;
+  background: whitesmoke;
 }
 
 #com_text,

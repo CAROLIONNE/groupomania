@@ -1,12 +1,20 @@
 <template>
   <div>
-    <router-link id="ancre_article" :to="{ name: 'DisplayArticle', params: { id: article.id_article }}"><h2>{{ article.titre }}</h2>
+    <router-link id="ancre_article" :to="{ name: 'DisplayArticle', params: { id: article.id }}"><h2>{{ article.titre }}</h2>
     </router-link>
     <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
+
     <!-- TO DO afficher UpdateArticle.vue si c'est l'utilisateur qui l'a créer -->
+    <UpdateArticle :article='article'/>
+
+
     <img id="article_img" :src="article.media" v-if="article.media"/>
     <p id="article_text">{{ article.text }}</p>
+<<<<<<< HEAD
     <p id="article_author">Créé par {{ author }} le {{ timestamp2(article.date_crea) }} <span v-if="article.date_crea != article.date_mod">, Modifié le {{ timestamp2(article.date_mod) }}</span> </p>
+=======
+    <p id="article_author">Créé par {{ article.utilisateur.pseudonyme }}, le {{ timestamp2(article.createdAt) }} <span v-if="article.createdAt != article.updatedAt">, Modifié le {{ timestamp2(article.updatedAt) }}</span> </p>
+>>>>>>> feat/sequelize
     <div id="btn">
           <button id="btn_new_com" @click="displayNewComment()">
             Commenter
@@ -14,8 +22,13 @@
           <button
             id="btn_coms"
             v-if="commentaires"
+<<<<<<< HEAD
             v-on:click="displayCommentaires(article.id_article)"
           >Commentaire<span v-if="commentaires.length >1">s</span> ({{commentaires.length}})
+=======
+            v-on:click="displayCommentaires(article.id)"
+          >Commentaire<span v-if="commentaires.length >1">s</span> ({{ commentaires.length }})
+>>>>>>> feat/sequelize
           </button>
           <p v-else>Soyez le premier a commenter</p>
         </div>
@@ -28,7 +41,6 @@
             rows="2"
             cols="33"
           >
-          Ecrivez votre commentaire ici
           </textarea>
           <input
             type="submit"
@@ -41,14 +53,14 @@
             {{ errors }}
           </p>
         </div>
-
-    <div id="container_comments" v-if="displayCom">
+    <div id="container_comments" v-if="displayCom" >
           <div
             id="display_com"
             v-for="(com, index) in commentaires"
             :key="com.id"
           >
           <BaseCommentaire :commentaire="com" :index="index" :getComment="displayCommentaires"/>
+<<<<<<< HEAD
             <!-- <i
               id="btn_delete-com"
               class="fa-solid fa-trash-can"
@@ -61,6 +73,8 @@
             <p class="error" v-if="errors">
               {{ errors }}
             </p> -->
+=======
+>>>>>>> feat/sequelize
           </div>
         </div>
         
@@ -71,10 +85,18 @@
 import moment from "moment";
 import Modale from "./ModaleBox.vue";
 import BaseCommentaire from "../components/BaseCommentaire.vue";
+<<<<<<< HEAD
 
 export default {
   name: "BaseArticle",
   components: { Modale, BaseCommentaire },
+=======
+import UpdateArticle from "../components/UpdateArticle.vue";
+
+export default {
+  name: "BaseArticle",
+  components: { Modale, BaseCommentaire, UpdateArticle },
+>>>>>>> feat/sequelize
   props: {
     article : {
       type: Object,
@@ -82,9 +104,9 @@ export default {
     index : {
       type: Number,
     },
-    // commentaire : {
-    //   type: Object,
-    // }
+    coms : {
+      type: Object,
+    }
   },
   data() {
     return {
@@ -107,7 +129,7 @@ export default {
     // Recupération des commentaires
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      let idArticle = this.article.id_article;
+      let idArticle = this.article.id;
       this.axios
         .get(`http://localhost:3000/api/comment/${idArticle}`, {
           headers: {
@@ -142,7 +164,7 @@ export default {
   },
   methods: {
     toggleModale() {
-      this.show = !this.show
+      this.show = !this.show;
     },
     timestamp(date) {
       return moment(date, "YYYYMMDD").fromNow();
@@ -167,6 +189,10 @@ export default {
         })
         .then((foundCommentaires) => {
             this.commentaires = foundCommentaires.data;
+<<<<<<< HEAD
+=======
+            console.log("in");
+>>>>>>> feat/sequelize
         })
         .catch((e) => {
           console.log(e.response.data.error);
@@ -179,7 +205,7 @@ export default {
     if (this.commentaire.text.length >= 3) {
       this.axios
         .post(
-          `http://localhost:3000/api/comment/${this.article.id_article}`,
+          `http://localhost:3000/api/comment/${this.article.id}`,
           {
             text: this.commentaire.text,
           },
@@ -194,18 +220,21 @@ export default {
           this.commentaire= ""
           this.message = response.data 
           this.toggleModale()
-          this.displayCommentaires()
+          this.displayCommentaires(this.article.id)
         })
         .catch((e) => {
           this.errors = e;
         });
         } else {
+<<<<<<< HEAD
           this.message = "Merçi de remplir tout les champs correctement 🙏" 
+=======
+          this.message = "3 caractères minimum 🙏" 
+>>>>>>> feat/sequelize
           this.toggleModale()
           this.displayCommentaires()
       }
     },
-
     deleteCom(index) {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
@@ -292,10 +321,13 @@ img {
   margin: 0.5em;
   margin-left: auto;
   margin-right: auto;
-  /* border: antiquewhite 2px solid; */
   border: 2px solid #a7a7a7;
   border-radius: 1em;
+<<<<<<< HEAD
   max-width: 80%;
+=======
+  width: 80%;
+>>>>>>> feat/sequelize
   background: whitesmoke;
 }
 #com_text,

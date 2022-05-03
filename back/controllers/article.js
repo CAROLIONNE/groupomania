@@ -1,25 +1,27 @@
-const Article = require("../models/Article");
-const Utilisateur = require("../models/User");
-const fs = require("fs");
-// const models = require('../models/index');
+const models = require("../models/index"); 
+const fs = require("fs"); 
 
 // Afficher tout les articles
 exports.viewAllArticles = (req, res, next) => {
-  Article.findAll({ order: [['date_crea', 'DESC']] })
+  models.Article.findAll({ 
+    include: [models.Utilisateur],
+    order: [['createdAt', 'DESC']]})
     .then((articles) => {
       if (!articles || articles.length === 0) {
         res.status(404).json({ error: "Aucun article pour le moment 🧐" });
-      }
+      } else {
       res.status(200).json(articles);
+      }
     })
     .catch((error) => {
-      console.log("catch findAll", error);
+      console.log("catch findAllArticles", error);
       res.status(500).json({error: "Une erreur est survenue 😕"});
     });
 };
 
 // Afficher un article
 exports.ViewArticle = async (req, res) => {
+<<<<<<< HEAD
   const articleFound = await Article.findOne({
     where: { id_article: req.params.id }, 
     // include: [Utilisateur]
@@ -27,6 +29,11 @@ exports.ViewArticle = async (req, res) => {
   //     model: Utilisateur,
   //     attributes:['pseudonyme']
   // }
+=======
+  const articleFound = await models.Article.findOne({
+    where: { id: req.params.id }, 
+    include: [models.Utilisateur]
+>>>>>>> feat/sequelize
   });
   if (articleFound) {
     res.status(200).json({ articleFound });
@@ -39,8 +46,8 @@ exports.ViewArticle = async (req, res) => {
 module.exports.createArticle = async (req, res) => {
   try {
     if (req.body.titre !== null && req.body.text !== null) {
-      await Article.create({
-        id_user: req.auth.userId,
+      await models.Article.create({
+        utilisateurId: req.auth.userId,
         titre: req.body.titre,
         text: req.body.text,
         media: req.file
@@ -59,28 +66,28 @@ module.exports.createArticle = async (req, res) => {
 
 // Mise a jour d'un article
 exports.updateArticle = async (req, res) => {
-  let article = await Article.findOne({ where: { id_article: req.params.id } });
+  let article = await models.Article.findOne({ where: { id: req.params.id } });
   // Verifie si l'article existe
   if (article) {
     // Acces admin ou utilisateur qui a créer le post
-    if (req.auth.userId == article.id_user || req.auth.role == 1) {
+    if (req.auth.userId == article.utilisateurId || req.auth.isAdmin == 1) {
       // Nom du fichier a supprimer
       const filename = article.media.split("/images/")[1];
       // console.log("-------", filename);
       if (req.file) {
         fs.unlink(`images/${filename}`, () => {
-          Article.update(
+          models.Article.update(
             {
               media: `${req.protocol}://${req.get("host")}/images/${
                 req.file.filename
               }`,
               titre: req.body.titre,
               text: req.body.text,
-              date_mod: new Date(),
+              updatedAt: new Date(),
             },
             {
               where: {
-                id_article: req.params.id,
+                id: req.params.id,
               },
             }
           );
@@ -88,15 +95,15 @@ exports.updateArticle = async (req, res) => {
       } else {
         // Mettre a jour texte, titre et date de l'article
         console.log("body",req.body);
-        Article.update(
+        models.Article.update(
           {
             titre: req.body.titre,
             text: req.body.text,
-            date_mod: new Date(),
+            updatedAt: new Date(),
           },
           {
             where: {
-              id_article: req.params.id,
+              id: req.params.id,
             },
           }
         );
@@ -112,17 +119,17 @@ exports.updateArticle = async (req, res) => {
 
 // Mise a jour image d'un article
 exports.updateImage = async (req, res) => {
-  let article = await Article.findOne({ where: { id_article: req.params.id } });
+  let article = await models.Article.findOne({ where: { id: req.params.id } });
   // Verifie si l'article existe
   if (article) {
     // Acces admin ou utilisateur qui a créer le post
-    if (req.auth.userId == article.id_user || req.auth.role == 1) {
+    if (req.auth.userId == article.utilisateurId || req.auth.isAdmin == 1) {
       // Nom du fichier a supprimer
       const filename = article.media.split("/images/")[1];
       // Supprimer image du dossier
       fs.unlink(`images/${filename}/`, () => {
         // Mettre a jour image de l'article
-        Article.update(
+        models.Article.update(
           {
             media: `${req.protocol}://${req.get("host")}/images/${
               req.file.filename
@@ -130,7 +137,7 @@ exports.updateImage = async (req, res) => {
             // media: req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : '',
             date_mod: new Date(),
           },
-          { where: { id_article: req.params.id } }
+          { where: { id: req.params.id } }
         );
         res.status(201).json("L'article est mis a jour 👍");
       });
@@ -144,19 +151,19 @@ exports.updateImage = async (req, res) => {
 
 // Suprimer un article
 exports.deleteArticle = async (req, res) => {
-  let article = await Article.findOne({ where: { id_article: req.params.id } });
+  let article = await models.Article.findOne({ where: { id: req.params.id } });
   // Verifie que l'article existe
   if (article) {
     // Acces admin ou utilisateur qui a créer le post
-    if (req.auth.userId == article.id_user || req.auth.role == 1) {
+    if (req.auth.userId == article.utilisateurId || req.auth.isAdmin == 1) {
       // Nom du fichier a supprimer
       const filename = article.media.split("/images/")[1];
       // Supprimer image du dossier
       fs.unlink(`images/${filename}/`, () => {
         // Supprimer l'article de la BDD
-        Article.destroy({
+        models.Article.destroy({
           where: {
-            id_article: req.params.id,
+            id: req.params.id,
           },
         });
         res.status(201).json("L'article a été supprimé 👍");

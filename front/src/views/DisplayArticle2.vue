@@ -3,7 +3,11 @@
       <h1>{{ intro }}</h1>
     <div id="container">
       <div id="article">
+<<<<<<< HEAD
         <BaseArticle :article="article" />
+=======
+        <BaseArticle :article="article"/>
+>>>>>>> feat/sequelize
       </div>
     </div>
   </div>
@@ -18,12 +22,21 @@ export default {
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
+<<<<<<< HEAD
       article: null,
       commentaires: "",
       message: null
     };
   },
   created() {
+=======
+      article: {},
+      commentaires: {},
+      message: null
+    };
+  },
+  mounted() {
+>>>>>>> feat/sequelize
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
     // let $id = this.$route.params.id;
@@ -36,6 +49,10 @@ export default {
       })
       .then((article) => {
         (this.article= article.data.articleFound)
+<<<<<<< HEAD
+=======
+        console.log("article fetch");
+>>>>>>> feat/sequelize
       })
       .catch((e) => {
         this.errors = e;

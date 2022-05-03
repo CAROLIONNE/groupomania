@@ -9,15 +9,26 @@
         placeholder="Votre titre"
         v-model="titre"
       />
-      <textarea
+    <editor
+      api-key="b7vz3gtuzy2c28rt2axsmshdeh5dfh1vftz3x9tvoqg12057"
+      :init="{
+        height: 200,
+        menubar: false,
+      }"
+       initial-value=""
+       id="editor"
+       v-model="text"
+       output-format="html" 
+    />
+      {{ text }}
+      <!-- <textarea
         id="article_text"
         name="text"
         rows="5"
         cols="33"
         v-model="text"
-        v-on:click="text = null"
       >
-      </textarea>
+      </textarea> -->
       <input id="file" type="file" name="image" v-on:change="fileChange" />
       <p id="error" v-if="errors.length">{{ errors }}</p>
       <button
@@ -28,21 +39,35 @@
         Publier
       </button>
     </form>
+    <Modale :show="show" :toggleModale="toggleModale"/>
   </div>
 </template>
 
 <script>
+import Modale from "../components/ModaleBox.vue";
+// import Editor from "../components/TinyMCE.vue";
+import Editor from '@tinymce/tinymce-vue'
 export default {
   name: "NewArticle",
+  components: {'editor': Editor, Modale },
   data() {
     return {
       titre: "",
-      text: "Ecrivez votre texte ici",
+      text: "",
       media: "",
       errors: "",
+      show: false,
+      message: null,
     };
   },
+  mounted() {
+  const editor = document.getElementById("editor")
+  console.log(editor.value);
+},
   methods: {
+    toggleModale() {
+      this.show = !this.show
+    },
     fileChange(e) {
       let files = e.target.files || e.dataTransfer.files;
       this.media = files[0];
@@ -51,8 +76,11 @@ export default {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
       const data = new FormData();
+      // const textEditor = document.getElementById("editor").value
+      // console.log(textEditor);
       data.append("titre", this.titre);
       data.append("text", this.text);
+      // data.append("text", textEditor);
       data.append("image", this.media);
       if (this.titre.length >= 3 && this.text.length >= 3) {
         this.axios
@@ -63,12 +91,22 @@ export default {
             },
           })
           .then((response) => {
+<<<<<<< HEAD
             alert(response.data)
+=======
+            // modale ne fonctionne pas
+            // alert(response.data)
+            this.message = response.data
+            this.toggleModale()
+>>>>>>> feat/sequelize
             this.$router.push({ name: "FilActu" });
           })
           .catch((e) => {
             console.log("erreur", e);
+<<<<<<< HEAD
             // console.log(e.response.config.data);
+=======
+>>>>>>> feat/sequelize
              this.errors = e.response.data.error;
           });
       } else {
@@ -82,25 +120,31 @@ export default {
 <style scoped>
 h1 {
   text-align: center;
-  padding: 1em;
+  padding: 0.3em;
 }
 #new_article {
-  width: 40%;
-  background: #a3eeff;
-  /* height: 17em; */
+  padding: 0.5em;
+  margin: 1em;
+    background: linear-gradient(
+    309deg,
+    rgba(144, 140, 153, 0.510224158022584) 0%,
+    rgba(208, 210, 237, 0.5858544101234244) 29%
+  );
+  border: 1px solid black;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-left: auto;
-  margin-right: auto;
+  /* margin-left: auto;
+  margin-right: auto; */
   border-radius: 3em;
   -webkit-box-shadow: 0px 10px 13px -7px #000000,
     5px 5px 15px 5px rgba(0, 0, 0, 0);
-  box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0);
+  /* box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0); */
+  box-shadow: 0.3em 0.3em 8px #a8a7a7;
 }
 #titre {
-  margin-top: 1em;
+  margin: 0.3em;
   padding: 0.5em;
 }
 #article_text {
