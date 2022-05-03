@@ -11,6 +11,46 @@ import NotFound from '@/views/NotFound'
 
 Vue.use(VueRouter)
 
+// import axios from 'vue-axios'
+// function isAuthenticated(to, from, next) {
+//   let ls = localStorage.getItem('user')
+//   if(ls){
+//   let user = JSON.parse(localStorage.getItem("user"));
+//   let token = user.token;
+//   console.log("test token", token);
+//   axios
+//     .get("http://localhost:3000/api/user/auth", {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     })
+//     .then((res) => {
+//       console.log(res);
+//       next()
+//     }) 
+//     .catch((err) => {
+//       console.log(err);
+//       localStorage.clear();
+//       this.$router.push({ name: "Connect" });
+//     });
+//   } else {
+//     localStorage.clear();
+//     next('/');
+//   }
+// }
+
+function isAuthenticated(to, from, next) {
+  let isAuthenticated= false; 
+  if(localStorage.getItem('user')) {isAuthenticated = true} 
+  else {isAuthenticated= false}
+  if(isAuthenticated) { 
+    next(); // permet d'entrer la route 
+  } else{ 
+    // next('/'); // aller à la page de connexion; 
+    this.$router.push({ name: "Connect" });
+  } 
+}
+
 const routes = [
   {
     path: '/',
@@ -25,16 +65,19 @@ const routes = [
   {
     path: '/articles',
     name: 'FilActu',
+    beforeEnter : isAuthenticated, 
     component: FilActu
   },    
   {
     path: '/articles/post',
     name: 'NewArticle',
+    beforeEnter : isAuthenticated, 
     component: NewArticle
   },    
   {
     path: '/article/:id',
     name: 'DisplayArticle',
+    beforeEnter : isAuthenticated, 
     component: DisplayArticle
   },    
   {
@@ -45,6 +88,7 @@ const routes = [
   {
     path: '/profil/:id',
     name: 'DisplayProfil',
+    beforeEnter : isAuthenticated, 
     component: DisplayProfil
   },     
   {

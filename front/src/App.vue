@@ -10,17 +10,15 @@
       </router-link>
       <div id="navigation">
         <div id="fil_actu" v-if="user">
-          <!-- <router-link to="/articles" id="ancre_fil_actu">Fil d'actualité</router-link> -->
           <router-link :to="{ name: 'FilActu' }" id="ancre_fil_actu"
             >Fil d'actualité</router-link
           >
         </div>
-        <a id="ancre_profil" @click="Profil()" v-if="user">
-          Profil
-        </a>
+        <a id="ancre_profil" @click="Profil()" v-if="user"> Profil </a>
         <a id="ancre_logout" @click="logOut()">Deconnexion</a>
       </div>
     </nav>
+   
     <nav id="nav" v-else>
       <router-link to="/" class="logo" v-if="!user">
         <img
@@ -57,21 +55,45 @@
 //       this.user=false
 // }, 1800000);
 
+
 export default {
   name: "App",
+
   data() {
     return {
       user: false,
     };
   },
+  mounted() {
+    // // tentative de requete pour token valide
+    // if (localStorage.getItem("user")){
+    // let user = JSON.parse(localStorage.getItem("user");
+    // this.axios
+    //   .get("http://localhost:3000/api/user/auth", {
+    //     headers: {
+    //       Authorization: `Bearer ${user.token}`,
+    //     },
+    //   })
+    //   .then((res) => {
+    //     console.log(res);
+    //     localStorage.setItem('token', 'valid' );
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     localStorage.clear();
+    //     this.$router.push({ name: "Connect" });
+    //     this.user = false;
+    //   });
+    // } else {
+    //     localStorage.clear();
+    //     this.user = false;
+    //     this.$router.push({ name: "Connect" });
+    // }
 
-  computed: {
-    //   GetUser2() {
-    //     let user = JSON.parse(localStorage.getItem("user"))
-    //     if (user) {
-    //       return this.user=true
-    //     }
-    //  },
+    // ----------------
+    // if (error.response.status === 401) {
+    //   this.$router.push({ name: "Connect" });
+    // }
   },
   methods: {
     Profil() {
@@ -88,7 +110,7 @@ export default {
     logOut() {
       localStorage.clear();
       this.$router.push({ name: "Connect" });
-      this.user=false
+      this.user = false;
     },
   },
 };
