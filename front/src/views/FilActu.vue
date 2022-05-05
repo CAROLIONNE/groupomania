@@ -6,6 +6,8 @@
         Créer une publication
       </button>
       <h2 id="fil">Fil d'actualité</h2>
+      <!-- <p> user </p>
+      <p> {{ $store.state.date }}  </p> -->
     </div>
     <div id="container">
       <div id="article" v-for="(article, index) in articles" :key="article.id">

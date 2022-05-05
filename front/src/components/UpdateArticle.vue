@@ -1,18 +1,21 @@
 <template>
-    <div id="mod">
+    <div id="mod" v-if='article.utilisateurId == userConnect.id'>
+      
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
           <button id="delete-btn" v-on:click="deleteArticle(article.id)">
             Supprimer l'article
           </button>
+          <div>Salut</div>
           <form @submit.prevent="update($event, article.id)">
             <fieldset id="container_update" v-if="showUpdate">
               <legend><h2>Modification</h2></legend>
-              <label for="titre">Titre : </label>
+              <!-- Error Unexpected mutation of "article" prop -->
+              <!-- <label for="titre">Titre : </label>
               <input type="text" v-model.trim="article.titre" name="titre"/>
               <label for="text">Texte : </label>
-              <input type="text" v-model.trim="article.text" name="text"/>
+              <input type="text" v-model.trim="article.text" name="text"/> -->
               <input
                 id="file"
                 type="file"
@@ -21,6 +24,7 @@
               <input type="submit" value="Sauvegarder" />
             </fieldset>
           </form>
+          {{ article }}
         </div>
 </template>
 
@@ -40,7 +44,13 @@ export default {
       return {
           articles: {},
           showUpdate: false,
+          userConnect : {}
       }
+  },
+  mounted(){ 
+    let user = JSON.parse(localStorage.getItem("user"));
+    this.userConnect = user
+  console.log(user);
   },
   methods: {
     showDisplayUpdate() {
