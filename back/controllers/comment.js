@@ -1,10 +1,12 @@
-// const Comment = require("../models/Comment");
+
 const models = require("../models/index"); 
 
 // Afficher commentaires d'un article
 exports.ViewComment = async (req, res) => {
   const commentFound = await models.Comment.findAll({
     where: { articleId: req.params.id },
+    include: [models.Utilisateur],
+    order: [['createdAt', 'DESC']]
   })
   if (commentFound.length > 0) {
     res.status(200).json( commentFound );

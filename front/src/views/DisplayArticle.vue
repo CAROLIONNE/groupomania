@@ -3,7 +3,6 @@
     <div id="container">
       <div id="article">
         <h1>{{ article.titre }}</h1>
-        <div>Salut</div>
         <div id="mod" v-if="article.utilisateurId == user.userID || user.isAdmin == 1">
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article

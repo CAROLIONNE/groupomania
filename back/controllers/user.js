@@ -81,7 +81,7 @@ module.exports.login = async (req, res) => {
       }
       res.status(200).json({
         // Creation du token et envoi coté client
-        role: userFound.role,
+        isAdmin: userFound.isAdmin,
         pseudo: userFound.pseudonyme,
         userID: userFound.id,
         token: jwt.sign(
@@ -108,7 +108,6 @@ exports.getOneUser = async (req, res, next) => {
       pseudonyme: userFound.pseudonyme,
       date_crea: userFound.date_crea,
       avatar: process.env.img + userFound.avatar,
-      // avatar:  userFound.avatar,
     });
   } else {
     res.status(404).json({ error: "Utilisateur introuvable 🧐" });
@@ -182,7 +181,12 @@ module.exports.updateAvatar = async (req, res) => {
       if (!userFound) return res.status(404).json({ error: "Utilisateur introuvable 🧐" });
       // Acces autorisé admin ou utilisateur qui a créer le compte
       if (userFound.id == req.auth.userId || req.auth.isAdmin == 1) {
-        if (userFound.avatar == "default.png") {
+        if (!req.file.filename) {
+          console.log(req.file);
+          console.log("filename undefined");
+          return res.status(500).json({ error: "Requête non authorisée ⛔" });
+        }
+        else if (userFound.avatar == "default.png") {
           // Mettre à jour l'avatar en conservant img par default dans stockage serveur
           models.Utilisateur.update(
             {

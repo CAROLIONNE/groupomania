@@ -45,11 +45,10 @@
 
 <script>
 import Modale from "../components/ModaleBox.vue";
-// import Editor from "../components/TinyMCE.vue";
 import Editor from '@tinymce/tinymce-vue'
 export default {
   name: "NewArticle",
-  components: {'editor': Editor, Modale },
+  components: { Editor, Modale },
   data() {
     return {
       titre: "",
@@ -60,10 +59,6 @@ export default {
       message: null,
     };
   },
-  mounted() {
-  const editor = document.getElementById("editor")
-  console.log(editor.value);
-},
   methods: {
     toggleModale() {
       this.show = !this.show
@@ -90,11 +85,7 @@ export default {
               'content-Type': "multipart/form-data",
             },
           })
-          .then((response) => {
-            // modale ne fonctionne pas
-            // alert(response.data)
-            this.message = response.data
-            this.toggleModale()
+          .then(() => {
             this.$router.push({ name: "FilActu" });
           })
           .catch((e) => {
@@ -147,7 +138,6 @@ h1 {
 #file {
   margin: 1em;
 }
-
 #btn_submit {
   margin: 1em;
   width: 30%;
@@ -195,7 +185,10 @@ h1 {
   transform: translateY(0);
 }
 #error {
-  color: red;
-  height: 2em;
+  color: #f00020;
+  padding: 0.5em;
+  display: inline-block;
+  border: dashed #B22222;
+  margin: 0.2em
 }
 </style>
