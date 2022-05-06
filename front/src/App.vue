@@ -1,7 +1,12 @@
 <template>
   <div id="app">
-    <nav id="nav" v-if="GetUser()">
-      <router-link :to="{ name: 'FilActu' }" class="logo" v-if="user">
+    {{ $store.state.user }}
+    <nav id="nav" v-if="$store.state.user == true">
+      <router-link
+        :to="{ name: 'FilActu' }"
+        class="logo"
+        v-if="$store.state.user == true"
+      >
         <img
           id="img_logo"
           src="./assets/icon-left-font-monochrome-white.svg"
@@ -9,25 +14,25 @@
         />
       </router-link>
       <div id="navigation">
-        <div id="fil_actu" v-if="user">
+        <div id="fil_actu">
           <router-link :to="{ name: 'FilActu' }" id="ancre_fil_actu"
             >Fil d'actualité</router-link
           >
         </div>
-        <a id="ancre_profil" @click="Profil()" v-if="user"> Profil </a>
+        <a id="ancre_profil" @click="Profil()"> Profil </a>
         <a id="ancre_logout" @click="logOut()">Deconnexion</a>
       </div>
     </nav>
-   
-    <nav id="nav" v-else>
-      <router-link to="/" class="logo" v-if="!user">
+
+    <nav id="nav" v-if="$store.state.user == false">
+      <router-link to="/" class="logo" v-if="$store.state.user == false">
         <img
           id="img_logo"
           src="./assets/icon-left-font-monochrome-white.svg"
           alt="logo de groupomania"
         />
       </router-link>
-      <div id="authentification" v-if="!user">
+      <div id="authentification">
         <div id="inscription">
           <router-link to="/inscription" id="ancre_inscription"
             >Inscription</router-link
@@ -43,52 +48,33 @@
 </template>
 
 <script>
-// deconnexion auto au bout de 30 minutes
-// setTimeout(function () {
-//   this.logOut();
-// }, 1800000);
-
-// setTimeout(function () {
-//       localStorage.clear();
-//       // this.$router.push({ name: "Connect" });
-//       window.location.href
-//       this.user=false
-// }, 1800000);
-
-
 export default {
   name: "App",
-
-  data() {
-    return {
-      user: false,
-    };
-  },
   mounted() {
-    // // tentative de requete pour token valide
-    // if (localStorage.getItem("user")){
-    // let user = JSON.parse(localStorage.getItem("user");
-    // this.axios
-    //   .get("http://localhost:3000/api/user/auth", {
-    //     headers: {
-    //       Authorization: `Bearer ${user.token}`,
-    //     },
-    //   })
-    //   .then((res) => {
-    //     console.log(res);
-    //     localStorage.setItem('token', 'valid' );
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     localStorage.clear();
-    //     this.$router.push({ name: "Connect" });
-    //     this.user = false;
-    //   });
-    // } else {
-    //     localStorage.clear();
-    //     this.user = false;
-    //     this.$router.push({ name: "Connect" });
-    // }
+  //   // tentative de requete pour token valide
+  //   if (localStorage.getItem("user")) {
+  //     let user = JSON.parse(localStorage.getItem("user"));
+  //     this.axios
+  //       .get("http://localhost:3000/api/user/auth", {
+  //         headers: {
+  //           Authorization: `Bearer ${user.token}`,
+  //         },
+  //       })
+  //       .then((res) => {
+  //         console.log(res);
+              // this.$store.commit("USER_CONNECT");
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //         localStorage.clear();
+  //         this.$store.commit("USER_DISCONNECT");
+  //         this.$router.push({ name: "Connect" });
+  //       });
+  //   } else {
+  //     localStorage.clear();
+  //     this.$store.commit("USER_DISCONNECT");
+  //     this.$router.push({ name: "Connect" });
+  //   }
 
     // ----------------
     // if (error.response.status === 401) {
@@ -103,14 +89,10 @@ export default {
         this.$router.push({ name: "DisplayProfil", params: { id } });
       }
     },
-    GetUser() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      if (user) return (this.user = true);
-    },
     logOut() {
       localStorage.clear();
       this.$router.push({ name: "Connect" });
-      this.user = false;
+      this.$store.commit("USER_DISCONNECT");
     },
   },
 };

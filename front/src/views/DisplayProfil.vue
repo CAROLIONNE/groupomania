@@ -86,7 +86,7 @@ export default {
         this.userInfo = user.data;
       })
       .catch((e) => {
-        this.message = e.response.data ;
+        this.message = e.response.data.error;
         this.toggleModale();
       });
   },
@@ -109,6 +109,9 @@ export default {
       .catch((e) => {
           this.message = e.response.data ;
           this.toggleModale();
+          localStorage.clear();
+          this.$router.push({ name: "Connect" });
+          this.$store.commit("USER_DISCONNECT");
       });
     },
     updateAvatar($event, id) {
@@ -135,7 +138,7 @@ export default {
         })
         .catch((e) => {
           console.log(e);
-          // Message de confirmation
+          // Modale si erreur
           this.message = e.response.data 
           this.toggleModale()
         });
@@ -186,14 +189,12 @@ export default {
             this.message = response.data
             this.toggleModale()
             localStorage.clear();
+            this.$store.commit("USER_DISCONNECT");
             this.$router.push({ name: "Inscription" });
-            // store user false
           })
           .catch((e) => {
             this.message = e.response.data ;
             this.toggleModale();
-            // alert("erreur", e.response.data);
-            // console.log(e.response.config.data);
           });
       }
     },
