@@ -1,59 +1,63 @@
 <template>
   <div>
-    <router-link id="ancre_article" :to="{ name: 'DisplayArticle', params: { id: article.id }}"><h2>{{ article.titre }}</h2>
+    <router-link
+      id="ancre_article"
+      :to="{ name: 'DisplayArticle', params: { id: article.id } }"
+      ><h2>{{ article.titre }}</h2>
     </router-link>
-    <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
-
-    <!-- TO DO afficher UpdateArticle.vue si c'est l'utilisateur qui l'a créer -->
-    <UpdateArticle :article='article'/>
-
-
-    <img id="article_img" :src="article.media" v-if="article.media"/>
+    <UpdateArticle :article="article" />
+    <img id="article_img" :src="article.media" v-if="article.media" />
     <p id="article_text">{{ article.text }}</p>
-    <p id="article_author">Créé par {{ article.utilisateur.pseudonyme }}, le {{ timestamp2(article.createdAt) }} <span v-if="article.createdAt != article.updatedAt">, Modifié le {{ timestamp2(article.updatedAt) }}</span> </p>
+    <p id="article_author">
+      Créé par {{ article.utilisateur.pseudonyme }}, le
+      {{ timestamp2(article.createdAt) }}
+      <span v-if="article.createdAt != article.updatedAt"
+        >, Modifié le {{ timestamp2(article.updatedAt) }}</span
+      >
+    </p>
     <div id="btn">
-          <button id="btn_new_com" @click="displayNewComment()">
-            Commenter
-          </button>
-          <button
-            id="btn_coms"
-            v-if="commentaires"
-            v-on:click="displayCommentaires(article.id)"
-          >Commentaire<span v-if="commentaires.length >1">s</span> ({{ commentaires.length }})
-          </button>
-          <p v-else>Soyez le premier a commenter</p>
-        </div>
+      <button id="btn_new_com" @click="displayNewComment()">Commenter</button>
+      <button
+        id="btn_coms"
+        v-if="commentaires"
+        v-on:click="displayCommentaires(article.id)"
+      >
+        Commentaire<span v-if="commentaires.length > 1">s</span> ({{
+          commentaires.length
+        }})
+      </button>
+      <p v-else>Soyez le premier a commenter</p>
+    </div>
     <div class="new_com" v-if="click">
-          <h2>Texte :</h2>
-          <textarea
-            id="com_text"
-            v-model="commentaire.text"
-            name="text"
-            rows="2"
-            cols="33"
-          >
-          </textarea>
-          <input
-            type="submit"
-            id="submit_com"
-            v-on:click="createCommentaire()"
-            value="Envoyer"
-          />
-          <br />
-          <p class="error" v-if="errors">
-            {{ errors }}
-          </p>
-        </div>
-    <div id="container_comments" v-if="displayCom" >
-          <div
-            id="display_com"
-            v-for="(com, index) in commentaires"
-            :key="com.id"
-          >
-          <BaseCommentaire :commentaire="com" :index="index" :getComment="displayCommentaires"/>
-          </div>
-        </div>
-        
+      <h2>Texte :</h2>
+      <textarea
+        id="com_text"
+        v-model="newCommentaire"
+        name="text"
+        rows="2"
+        cols="33"
+      >
+      </textarea>
+      <input
+        type="submit"
+        id="submit_com"
+        v-on:click="createCommentaire()"
+        value="Envoyer"
+      />
+    </div>
+      <p class="error" v-if="errors">
+        {{ errors }}
+      </p>
+    <div id="container_comments" v-if="displayCom">
+      <div id="display_com" v-for="(com, index) in commentaires" :key="com.id">
+        <BaseCommentaire
+          :commentaire="com"
+          :index="index"
+          :getComment="displayCommentaires"
+        />
+      </div>
+    </div>
+    <Modale :show="show" :toggleModale="toggleModale" :message="message" />
   </div>
 </template>
 
@@ -67,24 +71,21 @@ export default {
   name: "BaseArticle",
   components: { Modale, BaseCommentaire, UpdateArticle },
   props: {
-    article : {
+    article: {
       type: Object,
     },
-    index : {
+    index: {
       type: Number,
     },
-    coms : {
+    coms: {
       type: Object,
-    }
+    },
   },
   data() {
     return {
       commentaires: "",
-      commentaire: {
-        text: "",
-      },
+      newCommentaire: "",
       errors: null,
-      valid: null,
       click: false,
       showUpdate: false,
       displayCom: false,
@@ -96,40 +97,21 @@ export default {
   },
   mounted() {
     // Recupération des commentaires
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
-      let idArticle = this.article.id;
-      this.axios
-        .get(`http://localhost:3000/api/comment/${idArticle}`, {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((foundCommentaires) => {
-            this.commentaires = foundCommentaires.data;
-            console.log("commentaires", this.commentaires);
-        })
-        .catch((e) => {
-          console.log(e.response.data.error);
-          // this.errors = e.response.data.error;
-        })
-    // Recupération des pseudonymes
-    let idUser = this.article.id_user;
-      this.axios
-        .get(`http://localhost:3000/api/user/${idUser}`, {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((user) => {
-            this.author = user.data.pseudonyme;
-        })
-        .catch((e) => {
-          console.log(e.response.data.error);
-          // this.errors = e.response.data.error;
-        })
-
-
+    let user = JSON.parse(localStorage.getItem("user"));
+    let token = user.token;
+    let idArticle = this.article.id;
+    this.axios
+      .get(`http://localhost:3000/api/comment/${idArticle}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((foundCommentaires) => {
+        this.commentaires = foundCommentaires.data;
+      })
+      .catch((e) => {
+        console.log(e.response.data);
+      });
   },
   methods: {
     toggleModale() {
@@ -157,44 +139,44 @@ export default {
           },
         })
         .then((foundCommentaires) => {
-            this.commentaires = foundCommentaires.data;
-            console.log("in");
+          this.commentaires = foundCommentaires.data;
+          console.log("in");
         })
         .catch((e) => {
-          console.log(e.response.data.error);
-          // this.errors = e.response.data.error;
+          console.log(e);
         });
     },
     createCommentaire() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    let token = user.token;
-    if (this.commentaire.text.length >= 3) {
-      this.axios
-        .post(
-          `http://localhost:3000/api/comment/${this.article.id}`,
-          {
-            text: this.commentaire.text,
-          },
-          {
-            headers: {
-              Authorization: "Bearer " + token,
+      let user = JSON.parse(localStorage.getItem("user"));
+      let token = user.token;
+      if (this.newCommentaire.length >= 3) {
+        this.axios
+          .post(
+            `http://localhost:3000/api/comment/${this.article.id}`,
+            {
+              text: this.newCommentaire,
             },
-          }
-        )
-        .then((response) => {
-          this.click = false;
-          this.commentaire= ""
-          this.message = response.data 
-          this.toggleModale()
-          this.displayCommentaires(this.article.id)
-        })
-        .catch((e) => {
-          this.errors = e;
-        });
-        } else {
-          this.message = "3 caractères minimum 🙏" 
-          this.toggleModale()
-          this.displayCommentaires()
+            {
+              headers: {
+                Authorization: "Bearer " + token,
+              },
+            }
+          )
+          .then((response) => {
+            // reset champ
+            this.newCommentaire = "";
+            // display & refresh
+            this.click = false;
+            this.message = response.data;
+            this.toggleModale();
+            this.displayCommentaires(this.article.id);
+          })
+          .catch((e) => {
+            this.errors = e;
+          });
+      } else {
+        this.message = "3 caractères minimum 🙏";
+        this.toggleModale();
       }
     },
     deleteCom(index) {
@@ -210,24 +192,23 @@ export default {
             },
           })
           .then((response) => {
-          this.message = response.data 
-          this.toggleModale()
-          this.displayCommentaires();
+            this.message = response.data;
+            this.toggleModale();
+            this.displayCommentaires();
             // if(this.commentaires.length == 0) { this.displayCom = false}
           })
           .catch((e) => {
-          this.message = e.response.data
-          this.toggleModale()
-          console.log("log erreur delete", e.response);
+            this.message = e.response.data;
+            this.toggleModale();
+            console.log("erreur delete_com", e.response);
           });
       }
     },
-  }
+  },
 };
 </script>
 
 <style scoped>
-
 a {
   color: black;
   text-decoration: none;
@@ -285,7 +266,7 @@ img {
   margin-right: auto;
   border: 2px solid #a7a7a7;
   border-radius: 1em;
-  width: 80%;
+  /* width: 80%; */
   background: whitesmoke;
 }
 #com_text,
@@ -293,11 +274,9 @@ img {
   padding: 0.2em;
 }
 .error {
-  color: red;
+  color: #f00020;
   padding: 0.5em;
-}
-.valid {
-  color: #003ba2;
-  padding: 0.5em;
+  display: inline-block;
+  border: dashed #B22222;
 }
 </style>
