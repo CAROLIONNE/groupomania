@@ -83,11 +83,11 @@
             :key="com.id"
           >
            <BaseCommentaire :commentaire="com" :index="index" :getComment="getComment"/>
-            <Modale :show="show" :toggleModale="toggleModale"/>
           </div>
         </div>
       </div>
     </div>
+    <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
   </div>
 </template>
 
@@ -172,7 +172,8 @@ export default {
         this.commentaires = allCommentaires.data;
       })
       .catch((e) => {
-        this.errors = e;
+        this.commentaires = ""
+        console.log("getComment, displayArticle", e.response);
       });
     },
     timestamp(date) {
@@ -214,21 +215,26 @@ export default {
           },
         })
         .then((res) => {
-          // TODO MODALE 
           this.showUpdate = false;
-          alert(res.data);
-          this.getArticle()
-          
+          this.click = false;
+          this.message = res.data;
+          this.toggleModale();
+          setTimeout(() => {
+            this.getArticle()           
+          }, 300);
         })
         .catch((e) => {
-          alert(e.response.data);
+          this.message = e.response.data;
+          this.toggleModale();
+          // alert(e.response.data);
         });
     },
     deleteArticle() {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
       let $id = this.$route.params.id;
-      confirm("Voulez vous supprimer cet article ?");
+      const valid = confirm("Voulez vous supprimer cet article ?");
+      if (valid){
       this.axios
         .delete(`http://localhost:3000/api/article/${$id}`, {
           headers: {
@@ -236,13 +242,18 @@ export default {
           },
         })
         .then((response) => {
-          alert(response.data);
+          // modale ne fonctionne pas
+            this.click = false;
+            this.message = response.data;
+          // alert(response.data);
           this.$router.push({ name: "FilActu" });
         })
         .catch((e) => {
-          alert(e.response.data);
+          this.click = false;
+          this.message = e.response.data;
           // console.log(e.response.config.data);
         });
+      }
     },
 
     displayNewComment() {
@@ -265,45 +276,20 @@ export default {
             }
           )
           .then((response) => {
-            // TODO Ajouter modale et refresh ne fonctionne pas
             this.commentaire= "";
             this.click = false;
+            this.message = response.data;
+            this.toggleModale();
             this.getComment();
-            alert(response.data);
           })
           .catch((e) => {
             console.log(e);
             this.errors = e.response.data;
           });
       } else {
-        this.errors = "Fields incomplete min 3 characters";
+        this.errors = "Minimum 3 caratères 🙏";
       }
     },
-    // deleteCom(index) {
-    //   let user = JSON.parse(localStorage.getItem("user"));
-    //   let token = user.token;
-    //   let $id = this.commentaires[index].id_commentaire;
-    //   const valid = confirm("Voulez vous supprimer ce commentaire ?");
-    //   if (valid) {
-    //     this.axios
-    //       .delete(`http://localhost:3000/api/comment/${$id}`, {
-    //         headers: {
-    //           Authorization: "Bearer " + token,
-    //         },
-    //       })
-    //       .then((response) => {
-    //         // alert(response.data);
-    //       this.message = response.data
-    //       this.toggleModale()
-    //       this.getComment();
-    //       })
-    //       .catch((e) => {
-    //         console.log("log erreur delete", e);
-    //         alert(e.response.data);
-    //         // console.log(e.response.config.data);
-    //       });
-    //   }
-    // },
   },
 };
 </script>

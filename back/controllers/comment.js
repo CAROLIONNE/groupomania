@@ -29,7 +29,7 @@ module.exports.createComment = async (req, res) => {
   res.status(201).json("Commentaire créé 😉");
 } catch (error) {
   console.log(error);
-  res.status(401).json("Merçi de remplir tout les champs correctement 🙏");
+  res.status(401).json("Merçi de remplir le champ correctement 🙏");
 }
 }
 

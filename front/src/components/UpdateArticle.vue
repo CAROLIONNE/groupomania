@@ -1,13 +1,11 @@
 <template>
-    <div id="mod" v-if='article.utilisateurId == userConnect.id'>
-      
+    <div id="mod" v-if='article.utilisateurId == userConnect.userID || userConnect.isAdmin == 1'>
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
           <button id="delete-btn" v-on:click="deleteArticle(article.id)">
             Supprimer l'article
           </button>
-          <div>Salut</div>
           <form @submit.prevent="update($event, article.id)">
             <fieldset id="container_update" v-if="showUpdate">
               <legend><h2>Modification</h2></legend>
@@ -24,14 +22,15 @@
               <input type="submit" value="Sauvegarder" />
             </fieldset>
           </form>
-          {{ article }}
+          <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
         </div>
 </template>
 
 <script>
-
+import Modale from "../components/ModaleBox.vue";
 export default {
     name: "UpdateArticle",
+    components: { Modale },
     props: {
     article : {
       type: Object
@@ -42,17 +41,21 @@ export default {
   },
   data () {
       return {
-          articles: {},
-          showUpdate: false,
-          userConnect : {}
+        articles: {},
+        showUpdate: false,
+        userConnect : {},
+        show: false,
+        message: null,
       }
   },
   mounted(){ 
     let user = JSON.parse(localStorage.getItem("user"));
     this.userConnect = user
-  console.log(user);
   },
   methods: {
+    toggleModale() {
+      this.show = !this.show
+    },
     showDisplayUpdate() {
       this.showUpdate = !this.showUpdate;
     },
@@ -68,13 +71,15 @@ export default {
           },
         })
         .then((res) => {
-          // TODO MODALE 
           this.showUpdate = false;
-          alert(res.data);
-          this.getArticle() 
+          this.message = res.data;
+          this.toggleModale();
+          // TODO repasser les données au parent
+          // this.getArticles() 
         })
         .catch((e) => {
-          alert(e.response.data);
+          this.message = e.response.data;
+          this.toggleModale();
         });
     },
     getArticles() {
@@ -98,25 +103,28 @@ export default {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
     //   let $id = this.$route.params.id;
-      confirm("Voulez vous supprimer cet article ?");
-      this.axios
+      const valid = confirm("Voulez vous supprimer cet article ?");
+      if (valid) {
+        this.axios
         .delete(`http://localhost:3000/api/article/${id}`, {
           headers: {
             Authorization: "Bearer " + token,
           },
         })
         .then((response) => {
-        // ajout modale et refresh
-          alert(response.data);
-            this.getArticles();
-
+        // TO DO refresh
+          this.message = response.data;
+          this.toggleModale();
+          // TODO repasser les données au parent
+          this.getArticles();
           // si sur une autre page renvoyer au fil d'actu
-            // this.$router.push({ name: "FilActu" });
+          // this.$router.push({ name: "FilActu" });
         })
         .catch((e) => {
-        // modale
-          alert(e.response.data);
+          this.message = e.response.data;
+          this.toggleModale();
         });
+      }
     },
   }
 }
