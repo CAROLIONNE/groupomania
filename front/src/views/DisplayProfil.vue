@@ -23,7 +23,7 @@
           />
           <p>Inscrit depuis le {{ timestamp }}</p>
           <div id="btn">
-            <input type="submit" value="Modifier" />
+            <input class='submit' type="submit" value="Modifier" />
             <input
               id="delete"
               type="submit"
@@ -43,7 +43,7 @@
           <img :src="userInfo.avatar" />
           <input id="avatar" type="file" name="image"  />
           <div id="btn">
-            <input type="submit" value="Sauvegarder" />
+            <input class="submit" type="submit" value="Sauvegarder" />
 
           </div>
         </fieldset>
@@ -88,6 +88,9 @@ export default {
       .catch((e) => {
         this.message = e.response.data.error;
         this.toggleModale();
+        localStorage.clear();
+        this.$store.commit("USER_DISCONNECT");
+        this.$router.push({ name: "Connect" });
       });
   },
   methods: {
@@ -184,13 +187,15 @@ export default {
             },
           })
           .then((response) => {
-            // TODO modale ne fonctionne pas
-            // alert(response.data);
+            // modale pour informer l'utilisateur
             this.message = response.data
             this.toggleModale()
-            localStorage.clear();
-            this.$store.commit("USER_DISCONNECT");
-            this.$router.push({ name: "Inscription" });
+              setTimeout(() => {
+                // vide le LS et renvoie a la page d'inscription
+                localStorage.clear();
+                this.$store.commit("USER_DISCONNECT");
+                this.$router.push({ name: "Inscription" });       
+          }, 699);
           })
           .catch((e) => {
             this.message = e.response.data ;
@@ -230,7 +235,27 @@ img {
   /* object-fit: cover; */
   border: outset;
 }
-
+#delete {
+    background-color: white; 
+    color: black; 
+    border: 2px solid #f44336;
+}
+#delete:hover {
+    background-color: #f44336;
+    color: white;
+}
+input {
+  cursor: pointer;
+}
+.submit {
+    background-color: white;
+    color: black;
+    border: 2px solid #555555;
+}
+.submit:hover {
+    background-color: #555555;
+    color: white;
+}
 input {
   padding: 0.2em;
   margin: 0.2em;

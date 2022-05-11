@@ -20,7 +20,6 @@
        v-model="text"
        output-format="html" 
     />
-      {{ text }}
       <!-- <textarea
         id="article_text"
         name="text"
@@ -58,6 +57,11 @@ export default {
       show: false,
       message: null,
     };
+  },
+    mounted() {
+    // var myContent = Editor.get("editor").getContent();
+    var myContent = Editor.activeEditor.getContent();
+    console.log(myContent);
   },
   methods: {
     toggleModale() {

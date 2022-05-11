@@ -13,6 +13,7 @@
       </div>
       <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
     </div>
+    <i class="fa-solid fa-arrow-up-long" @click="scrollToTop()"></i>
   </div>
 </template>
 
@@ -54,6 +55,9 @@ export default {
       });
   },
   methods: {
+    scrollToTop() {
+            window.scrollTo(0, 0);
+        },
     createArticle() {
       this.$router.push({ name: "NewArticle" });
     },
@@ -97,7 +101,11 @@ h2 {
     rgba(208, 210, 237, 0.5858544101234244) 29%
   );
 }
-
+.fa-solid fa-arrow-up-long {
+    border: black 1px solid;
+    padding: 0.2em;
+    border-radius: 25%;
+}
 #container_update {
   padding: 0.5em;
   margin: 0.5em;
