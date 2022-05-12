@@ -1,112 +1,150 @@
 <template>
-    <div id="mod">
+    <div id="mod" v-if='article.utilisateurId == userConnect.userID || userConnect.isAdmin == 1'>
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
           <button id="delete-btn" v-on:click="deleteArticle(article.id)">
             Supprimer l'article
           </button>
-          <form @submit.prevent="update($event, article.id)">
+          <form @submit.prevent="update(article.id)">
             <fieldset id="container_update" v-if="showUpdate">
               <legend><h2>Modification</h2></legend>
+              <!-- Error Unexpected mutation of "article" prop -->
               <label for="titre">Titre : </label>
               <input type="text" v-model.trim="article.titre" name="titre"/>
-              <label for="text">Texte : </label>
-              <input type="text" v-model.trim="article.text" name="text"/>
+              <!-- <input type="text" v-model.trim=$store.state.article.titre name="titre"/> -->
+              <editor
+                api-key="b7vz3gtuzy2c28rt2axsmshdeh5dfh1vftz3x9tvoqg12057"
+                :init="{
+                  height: 150,
+                  menubar: false,
+                }"
+                initial-value=""
+                id="editor"
+                v-model=article.text
+                name="text"
+              />
+              
               <input
                 id="file"
                 type="file"
                 name="image"
+                v-on:change="fileChange"
               />
-              <input type="submit" value="Sauvegarder" />
+              <input class="submit" type="submit" value="Sauvegarder" v-on:="$emit('getArticle', article)"/>
             </fieldset>
           </form>
+              <!-- <button v-on:click="$emit('getArticle', article)">
+                click
+              </button> -->
+          <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
         </div>
 </template>
 
 <script>
-
+import Modale from "../components/ModaleBox.vue";
+import Editor from '@tinymce/tinymce-vue'
 export default {
     name: "UpdateArticle",
+    components: { Modale, Editor },
     props: {
     article : {
       type: Object
     },
-    refresh : {
-        type: Function
-    },
+    displayContent: {
+      type: Boolean
+    }
   },
   data () {
       return {
-          articles: {},
-          showUpdate: false,
+        articles: {},
+        showUpdate: false,
+        userConnect : {},
+        show: false,
+        message: null,
+        media: "",
+        display: this.displayContent
       }
   },
+  mounted(){ 
+    let user = JSON.parse(localStorage.getItem("user"));
+    this.userConnect = user
+  },
   methods: {
+    fileChange(e) {
+      let files = e.target.files || e.dataTransfer.files;
+      this.media = files[0];
+    },
+    toggleModale() {
+      this.show = !this.show
+    },
     showDisplayUpdate() {
+      this.$emit('displayUpdate', this.display)
+      this.display = !this.display;
       this.showUpdate = !this.showUpdate;
     },
-    update($event, id) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
-      const updatedPost = new FormData($event.target);
+    update(id) {
+      // let user = JSON.parse(localStorage.getItem("user"));
+      // let token = user.token;
+      const updatedPost = new FormData();
+      updatedPost.append("titre", this.article.titre)
+      updatedPost.append("text", this.article.text)
+      // updatedPost.append("titre", this.$store.state.article.titre)
+      // updatedPost.append("text", this.$store.state.article.text)
+      updatedPost.append("image", this.media)
       this.axios
         .put(`http://localhost:3000/api/article/${id}`, updatedPost,{
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: "Bearer " + token,
+            Authorization: "Bearer " + this.$store.state.token,
           },
         })
         .then((res) => {
-          // TODO MODALE 
           this.showUpdate = false;
-          alert(res.data);
-          this.getArticle() 
+          this.message = res.data;
+          this.toggleModale();
+          // refresh
+          setTimeout(() => {
+            this.$store.dispatch("fetchArticles")  
+          }, 800);
+          ///////
+          // this.$store.dispatch("updateArticle", id) 
+          // TODO repasser les données au parent
         })
         .catch((e) => {
-          alert(e.response.data);
+          this.message = e.response.data;
+          this.toggleModale();
         });
-    },
-    getArticles() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
-     this.axios
-      .get(`http://localhost:3000/api/article`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((allArticles) => {
-        this.articles = allArticles.data;
-        console.log("getArticles", this.articles);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
     },
     deleteArticle(id) {
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-    //   let $id = this.$route.params.id;
-      confirm("Voulez vous supprimer cet article ?");
-      this.axios
+      const valid = confirm("Voulez vous supprimer cet article ?");
+      if (valid) {
+        this.axios
         .delete(`http://localhost:3000/api/article/${id}`, {
           headers: {
             Authorization: "Bearer " + token,
           },
         })
         .then((response) => {
-        // ajout modale et refresh
-          alert(response.data);
-            this.getArticles();
+          this.message = response.data;
+          this.toggleModale();
+          // refresh
+          setTimeout(() => {
+            this.$store.dispatch("fetchArticles")  
+          }, 800);
+          // TODO repasser les données au parent
 
           // si sur une autre page renvoyer au fil d'actu
-            // this.$router.push({ name: "FilActu" });
+          // this.$router.push({ name: "FilActu" });
+
         })
         .catch((e) => {
-        // modale
-          alert(e.response.data);
+          this.message = e.response.data;
+          this.toggleModale();
         });
+      }
     },
   }
 }
@@ -121,5 +159,8 @@ export default {
 #container_update > input {
   padding: 0.2em;
   margin: 0.2em;
+}
+.submit{
+  cursor: pointer;
 }
 </style>

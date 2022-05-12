@@ -20,15 +20,6 @@
        v-model="text"
        output-format="html" 
     />
-      {{ text }}
-      <!-- <textarea
-        id="article_text"
-        name="text"
-        rows="5"
-        cols="33"
-        v-model="text"
-      >
-      </textarea> -->
       <input id="file" type="file" name="image" v-on:change="fileChange" />
       <p id="error" v-if="errors.length">{{ errors }}</p>
       <button
@@ -45,11 +36,10 @@
 
 <script>
 import Modale from "../components/ModaleBox.vue";
-// import Editor from "../components/TinyMCE.vue";
 import Editor from '@tinymce/tinymce-vue'
 export default {
   name: "NewArticle",
-  components: {'editor': Editor, Modale },
+  components: { Editor, Modale },
   data() {
     return {
       titre: "",
@@ -60,10 +50,6 @@ export default {
       message: null,
     };
   },
-  mounted() {
-  const editor = document.getElementById("editor")
-  console.log(editor.value);
-},
   methods: {
     toggleModale() {
       this.show = !this.show
@@ -73,28 +59,19 @@ export default {
       this.media = files[0];
     },
     createArticle() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
       const data = new FormData();
-      // const textEditor = document.getElementById("editor").value
-      // console.log(textEditor);
       data.append("titre", this.titre);
       data.append("text", this.text);
-      // data.append("text", textEditor);
       data.append("image", this.media);
       if (this.titre.length >= 3 && this.text.length >= 3) {
         this.axios
           .post(`http://localhost:3000/api/article`, data, {
             headers: {
-              Authorization: "Bearer " + token,
+              Authorization: "Bearer " + this.$store.state.token,
               'content-Type': "multipart/form-data",
             },
           })
-          .then((response) => {
-            // modale ne fonctionne pas
-            // alert(response.data)
-            this.message = response.data
-            this.toggleModale()
+          .then(() => {
             this.$router.push({ name: "FilActu" });
           })
           .catch((e) => {
@@ -127,8 +104,6 @@ h1 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* margin-left: auto;
-  margin-right: auto; */
   border-radius: 3em;
   -webkit-box-shadow: 0px 10px 13px -7px #000000,
     5px 5px 15px 5px rgba(0, 0, 0, 0);
@@ -147,7 +122,6 @@ h1 {
 #file {
   margin: 1em;
 }
-
 #btn_submit {
   margin: 1em;
   width: 30%;
@@ -195,7 +169,10 @@ h1 {
   transform: translateY(0);
 }
 #error {
-  color: red;
-  height: 2em;
+  color: #f00020;
+  padding: 0.5em;
+  display: inline-block;
+  border: dashed #B22222;
+  margin: 0.2em
 }
 </style>

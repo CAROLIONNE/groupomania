@@ -42,9 +42,12 @@ export default {
         })
         .then((response) => {
           let userConnect = response.data;
-          localStorage.setItem('user', JSON.stringify(userConnect) );
           response.headers.authorization = userConnect.token
+          localStorage.setItem('user', JSON.stringify(userConnect) );
           this.$router.push({ name: "FilActu" });
+          this.$store.commit('USER_CONNECT');
+          // this.$store.dispatch('fetchUser', userConnect.userID);
+          this.$store.commit('GET_TOKEN', userConnect.token)
         })
         .catch((e) => {
           console.log(e);
@@ -82,7 +85,6 @@ form {
     rgba(144, 140, 153, 0.510224158022584) 0%,
     rgba(208, 210, 237, 0.5858544101234244) 29%
   );
-  
 }
 label {
   margin: 0.5em;
@@ -91,7 +93,6 @@ label {
   color: red;
   padding: 0.5em;
 }
-
 #mail,
 #password {
   padding: 0.5em;

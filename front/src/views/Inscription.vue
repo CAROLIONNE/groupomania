@@ -46,7 +46,8 @@ export default {
       .then((response) => {
           let userConnect = response.data;
           localStorage.setItem('user', JSON.stringify(userConnect) );
-          response.headers.authorization = userConnect.token
+          response.headers.authorization = userConnect.token;
+          this.$store.commit('USER_CONNECT')
           this.$router.push({ name: "FilActu" });
       })
       .catch(e => {
