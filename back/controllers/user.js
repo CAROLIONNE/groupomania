@@ -81,6 +81,7 @@ module.exports.login = async (req, res) => {
       }
       res.status(200).json({
         // Creation du token et envoi coté client
+        userConnect: userFound,
         isAdmin: userFound.isAdmin,
         pseudo: userFound.pseudonyme,
         userID: userFound.id,

@@ -20,14 +20,6 @@
        v-model="text"
        output-format="html" 
     />
-      <!-- <textarea
-        id="article_text"
-        name="text"
-        rows="5"
-        cols="33"
-        v-model="text"
-      >
-      </textarea> -->
       <input id="file" type="file" name="image" v-on:change="fileChange" />
       <p id="error" v-if="errors.length">{{ errors }}</p>
       <button
@@ -58,11 +50,6 @@ export default {
       message: null,
     };
   },
-    mounted() {
-    // var myContent = Editor.get("editor").getContent();
-    var myContent = Editor.activeEditor.getContent();
-    console.log(myContent);
-  },
   methods: {
     toggleModale() {
       this.show = !this.show
@@ -72,20 +59,15 @@ export default {
       this.media = files[0];
     },
     createArticle() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
       const data = new FormData();
-      // const textEditor = document.getElementById("editor").value
-      // console.log(textEditor);
       data.append("titre", this.titre);
       data.append("text", this.text);
-      // data.append("text", textEditor);
       data.append("image", this.media);
       if (this.titre.length >= 3 && this.text.length >= 3) {
         this.axios
           .post(`http://localhost:3000/api/article`, data, {
             headers: {
-              Authorization: "Bearer " + token,
+              Authorization: "Bearer " + this.$store.state.token,
               'content-Type': "multipart/form-data",
             },
           })
@@ -122,8 +104,6 @@ h1 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* margin-left: auto;
-  margin-right: auto; */
   border-radius: 3em;
   -webkit-box-shadow: 0px 10px 13px -7px #000000,
     5px 5px 15px 5px rgba(0, 0, 0, 0);
