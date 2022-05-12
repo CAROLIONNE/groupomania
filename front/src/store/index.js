@@ -31,8 +31,7 @@ if (!user) {
 
 export default new Vuex.Store({
   state: {
-    // user: '',
-    token: '',
+    user: user,
     userConnect: false,
     articles: {},
     // article: {},
@@ -40,9 +39,6 @@ export default new Vuex.Store({
   getters: {
   },
   mutations: {
-    GET_TOKEN(state, token) {
-      state.token = token;
-    },
     // USER_INFO(state, user) {
     //   state.user = user;
     // },
@@ -65,7 +61,8 @@ export default new Vuex.Store({
   actions: {
     // let user = JSON.parse(localStorage.getItem("user"));
     // let token = user.token;
-    // Récupération des articles
+
+    // Récupération des infos utilisateurs
     // fetchUser({ commit }, id ) {     
     //   axios
     //   .get(`http://localhost:3000/api/user/${id}`, {
@@ -81,6 +78,7 @@ export default new Vuex.Store({
     //       console.log(error)
     //     });
     // },
+    
     // Récupération des articles
     fetchArticles({ commit }) {      
       axios
@@ -96,6 +94,7 @@ export default new Vuex.Store({
           console.log(error)
         });
     },
+
     // // Récupération des données d'un l'article
     // fetchArticle({commit}, id){
     //   console.log(id);
@@ -113,7 +112,8 @@ export default new Vuex.Store({
     //       console.log(e);
     //     });
     // },
-    // Mettre a jour article
+
+    // Mettre a jour un article
     updateArticle({commit}, id){
       axios
         .get(`http://localhost:3000/api/article/${id}`, {
@@ -134,8 +134,8 @@ export default new Vuex.Store({
   modules: {
   },
   plugins: [createPersistedState({
-    key: ['userConnect', 'token'],
-    paths: ['userConnect', 'token'],
+    key: ['userConnect'],
+    paths: ['userConnect'],
     storage: window.localStorage,
   })]
 })
@@ -146,7 +146,7 @@ export default new Vuex.Store({
 //  this.axios
 //   .get(`http://localhost:3000/api/article`, {
 //     headers: {
-//       Authorization: "Bearer " + token,
+//       Authorization: "Bearer " + user.token,
 //     },
 //   })
 //   .then((allArticles) => {

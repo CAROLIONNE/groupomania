@@ -1,8 +1,7 @@
 <template>
   <div id="content">
-    <!-- connecté : {{ $store.state.userConnect }} /
+    connecté : {{ $store.state.userConnect }} /
     user : {{ $store.state.user }}
-    token: {{ $store.state.token }} -->
 
     <!-- Navigation desktop -->
     <div id="nav_desktop" v-if="!mobile">

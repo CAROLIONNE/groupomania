@@ -96,7 +96,7 @@ export default {
         .put(`http://localhost:3000/api/article/${id}`, updatedPost,{
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: "Bearer " + this.$store.state.token,
+            Authorization: "Bearer " + this.$store.state.user.token,
           },
         })
         .then((res) => {
@@ -117,14 +117,14 @@ export default {
         });
     },
     deleteArticle(id) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
+      // let user = JSON.parse(localStorage.getItem("user"));
+      // let token = user.token;
       const valid = confirm("Voulez vous supprimer cet article ?");
       if (valid) {
         this.axios
         .delete(`http://localhost:3000/api/article/${id}`, {
           headers: {
-            Authorization: "Bearer " + token,
+            Authorization: "Bearer " + this.$store.state.user.token,
           },
         })
         .then((response) => {

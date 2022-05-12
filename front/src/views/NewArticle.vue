@@ -67,7 +67,7 @@ export default {
         this.axios
           .post(`http://localhost:3000/api/article`, data, {
             headers: {
-              Authorization: "Bearer " + this.$store.state.token,
+              Authorization: "Bearer " + this.$store.state.user.token,
               'content-Type': "multipart/form-data",
             },
           })

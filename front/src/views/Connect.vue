@@ -47,7 +47,6 @@ export default {
           this.$router.push({ name: "FilActu" });
           this.$store.commit('USER_CONNECT');
           // this.$store.dispatch('fetchUser', userConnect.userID);
-          this.$store.commit('GET_TOKEN', userConnect.token)
         })
         .catch((e) => {
           console.log(e);
