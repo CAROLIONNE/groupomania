@@ -5,16 +5,19 @@
       :to="{ name: 'DisplayArticle', params: { id: article.id } }"
       ><h2>{{ article.titre }}</h2>
     </router-link>
-    <UpdateArticle :article="article" />
-    <img id="article_img" :src="article.media" v-if="article.media" />
-    <p id="article_text">{{ article.text }}</p>
+    <UpdateArticle :article="article" :displayContent.sync='displayContent' v-on:displayUpdate="displayUpdate($event)"/>
+    <!-- recup article pas a jour -->
+    <div id='content' v-if="displayContent">
+    <img :src="article.media" v-if="article.media" />
+    <p id="article_text" v-html="article.text"></p>
     <p id="article_author">
       Créé par {{ article.utilisateur.pseudonyme }}, le
       {{ timestamp2(article.createdAt) }}
       <span v-if="article.createdAt != article.updatedAt"
-        >, Modifié le {{ timestamp2(article.updatedAt) }}</span
-      >
+        >, Modifié le {{ timestamp2(article.updatedAt) }}
+      </span>
     </p>
+    </div>
     <div id="btn">
       <button id="btn_new_com" @click="displayNewComment()">Commenter</button>
       <button
@@ -40,7 +43,7 @@
       </textarea>
       <input
         type="submit"
-        id="submit_com"
+        class="submit"
         v-on:click="createCommentaire()"
         value="Envoyer"
       />
@@ -89,13 +92,14 @@ export default {
       click: false,
       showUpdate: false,
       displayCom: false,
+      displayContent: true,
       media: "",
       message: null,
       show: false,
       author: null,
     };
   },
-  mounted() {
+  created() {
     // Recupération des commentaires
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
@@ -114,6 +118,12 @@ export default {
       });
   },
   methods: {
+    // getArticle($event) {
+    //   console.log($event);
+    // },
+    displayUpdate($event) {
+      this.displayContent = $event
+    },
     toggleModale() {
       this.show = !this.show;
     },
@@ -125,13 +135,14 @@ export default {
     },
     displayNewComment() {
       this.click = !this.click;
+      if (this.displayCom == true) this.displayCom = false
     },
     // Afficher les commentaires d'un article
     displayCommentaires(id) {
       this.displayCom = !this.displayCom;
+      if (this.click == true) this.click = false
       let user = JSON.parse(localStorage.getItem("user"));
       let token = user.token;
-      // let idArticle = this.article.id_article;
       this.axios
         .get(`http://localhost:3000/api/comment/${id}`, {
           headers: {
@@ -179,31 +190,6 @@ export default {
         this.toggleModale();
       }
     },
-    deleteCom(index) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
-      let $id = this.commentaires[index].id_commentaire;
-      const valid = confirm("Voulez vous supprimer ce commentaire ?");
-      if (valid) {
-        this.axios
-          .delete(`http://localhost:3000/api/comment/${$id}`, {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          })
-          .then((response) => {
-            this.message = response.data;
-            this.toggleModale();
-            this.displayCommentaires();
-            // if(this.commentaires.length == 0) { this.displayCom = false}
-          })
-          .catch((e) => {
-            this.message = e.response.data;
-            this.toggleModale();
-            console.log("erreur delete_com", e.response);
-          });
-      }
-    },
   },
 };
 </script>
@@ -215,8 +201,9 @@ a {
   cursor: pointer;
 }
 img {
+  overflow:auto;
   height: 30em;
-  margin: 1em;
+  margin: 0.5em;
   border: outset;
   max-width: 100%;
   margin-left: auto;
@@ -254,9 +241,7 @@ img {
 
 #container_comments {
   margin: 0.5em;
-  /* background: black; */
   border-radius: 3em;
-  width: 70%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -272,6 +257,9 @@ img {
 #com_text,
 #com_date {
   padding: 0.2em;
+}
+.submit{
+  cursor: pointer;
 }
 .error {
   color: #f00020;

@@ -8,7 +8,7 @@
       <h2 id="fil">Fil d'actualité</h2>
     </div>
     <div id="container">
-      <div id="article" v-for="(article, index) in articles" :key="article.id">
+      <div id="article" v-for="(article, index) in $store.state.articles" :key="article.id">
         <BaseArticle :article="article" :index="index"/>
       </div>
       <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
@@ -25,7 +25,6 @@ export default {
   components: { BaseArticle, Modale},
   data() {
     return {
-      articles: null,
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
       show: false,
       message: null,
@@ -33,26 +32,7 @@ export default {
   },
 
   created() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    let token = user.token;
-     this.axios
-      .get(`http://localhost:3000/api/article`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((allArticles) => {
-        this.articles = allArticles.data;
-
-      })
-      .catch((e) => {
-        // modale ne s'affiche pas
-        this.message = e.response.data.error;
-        this.toggleModale();
-        localStorage.clear();
-        this.$store.commit("USER_DISCONNECT");
-        this.$router.push({ name: "Connect" });
-      });
+    this.$store.dispatch("fetchArticles")       
   },
   methods: {
     scrollToTop() {
@@ -101,10 +81,11 @@ h2 {
     rgba(208, 210, 237, 0.5858544101234244) 29%
   );
 }
-.fa-solid fa-arrow-up-long {
+.fa-arrow-up-long {
     border: black 1px solid;
     padding: 0.2em;
     border-radius: 25%;
+    cursor: pointer;
 }
 #container_update {
   padding: 0.5em;

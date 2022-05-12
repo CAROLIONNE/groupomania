@@ -76,6 +76,7 @@ export default {
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
     let id = user.userID;
+  // this.$store.dispatch("fetchUser", id)  
     this.axios
       .get(`http://localhost:3000/api/user/${id}`, {
         headers: {
@@ -195,7 +196,7 @@ export default {
                 localStorage.clear();
                 this.$store.commit("USER_DISCONNECT");
                 this.$router.push({ name: "Inscription" });       
-          }, 699);
+          }, 1500);
           })
           .catch((e) => {
             this.message = e.response.data ;

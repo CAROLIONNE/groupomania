@@ -1,13 +1,17 @@
 <template>
   <div id="content">
+    <!-- connecté : {{ $store.state.userConnect }} /
+    user : {{ $store.state.user }}
+    token: {{ $store.state.token }} -->
+
     <!-- Navigation desktop -->
     <div id="nav_desktop" v-if="!mobile">
       <!-- Navigation avec authentification -->
-      <nav class="nav" v-if="$store.state.user == true">
+      <nav class="nav" v-if="$store.state.userConnect == true">
         <router-link
           :to="{ name: 'FilActu' }"
           class="logo"
-          v-if="$store.state.user == true"
+          v-if="$store.state.userConnect == true"
         >
           <img
             class="img_logo"
@@ -26,8 +30,8 @@
         </div>
       </nav>
       <!-- Navigation sans authentification -->
-      <nav class="nav" v-if="$store.state.user == false">
-        <router-link to="/" class="logo" v-if="$store.state.user == false">
+      <nav class="nav" v-if="$store.state.userConnect == false">
+        <router-link to="/" class="logo" v-if="$store.state.userConnect == false">
           <img
             class="img_logo"
             src="../assets/icon-left-font-monochrome-white.svg"
@@ -48,12 +52,12 @@
     </div>
 
     <div id="nav_mobile" v-if="mobile">
-      <nav class="nav" v-if="$store.state.user == true">
+      <nav class="nav" v-if="$store.state.userConnect == true">
         <!-- Navigation avec authentification -->
         <router-link
           :to="{ name: 'FilActu' }"
           class="logo"
-          v-if="$store.state.user == true"
+          v-if="$store.state.userConnect == true"
         >
           <img
             class="img_logo"
@@ -81,8 +85,8 @@
           </div>
         </div>
       </nav>
-      <nav class="nav" v-if="$store.state.user == false">
-        <router-link to="/" class="logo" v-if="$store.state.user == false">
+      <nav class="nav" v-if="$store.state.userConnect == false">
+        <router-link to="/" class="logo" v-if="$store.state.userConnect == false">
           <i
             @click="toggleMobileNav"
             class="fa fa-bars"
@@ -136,6 +140,7 @@ export default {
     Profil() {
       let user = JSON.parse(localStorage.getItem("user"));
       let id = user.userID;
+      // let id = this.$store.state.user.id;
       if (user) {
         this.$router.push({ name: "DisplayProfil", params: { id } });
       }
@@ -171,7 +176,7 @@ a {
 }
 .nav {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   height: 3rem;
   background-color: black;
   /* test */
