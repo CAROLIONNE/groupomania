@@ -72,7 +72,7 @@ export default {
     };
   },
 
-  mounted() {
+  created() {
     let user = JSON.parse(localStorage.getItem("user"));
     let token = user.token;
     let id = user.userID;
@@ -99,12 +99,10 @@ export default {
       this.show = !this.show
     },
     getUser() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    let token = user.token;
     this.axios
       .get(`http://localhost:3000/api/user/${this.$route.params.id}`, {
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + this.$store.state.user.token,
         },
       })
       .then((user) => {
@@ -119,15 +117,13 @@ export default {
       });
     },
     updateAvatar($event, id) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
       const updatedPost = new FormData($event.target);
       this.axios
         .put(
           `http://localhost:3000/api/user/avatar/${id}`, updatedPost,
           {
             headers: {
-              Authorization: "Bearer " + token,
+              Authorization: "Bearer " + this.$store.state.user.token,
               // "content-Type": "multipart/form-data",
             },
           }
@@ -148,8 +144,6 @@ export default {
         });
     },
     updateUser(id) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
       this.axios
         .put(
           `http://localhost:3000/api/user/${id}`,
@@ -161,7 +155,7 @@ export default {
           },
           {
             headers: {
-              Authorization: "Bearer " + token,
+              Authorization: "Bearer " + this.$store.state.user.token,
             },
           }
         )
@@ -177,14 +171,12 @@ export default {
     },
 
     deleteUser() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
       const valid = confirm("Voulez vous supprimer votre compte ?");
       if (valid) {
         this.axios
           .delete(`http://localhost:3000/api/user/${this.$route.params.id}` , {
             headers: {
-              Authorization: "Bearer " + token,
+              Authorization: "Bearer " + this.$store.state.user.token,
             },
           })
           .then((response) => {

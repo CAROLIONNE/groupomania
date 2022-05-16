@@ -87,8 +87,6 @@ export default {
       this.showUpdateCom = !this.showUpdateCom;
     },
     updateCom(id, idArticle) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
       this.axios
         .put(
           `http://localhost:3000/api/comment/${id}`,
@@ -97,7 +95,7 @@ export default {
           },
           {
             headers: {
-              Authorization: "Bearer " + token,
+              Authorization: "Bearer " + this.$store.state.user.token,
             },
           }
         )
@@ -116,14 +114,12 @@ export default {
         });
     },
     deleteCom(id, idArticle) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
       const valid = confirm("Voulez vous supprimer ce commentaire ?");
       if (valid) {
         this.axios
           .delete(`http://localhost:3000/api/comment/${id}`, {
             headers: {
-              Authorization: "Bearer " + token,
+              Authorization: "Bearer " + this.$store.state.user.token,
             },
           })
           .then((response) => {

@@ -101,13 +101,11 @@ export default {
   },
   created() {
     // Recupération des commentaires
-    let user = JSON.parse(localStorage.getItem("user"));
-    let token = user.token;
     let idArticle = this.article.id;
     this.axios
       .get(`http://localhost:3000/api/comment/${idArticle}`, {
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + this.$store.state.user.token,
         },
       })
       .then((foundCommentaires) => {
@@ -141,12 +139,10 @@ export default {
     displayCommentaires(id) {
       this.displayCom = !this.displayCom;
       if (this.click == true) this.click = false
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
       this.axios
         .get(`http://localhost:3000/api/comment/${id}`, {
           headers: {
-            Authorization: "Bearer " + token,
+            Authorization: "Bearer " + this.$store.state.user.token,
           },
         })
         .then((foundCommentaires) => {
@@ -158,8 +154,6 @@ export default {
         });
     },
     createCommentaire() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
       if (this.newCommentaire.length >= 3) {
         this.axios
           .post(
@@ -169,7 +163,7 @@ export default {
             },
             {
               headers: {
-                Authorization: "Bearer " + token,
+                Authorization: "Bearer " + this.$store.state.user.token,
               },
             }
           )

@@ -46,11 +46,13 @@ export default {
           localStorage.setItem('user', JSON.stringify(userConnect) );
           this.$router.push({ name: "FilActu" });
           this.$store.commit('USER_CONNECT');
-          // this.$store.dispatch('fetchUser', userConnect.userID);
+          this.$store.dispatch('getUser');
         })
         .catch((e) => {
           console.log(e);
-          this.errors = e.response.data.error;
+          if (e.response) {
+            this.errors = e.response.data.error;
+          }
         });
     },
   },

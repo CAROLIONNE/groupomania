@@ -84,8 +84,6 @@ export default {
       this.showUpdate = !this.showUpdate;
     },
     update(id) {
-      // let user = JSON.parse(localStorage.getItem("user"));
-      // let token = user.token;
       const updatedPost = new FormData();
       updatedPost.append("titre", this.article.titre)
       updatedPost.append("text", this.article.text)
@@ -130,12 +128,11 @@ export default {
         .then((response) => {
           this.message = response.data;
           this.toggleModale();
-          // refresh
+          // refresh ne fonctionne pas
           setTimeout(() => {
             this.$store.dispatch("fetchArticles")  
-          }, 800);
+          }, 1000);
           // TODO repasser les données au parent
-
           // si sur une autre page renvoyer au fil d'actu
           // this.$router.push({ name: "FilActu" });
 

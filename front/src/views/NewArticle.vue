@@ -72,6 +72,7 @@ export default {
             },
           })
           .then(() => {
+            this.$store.dispatch("fetchArticles")  
             this.$router.push({ name: "FilActu" });
           })
           .catch((e) => {

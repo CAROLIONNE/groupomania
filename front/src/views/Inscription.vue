@@ -48,6 +48,7 @@ export default {
           localStorage.setItem('user', JSON.stringify(userConnect) );
           response.headers.authorization = userConnect.token;
           this.$store.commit('USER_CONNECT')
+          this.$store.dispatch('getUser');
           this.$router.push({ name: "FilActu" });
       })
       .catch(e => {
