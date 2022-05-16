@@ -1,16 +1,13 @@
 <template>
   <div id="content">
-    connecté : {{ $store.state.userConnect }} /
-    user : {{ $store.state.user }}
-
     <!-- Navigation desktop -->
     <div id="nav_desktop" v-if="!mobile">
       <!-- Navigation avec authentification -->
-      <nav class="nav" v-if="$store.state.userConnect == true">
+      <nav class="nav" v-if="$store.state.isAuthentificated == true">
         <router-link
           :to="{ name: 'FilActu' }"
           class="logo"
-          v-if="$store.state.userConnect == true"
+          v-if="$store.state.isAuthentificated == true"
         >
           <img
             class="img_logo"
@@ -29,8 +26,8 @@
         </div>
       </nav>
       <!-- Navigation sans authentification -->
-      <nav class="nav" v-if="$store.state.userConnect == false">
-        <router-link to="/" class="logo" v-if="$store.state.userConnect == false">
+      <nav class="nav" v-if="$store.state.isAuthentificated == false">
+        <router-link to="/" class="logo" v-if="$store.state.isAuthentificated == false">
           <img
             class="img_logo"
             src="../assets/icon-left-font-monochrome-white.svg"
@@ -48,15 +45,18 @@
           </div>
         </div>
       </nav>
+    connecté : {{ $store.state.isAuthentificated }} /
+    <!-- user : {{ $store.state.user }} -->
+    token : {{ $store.state.user.token }}
     </div>
 
     <div id="nav_mobile" v-if="mobile">
-      <nav class="nav" v-if="$store.state.userConnect == true">
+      <nav class="nav" v-if="$store.state.isAuthentificated == true">
         <!-- Navigation avec authentification -->
         <router-link
           :to="{ name: 'FilActu' }"
           class="logo"
-          v-if="$store.state.userConnect == true"
+          v-if="$store.state.isAuthentificated == true"
         >
           <img
             class="img_logo"
@@ -72,8 +72,11 @@
         ></i>
         <transition name="mobile-nav"> </transition>
         <div v-show="mobileNav" id="nav_auth-mobile">
-          <!-- <transition name="mobile-nav-menu">  -->
+          <transition name="mobile"> 
           <div class="navigation_M">
+            
+            <!-- <div class="navigation_M" :class="{ 'menu-enter-active': mobile-nav-menu }"> -->
+
             <div class="fil_actu">
               <router-link :to="{ name: 'FilActu' }" class="ancre_fil_actu">
                 Fil d'actualité
@@ -82,10 +85,11 @@
             <a class="ancre_profil" @click="Profil()"> Profil </a>
             <a class="ancre_logout" @click="logOut()"> Deconnexion </a>
           </div>
+          </transition>
         </div>
       </nav>
-      <nav class="nav" v-if="$store.state.userConnect == false">
-        <router-link to="/" class="logo" v-if="$store.state.userConnect == false">
+      <nav class="nav" v-if="$store.state.isAuthentificated == false">
+        <router-link to="/" class="logo" v-if="$store.state.isAuthentificated == false">
           <i
             @click="toggleMobileNav"
             class="fa fa-bars"
@@ -175,10 +179,8 @@ a {
 }
 .nav {
   display: flex;
-  /* align-items: center; */
   height: 3rem;
-  background-color: black;
-  /* test */
+  background-color: var(--color-secondary);
   width: 100%;
 }
 
@@ -186,7 +188,7 @@ a {
   display: flex;
   align-items: center;
   width: 100%;
-  background-color: black;
+  background-color: var(--color-secondary);
 }
 .img_logo {
   max-width: 11rem;
@@ -201,19 +203,20 @@ a {
 .navigation_M {
   display: flex;
   flex-direction: column;
-  top: 45px;
+  top: 40px;
   right: 0;
   position: absolute;
   background: rgba(0, 0, 0, 0.8);
-  transition: transform ease-in 2s;
+  transition: all ease-in-out 1s;
   overflow: hidden;
   z-index: 10;
   /* visibility: hidden; */
 }
-/* .navigation_M:click {
+/* i:active + .navigation_M {
+  z-index: 10;
+  transform: translateY(60px), scale(50px);
     visibility: visible;
-    transform: translateX(45px);
-} */
+  } */
 .inscription,
 .connexion,
 .fil_actu,
@@ -229,7 +232,7 @@ a {
 .ancre_fil_actu,
 .ancre_profil,
 .ancre_logout {
-  color: white;
+  color: var(--color-primary);
   font-size: larger;
   cursor: pointer;
 }
@@ -238,7 +241,7 @@ a {
 .ancre_connexion:hover,
 .ancre_fil_actu:hover,
 .ancre_profil:hover {
-  color: #a3eeff;
+  color: var(--color-tertiary);
   transition: all 0.15s ease-in-out;
   transform: scale(1.1);
 }
@@ -255,12 +258,22 @@ a {
   right: 0;
   /* height: 100%; */
   cursor: pointer;
-  color: white;
+  color: var(--color-primary);
   cursor: pointer;
   font-size: 25px;
   transition: 0.5s ease all;
 }
 .icon-active {
   transform: rotate(180deg);
+}
+.mobile-enter-active {
+  transition: opacity 1s;
+    /* z-index: 10;
+  transform: translateY(60px), scale(50px); */
+}
+.mobile-enter {
+  opacity: 0;
+  /* z-index: 10;
+  transform: translateY(60px), scale(50px); */
 }
 </style>

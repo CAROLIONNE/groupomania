@@ -361,7 +361,7 @@ img {
   height: 30em;
   margin: 0.5em;
   border: outset;
-  max-width: 95%;
+  max-width: 100%;
 }
 #article_text,
 #article_author {

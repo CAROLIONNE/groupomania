@@ -190,7 +190,7 @@ export default {
 
 <style scoped>
 a {
-  color: black;
+  color: var(--color-secondary);
   text-decoration: none;
   cursor: pointer;
 }
@@ -245,8 +245,7 @@ img {
   margin-right: auto;
   border: 2px solid #a7a7a7;
   border-radius: 1em;
-  /* width: 80%; */
-  background: whitesmoke;
+  background: var(--color-primary);
 }
 #com_text,
 #com_date {
@@ -256,7 +255,7 @@ img {
   cursor: pointer;
 }
 .error {
-  color: #f00020;
+  color: var(--color-error);
   padding: 0.5em;
   display: inline-block;
   border: dashed #B22222;

@@ -4,14 +4,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>Groupomania</title>
-    <script src="https://kit.fontawesome.com/50cf5c9b86.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/50cf5c9b86.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <div id="app"></div>
     <footer class="footer">
       <div id="contact">
         <!-- icone arobase version mobile -->
-        <!-- <i class="fa-solid fa-at"></i> -->
+         <a id="mailto-M" href="mailto:groupomania@network.fr"><i id="icon" class="fa-solid fa-at"></i></a>
         <a id="mailto" href="mailto:groupomania@network.fr">Contact</a>
       </div>
       <div id="adresse">Groupomania, 101 Avenue picasso 62000 ARRAS</div>
@@ -20,34 +23,56 @@
 </html>
 
 <style>
+  :root {
+    --color-primary: whitesmoke;
+    --color-secondary: black;
+    --color-tertiary: #a3eeff;
+    --color-error: #f00020;
+  }
   * {
     margin: 0;
     padding: 0;
   }
-  
+
   footer {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    background: black;
-    height: 3rem;
+    background: var(--color-secondary);
+    height: 2rem;
     position: fixed;
     bottom: 0;
     width: 100%;
   }
-
+  #icon {
+    display: none;
+  }
   #contact,
-  #adresse {
-    color: white;
-    font-size: larger;
+  #adresse, #mailto {
+    color: var(--color-primary);
+    font-size: large;
   }
-
-  #mailto {
-    color: white;
+  #mailto, #mailto-M {
+    color: var(--color-primary);
+    text-decoration: none;
   }
-  #mailto:hover {
-    color: #a3eeff;
-    transition: all 0.15s ease-in-out;
-    transform: scale(1.1);
+  #mailto:hover, #mailto-M:hover {
+    color: var(--color-tertiary);
+    transition: scale 0.15s ease-in-out;
+    transform: scale(1.9);
+  }
+  #mailto:visited, #mailto-M:visited {
+    color: var(--color-primary);
+  }
+  @media screen and (max-width: 520px) {
+    #adresse {
+      display: none;
+    }
+    #mailto {
+      display: none;
+    }
+    #icon {
+      display: inherit;
+    }
   }
 </style>

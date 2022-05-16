@@ -8,12 +8,23 @@
       <h2 id="fil">Fil d'actualité</h2>
     </div>
     <div id="container">
-      <div id="article" v-for="(article, index) in $store.state.articles" :key="article.id">
-        <BaseArticle :article="article" :index="index"/>
+      <div id="no_content" v-if="isObjEmpty($store.state.articles)">
+        Pas encore d'article pour l'instant 🧐
       </div>
-      <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
+      <div
+        id="article"
+        v-for="(article, index) in $store.state.articles"
+        :key="article.id"
+      >
+        <BaseArticle :article="article" :index="index" />
+      </div>
+      <Modale :show="show" :toggleModale="toggleModale" :message="message" />
     </div>
-    <i class="fa-solid fa-arrow-up-long" @click="scrollToTop()"></i>
+    <i
+      class="fa-solid fa-arrow-up-long"
+      v-if="$store.state.articles.length >= 2"
+      @click="scrollToTop()"
+    ></i>
   </div>
 </template>
 
@@ -22,7 +33,7 @@ import BaseArticle from "../components/BaseArticle.vue";
 import Modale from "../components/ModaleBox.vue";
 export default {
   name: "FilActu",
-  components: { BaseArticle, Modale},
+  components: { BaseArticle, Modale },
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
@@ -32,20 +43,23 @@ export default {
   },
 
   created() {
-    this.$store.dispatch("fetchArticles")       
+    this.$store.dispatch("fetchArticles");
   },
   methods: {
+    isObjEmpty(obj) {
+      return Object.keys(obj).length === 0;
+    },
     scrollToTop() {
-            window.scrollTo(0, 0);
-        },
+      window.scrollTo(0, 0);
+    },
     createArticle() {
       this.$router.push({ name: "NewArticle" });
     },
     toggleModale() {
-      this.show = !this.show
+      this.show = !this.show;
     },
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -61,6 +75,17 @@ h2 {
 }
 #fil {
   margin: 0.5em;
+}
+#no_content {
+  padding: 0.5em;
+  font-size: 20px;
+  border: 2px dashed grey;
+  margin: 1em;
+  margin-right: 1em;
+  margin-left: 1em;
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
 }
 #article {
   margin-left: auto;
@@ -82,10 +107,10 @@ h2 {
   );
 }
 .fa-arrow-up-long {
-    border: black 1px solid;
-    padding: 0.2em;
-    border-radius: 25%;
-    cursor: pointer;
+  border: black 1px solid;
+  padding: 0.2em;
+  border-radius: 25%;
+  cursor: pointer;
 }
 #container_update {
   padding: 0.5em;
