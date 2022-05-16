@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
 const models = require("../models/index"); 
-// const Utilisateur = require("../models/User");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const EMAIL_REGEX =
@@ -37,12 +36,21 @@ module.exports.signup = async (req, res) => {
   if (utilisateur) {
     return res.status(401).json({ error: "Cet email est deja utilisé ❌" });
   } else {
+      // 1er user === admin
+      let isAdmin;
+      const countUsers = await models.Utilisateur.count()
+      if (countUsers < 1)  {
+        isAdmin = true }
+      else {
+        isAdmin = false
+      }
     // Cryptage du mot de passe
     bcrypt.hash(req.body.mot_psw, 10)
-    .then((hash) => {
+      .then((hash) => {
       // Creer nouvel utilisateur
       models.Utilisateur.create({
         mail: req.body.mail,
+        isAdmin: isAdmin,
         mot_psw: hash,
         pseudonyme: req.body.pseudonyme,
       })
