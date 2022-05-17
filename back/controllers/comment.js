@@ -5,7 +5,7 @@ const models = require("../models/index");
 exports.ViewComment = async (req, res) => {
   const commentFound = await models.Comment.findAll({
     where: { articleId: req.params.id },
-    include: [models.Utilisateur],
+    include: [{model: models.Utilisateur, attributes: ["pseudonyme"]}] ,
     order: [['createdAt', 'DESC']]
   })
   if (commentFound.length > 0) {

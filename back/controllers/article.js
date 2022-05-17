@@ -4,8 +4,9 @@ const fs = require("fs");
 // Afficher tout les articles
 exports.viewAllArticles = (req, res, next) => {
   models.Article.findAll({ 
-    include: [models.Utilisateur],
+    include: [{model: models.Utilisateur, attributes: ["pseudonyme"]}] ,
     order: [['createdAt', 'DESC']]})
+
     .then((articles) => {
       if (!articles || articles.length === 0) {
         res.status(404).json({ error: "Aucun article pour le moment 🧐" });
@@ -23,7 +24,7 @@ exports.viewAllArticles = (req, res, next) => {
 exports.ViewArticle = async (req, res) => {
   const articleFound = await models.Article.findOne({
     where: { id: req.params.id }, 
-    include: [models.Utilisateur]
+    include: [{model: models.Utilisateur, attributes: ["pseudonyme"]}] ,
   });
   if (articleFound) {
     res.status(200).json({ articleFound });
