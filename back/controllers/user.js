@@ -55,9 +55,12 @@ module.exports.signup = async (req, res) => {
         pseudonyme: req.body.pseudonyme,
       })
       .then(user => {
+        delete user.mot_psw;
+        delete user.mail;
       return res.status(201).json({
         // Creation du token et envoi coté client
-        pseudo: user.pseudonyme,
+        userConnect : user,
+        isAdmin: user.isAdmin,
         userID: user.id,
         token: jwt.sign(
           { id: user.id, isAdmin: user.isAdmin },
@@ -87,11 +90,13 @@ module.exports.login = async (req, res) => {
       if (!verify) {
         res.status(404).json({ error: "L'email ou le pseudonyme est incorrect ❌" });
       }
+      delete userFound.mot_psw;
+      delete userFound.mail;
+      // console.log(userFound);
       res.status(200).json({
         // Creation du token et envoi coté client
-        userConnect: userFound,
+        userConnect : userFound,
         isAdmin: userFound.isAdmin,
-        pseudo: userFound.pseudonyme,
         userID: userFound.id,
         token: jwt.sign(
           { id: userFound.id, isAdmin: userFound.isAdmin },

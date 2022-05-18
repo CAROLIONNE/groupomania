@@ -41,12 +41,13 @@ export default {
           mot_psw: this.password,
         })
         .then((response) => {
-          let userConnect = response.data;
-          response.headers.authorization = userConnect.token
-          localStorage.setItem('user', JSON.stringify(userConnect) );
-          this.$router.push({ name: "FilActu" });
+          let user = response.data;
+          localStorage.setItem('token', user.token );
+          localStorage.setItem('user', JSON.stringify({userID : user.userConnect.id, isAdmin : user.userConnect.isAdmin}));
           this.$store.commit('USER_CONNECT');
-          this.$store.dispatch('getUser');
+          // this.$store.dispatch('getUser', user.userConnect);
+          this.$store.dispatch('fetchUser');
+          this.$router.push({ name: "FilActu" });
         })
         .catch((e) => {
           console.log(e);

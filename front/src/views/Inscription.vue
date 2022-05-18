@@ -44,11 +44,11 @@ export default {
         pseudonyme: this.pseudonyme
       })
       .then((response) => {
-          let userConnect = response.data;
-          localStorage.setItem('user', JSON.stringify(userConnect) );
-          response.headers.authorization = userConnect.token;
-          this.$store.commit('USER_CONNECT')
-          this.$store.dispatch('getUser');
+          let user = response.data;
+          this.$store.commit('USER_CONNECT');
+          localStorage.setItem('token', user.token );
+          localStorage.setItem('user', JSON.stringify({userID : user.userConnect.id, isAdmin : user.userConnect.isAdmin}));
+          this.$store.dispatch('getUser', user.userConnect);
           this.$router.push({ name: "FilActu" });
       })
       .catch(e => {
