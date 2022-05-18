@@ -84,6 +84,7 @@ export default {
       this.showUpdate = !this.showUpdate;
     },
     update(id) {
+      let token = localStorage.getItem("token");
       const updatedPost = new FormData();
       updatedPost.append("titre", this.article.titre)
       updatedPost.append("text", this.article.text)
@@ -94,7 +95,7 @@ export default {
         .put(`http://localhost:3000/api/article/${id}`, updatedPost,{
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: "Bearer " + this.$store.state.user.token,
+            Authorization: "Bearer " + token,
           },
         })
         .then((res) => {
@@ -115,14 +116,13 @@ export default {
         });
     },
     deleteArticle(id) {
-      // let user = JSON.parse(localStorage.getItem("user"));
-      // let token = user.token;
+      let token = localStorage.getItem("token");
       const valid = confirm("Voulez vous supprimer cet article ?");
       if (valid) {
         this.axios
         .delete(`http://localhost:3000/api/article/${id}`, {
           headers: {
-            Authorization: "Bearer " + this.$store.state.user.token,
+            Authorization: "Bearer " + token,
           },
         })
         .then((response) => {

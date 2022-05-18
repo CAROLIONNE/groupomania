@@ -59,6 +59,7 @@ export default {
       this.media = files[0];
     },
     createArticle() {
+      let token = localStorage.getItem("token");
       const data = new FormData();
       data.append("titre", this.titre);
       data.append("text", this.text);
@@ -67,7 +68,7 @@ export default {
         this.axios
           .post(`http://localhost:3000/api/article`, data, {
             headers: {
-              Authorization: "Bearer " + this.$store.state.user.token,
+              Authorization: "Bearer " + token,
               'content-Type': "multipart/form-data",
             },
           })

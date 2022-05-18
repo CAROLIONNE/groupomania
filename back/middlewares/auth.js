@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
     jwt.verify(token, process.env.SECRET, (err, decodedToken) => {
       if (err) {
         console.log("error authentification", err);
-        res.status(401).json({ error: "Token invalid" });
+        res.status(401).json({ error: "Token invalide" });
       } else {
         const userId = decodedToken.id;
         const isAdmin = decodedToken.isAdmin;

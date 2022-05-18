@@ -87,6 +87,8 @@ export default {
       this.showUpdateCom = !this.showUpdateCom;
     },
     updateCom(id, idArticle) {
+      let token = localStorage.getItem("token");
+      if (this.commentaireUpdate.length >= 3) {
       this.axios
         .put(
           `http://localhost:3000/api/comment/${id}`,
@@ -95,7 +97,7 @@ export default {
           },
           {
             headers: {
-              Authorization: "Bearer " + this.$store.state.user.token,
+              Authorization: "Bearer " + token,
             },
           }
         )
@@ -109,17 +111,21 @@ export default {
         })
         .catch((e) => {
           console.log("erreur updateCom", e.response);
-          this.message = e.response.data.err;
+          this.message = e.response.data.error;
           this.toggleModale();
         });
+      } else {
+        this.errors = "3 caractères minimum 🙏";
+      }
     },
     deleteCom(id, idArticle) {
+      let token = localStorage.getItem("token");
       const valid = confirm("Voulez vous supprimer ce commentaire ?");
       if (valid) {
         this.axios
           .delete(`http://localhost:3000/api/comment/${id}`, {
             headers: {
-              Authorization: "Bearer " + this.$store.state.user.token,
+              Authorization: "Bearer " + token,
             },
           })
           .then((response) => {

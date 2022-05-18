@@ -5,6 +5,7 @@
       :to="{ name: 'DisplayArticle', params: { id: article.id } }"
       ><h2>{{ article.titre }}</h2>
     </router-link>
+    
     <UpdateArticle :article="article" :displayContent.sync='displayContent' v-on:displayUpdate="displayUpdate($event)"/>
     <!-- recup article pas a jour -->
     <div id='content' v-if="displayContent">
@@ -101,11 +102,12 @@ export default {
   },
   created() {
     // Recupération des commentaires
+    let token = localStorage.getItem("token");
     let idArticle = this.article.id;
     this.axios
       .get(`http://localhost:3000/api/comment/${idArticle}`, {
         headers: {
-          Authorization: "Bearer " + this.$store.state.user.token,
+          Authorization: "Bearer " + token,
         },
       })
       .then((foundCommentaires) => {
@@ -137,12 +139,14 @@ export default {
     },
     // Afficher les commentaires d'un article
     displayCommentaires(id) {
+      let token = localStorage.getItem("token");
       this.displayCom = !this.displayCom;
       if (this.click == true) this.click = false
+      if (this.displayCom == true) {
       this.axios
         .get(`http://localhost:3000/api/comment/${id}`, {
           headers: {
-            Authorization: "Bearer " + this.$store.state.user.token,
+            Authorization: "Bearer " + token,
           },
         })
         .then((foundCommentaires) => {
@@ -152,8 +156,10 @@ export default {
         .catch((e) => {
           console.log(e);
         });
+      }
     },
     createCommentaire() {
+      let token = localStorage.getItem("token");
       if (this.newCommentaire.length >= 3) {
         this.axios
           .post(
@@ -163,7 +169,7 @@ export default {
             },
             {
               headers: {
-                Authorization: "Bearer " + this.$store.state.user.token,
+                Authorization: "Bearer " + token,
               },
             }
           )
@@ -172,16 +178,14 @@ export default {
             this.newCommentaire = "";
             // display & refresh
             this.click = false;
-            this.message = response.data;
-            this.toggleModale();
+            console.log(response.data)
             this.displayCommentaires(this.article.id);
           })
           .catch((e) => {
             this.errors = e;
           });
       } else {
-        this.message = "3 caractères minimum 🙏";
-        this.toggleModale();
+        this.errors = "3 caractères minimum 🙏";
       }
     },
   },
