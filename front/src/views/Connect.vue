@@ -8,6 +8,7 @@
       <input
         id="password"
         type="password"
+        name="mot de passe"
         v-model="password"
         placeholder="mot de passe"
       />
@@ -42,11 +43,16 @@ export default {
         })
         .then((response) => {
           let user = response.data;
-          localStorage.setItem('token', user.token );
-          localStorage.setItem('user', JSON.stringify({userID : user.userConnect.id, isAdmin : user.userConnect.isAdmin}));
-          this.$store.commit('USER_CONNECT');
+          localStorage.setItem("token", user.token);
+          localStorage.setItem("user",
+            JSON.stringify({
+              userID: user.userConnect.id,
+              isAdmin: user.userConnect.isAdmin,
+            })
+          );
+          this.$store.commit("USER_CONNECT");
           // this.$store.dispatch('getUser', user.userConnect);
-          this.$store.dispatch('fetchUser');
+          this.$store.dispatch("fetchUser");
           this.$router.push({ name: "FilActu" });
         })
         .catch((e) => {
@@ -73,26 +79,21 @@ form {
   padding: 1em;
   display: flex;
   align-items: center;
-  background: #a3eeff;
-  width: 24em;
+  width: 40%;
   flex-direction: column;
   margin-left: auto;
   margin-right: auto;
-  border: black 2px solid;
+  border: var(--color-secondary) 2px solid;
   border-radius: 20px;
   box-shadow: 0.2em 0.2em 10px #a8a7a7;
-  background: rgb(144, 140, 153);
-  background: linear-gradient(
-    309deg,
-    rgba(144, 140, 153, 0.510224158022584) 0%,
-    rgba(208, 210, 237, 0.5858544101234244) 29%
-  );
+  background: var(--gradiant);
+  transition: all 1s ease-in-out;
 }
 label {
   margin: 0.5em;
 }
 #error {
-  color: red;
+  color: var(--color-error);
   padding: 0.5em;
 }
 #mail,
@@ -121,7 +122,7 @@ label {
   line-height: normal;
   margin: 1em;
   min-height: 60px;
-  min-width: 0;
+  min-width: 130px;
   outline: none;
   padding: 16px 24px;
   text-align: center;
@@ -130,23 +131,25 @@ label {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  /* width: 100%; */
   will-change: transform;
 }
-
 #valid_form:disabled {
   pointer-events: none;
 }
-
 #valid_form:hover {
   color: #fff;
   background-color: #1a1a1a;
   box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
   transform: translateY(-2px);
 }
-
 #valid_form:active {
   box-shadow: none;
   transform: translateY(0);
 }
+  @media screen and (max-width: 768px) {
+    form {
+      transition: all 1s ease-in-out;
+      width:70%;
+    }
+  }
 </style>

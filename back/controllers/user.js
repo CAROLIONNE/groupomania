@@ -11,15 +11,15 @@ require("dotenv").config();
 module.exports.signup = async (req, res) => {
   // Verifie que les champs sont remplis
   if (
-    req.body.mail == null ||
-    req.body.mot_psw == null ||
-    req.body.pseudonyme == null
+    req.body.mail.length < 1 ||
+    req.body.mot_psw.length < 1 ||
+    req.body.pseudonyme.length < 1
   ) {
     return res.status(400).json({ error: "Merçi de remplir tout les champs correctement 🙏" });
   }
   // Verifie la taille du pseudo
   if (req.body.pseudonyme.length <= 3 || req.body.pseudonyme.length >= 14) {
-    return res.status(400).json({ error: "Pseudonyme trop long ou trop court ❌" });
+    return res.status(400).json({ error: "Pseudonyme trop long ou trop court (entre 3 et 14 caractères)❌" });
   }
   // Contrôle adresse email
   if (!EMAIL_REGEX.test(req.body.mail)) {

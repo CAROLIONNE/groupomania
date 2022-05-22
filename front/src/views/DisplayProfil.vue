@@ -23,7 +23,7 @@
           />
           <p>Inscrit depuis le {{ timestamp }}</p>
           <div id="btn">
-            <input class='submit' type="submit" value="Modifier" />
+            <input class="submit" type="submit" value="Modifier" />
             <input
               id="delete"
               type="submit"
@@ -33,7 +33,7 @@
           </div>
         </fieldset>
       </form>
-      <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
+      <Modale :show="show" :toggleModale="toggleModale" :message="message" />
       <form
         id="update_avatar"
         @submit.prevent="updateAvatar($event, userInfo.user_id)"
@@ -41,10 +41,9 @@
         <fieldset>
           <legend><h2>Avatar</h2></legend>
           <img :src="userInfo.avatar" />
-          <input id="avatar" type="file" name="image"  />
+          <input id="avatar" type="file" name="image" />
           <div id="btn">
             <input class="submit" type="submit" value="Sauvegarder" />
-
           </div>
         </fieldset>
       </form>
@@ -60,90 +59,69 @@ export default {
   components: { Modale },
   data() {
     return {
-      userInfo: {
-        mail: "",
-        pseudonyme: "",
-        poste: "",
-        bureau: "",
-        avatar: "",
-      },
+      userInfo: this.$store.state.user,
       show: false,
       message: null,
     };
   },
 
   created() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    let token = user.token;
-    let id = user.userID;
-  // this.$store.dispatch("fetchUser", id)  
-    this.axios
-      .get(`http://localhost:3000/api/user/${id}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((user) => {
-        this.userInfo = user.data;
-      })
-      .catch((e) => {
-        this.message = e.response.data.error;
-        this.toggleModale();
-        localStorage.clear();
-        this.$store.commit("USER_DISCONNECT");
-        this.$router.push({ name: "Connect" });
-      });
+    this.$store.dispatch("fetchUser");
   },
   methods: {
     toggleModale() {
-      this.show = !this.show
+      this.show = !this.show;
     },
     getUser() {
-    this.axios
-      .get(`http://localhost:3000/api/user/${this.$route.params.id}`, {
-        headers: {
-          Authorization: "Bearer " + this.$store.state.user.token,
-        },
-      })
-      .then((user) => {
-        return this.userInfo = user.data;
-      })
-      .catch((e) => {
-          this.message = e.response.data ;
+      let token = localStorage.getItem("token");
+      this.axios
+        .get(`http://localhost:3000/api/user/${this.$route.params.id}`, {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((user) => {
+          this.userInfo = user.data;
+          // Mise a jour du store
+          this.$store.dispatch("getUser", this.userInfo);
+        })
+        .catch((e) => {
+          this.message = e.response.data;
           this.toggleModale();
           localStorage.clear();
           this.$router.push({ name: "Connect" });
           this.$store.commit("USER_DISCONNECT");
-      });
+        });
     },
     updateAvatar($event, id) {
+      let token = localStorage.getItem("token");
       const updatedPost = new FormData($event.target);
       this.axios
-        .put(
-          `http://localhost:3000/api/user/avatar/${id}`, updatedPost,
-          {
-            headers: {
-              Authorization: "Bearer " + this.$store.state.user.token,
-              // "content-Type": "multipart/form-data",
-            },
-          }
-        )
+        .put(`http://localhost:3000/api/user/avatar/${id}`, updatedPost, {
+          headers: {
+            Authorization: "Bearer " + token,
+            // "content-Type": "multipart/form-data",
+          },
+        })
         .then(() => {
-          // reset input
+          // Reset input
           document.getElementById("avatar").value = "";
-          // refresh infos utilisateur
+          // Refresh infos utilisateur
           setTimeout(() => {
-            this.getUser()           
+            // STORE SE MET A JOUR mais img ne se met pas a jour
+            this.$store.dispatch("fetchUser");
+            // this.getUser()
           }, 499);
         })
         .catch((e) => {
           console.log(e);
           // Modale si erreur
-          this.message = e.response.data 
-          this.toggleModale()
+          this.message = e.response.data;
+          this.toggleModale();
         });
     },
     updateUser(id) {
+      let token = localStorage.getItem("token");
       this.axios
         .put(
           `http://localhost:3000/api/user/${id}`,
@@ -155,43 +133,47 @@ export default {
           },
           {
             headers: {
-              Authorization: "Bearer " + this.$store.state.user.token,
+              Authorization: "Bearer " + token,
             },
           }
         )
         .then((response) => {
-          this.message = response.data 
-          this.toggleModale()
+          // Mise a jour du store
+          this.$store.dispatch("getUser", this.userInfo);
+          // Modale
+          this.message = response.data;
+          this.toggleModale();
         })
         .catch((e) => {
           console.log(e);
-          this.message = e.response.data ;
+          this.message = e.response.data;
           this.toggleModale();
         });
     },
 
     deleteUser() {
+      let token = localStorage.getItem("token");
       const valid = confirm("Voulez vous supprimer votre compte ?");
       if (valid) {
         this.axios
-          .delete(`http://localhost:3000/api/user/${this.$route.params.id}` , {
+          .delete(`http://localhost:3000/api/user/${this.$route.params.id}`, {
             headers: {
-              Authorization: "Bearer " + this.$store.state.user.token,
+              Authorization: "Bearer " + token,
             },
           })
           .then((response) => {
-            // modale pour informer l'utilisateur
-            this.message = response.data
-            this.toggleModale()
-              setTimeout(() => {
-                // vide le LS et renvoie a la page d'inscription
-                localStorage.clear();
-                this.$store.commit("USER_DISCONNECT");
-                this.$router.push({ name: "Inscription" });       
-          }, 1500);
+            // Modale
+            this.message = response.data;
+            this.toggleModale();
+            setTimeout(() => {
+              // Vide le LS et renvoie a la page d'inscription
+              localStorage.clear();
+              this.$store.commit("USER_DISCONNECT");
+              this.$router.push({ name: "Inscription" });
+            }, 1500);
           })
           .catch((e) => {
-            this.message = e.response.data ;
+            this.message = e.response.data;
             this.toggleModale();
           });
       }
@@ -229,25 +211,25 @@ img {
   border: outset;
 }
 #delete {
-    background-color: white; 
-    color: black; 
-    border: 2px solid #f44336;
+  background-color: white;
+  color: var(--color-secondary);
+  border: 2px solid #f44336;
 }
 #delete:hover {
-    background-color: #f44336;
-    color: white;
+  background-color: #f44336;
+  color: white;
 }
 input {
   cursor: pointer;
 }
 .submit {
-    background-color: white;
-    color: black;
-    border: 2px solid #555555;
+  background-color: white;
+  color: black;
+  border: 2px solid #555555;
 }
 .submit:hover {
-    background-color: #555555;
-    color: white;
+  background-color: #555555;
+  color: white;
 }
 input {
   padding: 0.2em;
