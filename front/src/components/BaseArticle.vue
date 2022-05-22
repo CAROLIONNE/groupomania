@@ -5,9 +5,7 @@
       :to="{ name: 'DisplayArticle', params: { id: article.id } }"
       ><h2>{{ article.titre }}</h2>
     </router-link>
-    
-    <UpdateArticle :article="article" :displayContent.sync='displayContent' v-on:displayUpdate="displayUpdate($event)"/>
-    <!-- recup article pas a jour -->
+    <UpdateArticle :idArticle='article.id' :displayContent.sync='displayContent' v-on:displayUpdate="displayUpdate($event)"/>
     <div id='content' v-if="displayContent">
     <img :src="article.media" v-if="article.media" />
     <p id="article_text" v-html="article.text"></p>
@@ -81,9 +79,6 @@ export default {
     index: {
       type: Number,
     },
-    coms: {
-      type: Object,
-    },
   },
   data() {
     return {
@@ -118,9 +113,6 @@ export default {
       });
   },
   methods: {
-    // getArticle($event) {
-    //   console.log($event);
-    // },
     displayUpdate($event) {
       this.displayContent = $event
     },
@@ -173,12 +165,11 @@ export default {
               },
             }
           )
-          .then((response) => {
-            // reset champ
+          .then(() => {
+            // Reset champ
             this.newCommentaire = "";
-            // display & refresh
+            // Display & refresh
             this.click = false;
-            console.log(response.data)
             this.displayCommentaires(this.article.id);
           })
           .catch((e) => {
@@ -199,13 +190,11 @@ a {
   cursor: pointer;
 }
 img {
-  overflow:auto;
-  height: 30em;
-  margin: 0.5em;
+  height: 100%;
+  margin: auto;
   border: outset;
+  min-width: 90%;
   max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
 }
 #article_text,
 #article_author {
@@ -242,6 +231,7 @@ img {
   border-radius: 3em;
   margin-left: auto;
   margin-right: auto;
+  width: 60%;
 }
 #display_com {
   margin: 0.5em;
@@ -249,7 +239,7 @@ img {
   margin-right: auto;
   border: 2px solid #a7a7a7;
   border-radius: 1em;
-  background: var(--color-primary);
+  background: whitesmoke;
 }
 #com_text,
 #com_date {

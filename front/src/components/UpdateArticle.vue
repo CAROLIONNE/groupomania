@@ -44,12 +44,13 @@
 <script>
 import Modale from "../components/ModaleBox.vue";
 import Editor from '@tinymce/tinymce-vue'
+import { mapGetters } from 'vuex'
 export default {
     name: "UpdateArticle",
     components: { Modale, Editor },
     props: {
-    article : {
-      type: Object
+    idArticle: {
+      type: Number
     },
     displayContent: {
       type: Boolean
@@ -57,7 +58,6 @@ export default {
   },
   data () {
       return {
-        articles: {},
         showUpdate: false,
         userConnect : {},
         show: false,
@@ -70,6 +70,12 @@ export default {
     let user = JSON.parse(localStorage.getItem("user"));
     this.userConnect = user
   },
+    computed: {
+    ...mapGetters(["getArticleById"]),
+    article () {
+      return this.getArticleById(this.idArticle)
+    }
+  },
   methods: {
     fileChange(e) {
       let files = e.target.files || e.dataTransfer.files;
@@ -79,8 +85,8 @@ export default {
       this.show = !this.show
     },
     showDisplayUpdate() {
-      this.$emit('displayUpdate', this.display)
       this.display = !this.display;
+      this.$emit('displayUpdate', this.display)
       this.showUpdate = !this.showUpdate;
     },
     update(id) {
@@ -88,8 +94,6 @@ export default {
       const updatedPost = new FormData();
       updatedPost.append("titre", this.article.titre)
       updatedPost.append("text", this.article.text)
-      // updatedPost.append("titre", this.$store.state.article.titre)
-      // updatedPost.append("text", this.$store.state.article.text)
       updatedPost.append("image", this.media)
       this.axios
         .put(`http://localhost:3000/api/article/${id}`, updatedPost,{
@@ -102,13 +106,10 @@ export default {
           this.showUpdate = false;
           this.message = res.data;
           this.toggleModale();
-          // refresh
+          // Mise a jour du store
           setTimeout(() => {
             this.$store.dispatch("fetchArticles")  
-          }, 800);
-          ///////
-          // this.$store.dispatch("updateArticle", id) 
-          // TODO repasser les données au parent
+          }, 500);
         })
         .catch((e) => {
           this.message = e.response.data;

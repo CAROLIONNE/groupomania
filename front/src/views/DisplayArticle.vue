@@ -3,6 +3,7 @@
     <div id="container">
       <div id="article">
         <h1>{{ article.titre }}</h1>
+        <p class="valid" v-if="valid">{{ valid }}</p>
         <div
           id="mod"
           v-if="article.utilisateurId == user.userID || user.isAdmin == 1"
@@ -36,7 +37,6 @@
               />
               <input class="submit" type="submit" value="Sauvegarder" />
               <p class="error" v-if="errors">{{ errors }}</p>
-              <p class="valid" v-if="valid">{{ valid }}</p>
             </fieldset>
           </form>
         </div>
@@ -118,14 +118,14 @@ import BtnWhite from "../components/BtnWhite.vue";
 import Modale from "../components/ModaleBox.vue";
 import BaseCommentaire from "../components/BaseCommentaire.vue";
 import Editor from "@tinymce/tinymce-vue";
+import { mapGetters } from 'vuex'
+
 export default {
   name: "DisplayArticle",
   components: { BtnWhite, Modale, BaseCommentaire, Editor },
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
-      article: {},
-      // article: this.$store.state.article,
       commentaires: "",
       commentaire: "",
       errors: null,
@@ -141,39 +141,31 @@ export default {
     };
   },
   created() {
-    // this.$store.dispatch("fetchArticle", this.$route.params.id)  
     let user = JSON.parse(localStorage.getItem("user"));
-    let token = user.token;
-    this.user = user;
-    // Récupération des données de l'article
-    this.axios
-      .get(`http://localhost:3000/api/article/${this.$route.params.id}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((article) => {
-        this.article = article.data.articleFound;
-      })
-      .catch((e) => {
-        this.errors = e;
-        console.log(e);
-      });
+    this.user = user
+    let token = localStorage.getItem("token");
+    // this.$store.dispatch("fetchArticle", this.$route.params.id) 
+
     // Recupération des commentaires de l'article
     this.axios
       .get(`http://localhost:3000/api/comment/${this.$route.params.id}`, {
         headers: {
-          Authorization: "Bearer " + this.user.token,
+          Authorization: "Bearer " + token,
         },
       })
       .then((allCommentaires) => {
         this.commentaires = allCommentaires.data;
       })
       .catch((e) => {
-        console.log("get comment", e);
+        console.log("get comment", e.response);
       });
   },
-
+  computed: {
+    ...mapGetters(["getArticleById"]),
+    article () {
+      return this.getArticleById(this.$route.params.id)
+    }
+  },
   methods: {
     fileChange(e) {
       let files = e.target.files || e.dataTransfer.files;
@@ -188,8 +180,7 @@ export default {
     },
     getComment() {
       // Recupération des commentaires de l'article
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
+      let token = localStorage.getItem("token");
       let $id = this.$route.params.id;
       return this.axios
         .get(`http://localhost:3000/api/comment/${$id}`, {
@@ -215,27 +206,8 @@ export default {
       this.displayContent = !this.displayContent;
       this.showUpdate = !this.showUpdate;
     },
-    getArticle() {
-      let $id = this.$route.params.id;
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
-      // Récupération des données de l'article
-      this.axios
-        .get(`http://localhost:3000/api/article/${$id}`, {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((article) => {
-          this.article = article.data.articleFound;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    },
     update() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
+      let token = localStorage.getItem("token");
       const updatedPost = new FormData();
       updatedPost.append("titre", this.article.titre);
       updatedPost.append("text", this.article.text);
@@ -252,26 +224,27 @@ export default {
           }
         )
         .then((res) => {
+          // Display
           this.displayContent = !this.displayContent;
           this.showUpdate = false;
           this.click = false;
-          this.message = res.data;
-          this.toggleModale();
-          // this.$store.commit('UPDATE_ARTICLE', res)
-          console.log(res);
-          // setTimeout(() => {
-          //   this.getArticle();
-          // }, 300);
+
+          this.valid = res.data
+          // Modale
+          // this.message = res.data;
+          // this.toggleModale();
+          // Mise a jour du store
+          setTimeout(() => {
+            this.$store.dispatch("fetchArticles");
+          }, 300);
         })
         .catch((e) => {
           this.message = e.response.data;
           this.toggleModale();
-          // alert(e.response.data);
         });
     },
     deleteArticle() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
+      let token = localStorage.getItem("token");
       let $id = this.$route.params.id;
       const valid = confirm("Voulez vous supprimer cet article ?");
       if (valid) {
@@ -282,11 +255,15 @@ export default {
             },
           })
           .then((response) => {
-            // modale ne fonctionne pas
+            // Modale
             this.click = false;
             this.message = response.data;
-            // alert(response.data);
+            // Mise a jour du store
+            this.$store.dispatch("fetchArticles");
+            // Redirection
+            setTimeout(() => {
             this.$router.push({ name: "FilActu" });
+          }, 1500);
           })
           .catch((e) => {
             this.click = false;
@@ -301,8 +278,7 @@ export default {
       if (this.displayCom == true) this.displayCom = false;
     },
     createCommentaire() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let token = user.token;
+      let token = localStorage.getItem("token");
       if (this.commentaire.length >= 3) {
         this.axios
           .post(
@@ -345,22 +321,18 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 1em;
-  border: 1px solid black;
+  border: 1px solid var(--color-secondary);
   margin-top: 3em;
   margin-bottom: 6em;
   border-radius: 2em;
   box-shadow: 0.3em 0.3em 8px #a8a7a7;
-  background: rgb(144, 140, 153);
-  background: linear-gradient(
-    309deg,
-    rgba(144, 140, 153, 0.510224158022584) 0%,
-    rgba(208, 210, 237, 0.5858544101234244) 29%
-  );
+  background: var(--gradiant);
 }
 img {
-  height: 30em;
-  margin: 0.5em;
+  height: 100%;
+  margin: auto;
   border: outset;
+  min-width: 90%;
   max-width: 100%;
 }
 #article_text,
@@ -395,7 +367,6 @@ img {
 
 #container_comments {
   margin: 0.5em;
-  /* background: black; */
   border-radius: 3em;
   width: 70%;
   margin-left: auto;
@@ -419,7 +390,7 @@ img {
   cursor: pointer;
 }
 .error {
-  color: red;
+  color: var(--color-error);
   padding: 0.5em;
 }
 .valid {
