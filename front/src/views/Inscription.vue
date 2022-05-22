@@ -53,6 +53,7 @@ export default {
       })
       .catch(e => {
         this.errors = e.response.data.error
+        console.log(e);
       })
     }
   }
@@ -68,7 +69,7 @@ h1 {
   background: white;
   opacity: 0.8;
   padding: 1rem;
-  margin-left: 2em
+  margin-left: 1em
 }
 h2 {
   position: absolute;
@@ -82,21 +83,17 @@ h2 {
   max-width: 100%;
 }
 #error {
-  color:red;
+  color:var(--color-error);
   padding: 0.5em;
-}
-#valid {
-  color:green;
 }
 form {
   display: grid;
-  /* gap: 0.5em; */
   position: absolute;
   top: 6em;
-  right:4em;
-  background: black;
-  color:white;
-  opacity: 0.8;
+  right:2em;
+  background: var(--color-secondary);
+  color:var(--color-primary);
+  opacity: 0.9;
   padding:1em;
   border: 3px solid;
   border-radius: 1em;
@@ -106,16 +103,6 @@ input {
   margin: 1em;
   padding: 0.5em;
 }
-input:focus {
-   border: 3px solid #a3eeff;
-}
-/* #btn_submit {
-  width:100%;
-  
-} */
-
-
-/* CSS */
 #btn_submit {
   margin-left: auto;
   margin-right: auto;
@@ -147,10 +134,23 @@ input:focus {
   color: #fff;
 }
 
-@media (min-width: 768px) {
-  #btn_submit {
-    font-size: 1.125rem;
-    padding: 1rem 2rem;
+@media (max-width: 768px) {
+  #img_reunion, h2 {
+    display: none;
+  }
+  h1 {
+    text-align: center;
+    position:inherit;
+    margin: 0.2em;
+    padding: 0.5em;
+  }
+  form {
+    /* transition ne fonctionne pas  */
+    transition : all 1s ease-in;
+    position: inherit;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 </style>

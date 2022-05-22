@@ -46,11 +46,10 @@
         </div>
       </nav>
     connecté : {{ $store.state.isAuthentificated }} /
-    <!-- user : {{ $store.state.user }} -->
-    token : {{ $store.state.user.token }}
+    user : {{ $store.state.user }}
     </div>
 
-    <div id="nav_mobile" v-if="mobile">
+    <div id="nav_mobile" v-if="mobile" >
       <nav class="nav" v-if="$store.state.isAuthentificated == true">
         <!-- Navigation avec authentification -->
         <router-link
@@ -144,21 +143,19 @@ export default {
       let user = JSON.parse(localStorage.getItem("user"));
       let id = user.userID;
       // let id = this.$store.state.user.id;
-      if (user) {
-        this.$router.push({ name: "DisplayProfil", params: { id } });
-      }
+      this.$router.push({ name: "DisplayProfil", params: { id } });
     },
     logOut() {
       localStorage.clear();
-      this.$router.push({ name: "Connect" });
       this.$store.commit("USER_DISCONNECT");
+      this.$router.push({ name: "Connect" });
     },
     toggleMobileNav() {
       this.mobileNav = !this.mobileNav;
     },
     checkScreen() {
       this.windowWidth = window.innerWidth;
-      if (this.windowWidth <= 750) {
+      if (this.windowWidth <= 768) {
         this.mobile = true;
         return;
       }
@@ -206,7 +203,7 @@ a {
   top: 40px;
   right: 0;
   position: absolute;
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--color-secondary);
   transition: all ease-in-out 1s;
   overflow: hidden;
   z-index: 10;

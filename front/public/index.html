@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
@@ -10,12 +10,24 @@
     ></script>
   </head>
   <body>
-    <div id="app"></div>
+    <main>
+      <div id="app"></div>
+    </main>
     <footer class="footer">
       <div id="contact">
+        <a
+          id="mailto"
+          title="contact par email"
+          href="mailto:groupomania@network.fr"
+          >Contact</a
+        >
         <!-- icone arobase version mobile -->
-         <a id="mailto-M" href="mailto:groupomania@network.fr"><i id="icon" class="fa-solid fa-at"></i></a>
-        <a id="mailto" href="mailto:groupomania@network.fr">Contact</a>
+        <a
+          id="mailto-M"
+          title="contact par email"
+          href="mailto:groupomania@network.fr"
+          ><i id="icon" class="fa-solid fa-at"></i
+        ></a>
       </div>
       <div id="adresse">Groupomania, 101 Avenue picasso 62000 ARRAS</div>
     </footer>
@@ -24,10 +36,19 @@
 
 <style>
   :root {
-    --color-primary: whitesmoke;
-    --color-secondary: black;
+    --color-primary: #E0E4E4;
+    --color-secondary: #2E3131;
     --color-tertiary: #a3eeff;
     --color-error: #f00020;
+    --gradiant: linear-gradient(
+    309deg,
+    rgba(144, 140, 153, 0.510224158022584) 0%,
+    rgba(208, 210, 237, 0.5858544101234244) 29%
+  );
+    /* --color-primary: whitesmoke;
+    --color-secondary: black;
+    --color-tertiary: #a3eeff;
+    --color-error: #f00020; */
   }
   * {
     margin: 0;
@@ -48,20 +69,24 @@
     display: none;
   }
   #contact,
-  #adresse, #mailto {
+  #adresse,
+  #mailto {
     color: var(--color-primary);
     font-size: large;
   }
-  #mailto, #mailto-M {
+  #mailto,
+  #mailto-M {
     color: var(--color-primary);
     text-decoration: none;
   }
-  #mailto:hover, #mailto-M:hover {
+  #mailto:hover,
+  #mailto-M:hover {
     color: var(--color-tertiary);
     transition: scale 0.15s ease-in-out;
     transform: scale(1.9);
   }
-  #mailto:visited, #mailto-M:visited {
+  #mailto:visited,
+  #mailto-M:visited {
     color: var(--color-primary);
   }
   @media screen and (max-width: 520px) {
