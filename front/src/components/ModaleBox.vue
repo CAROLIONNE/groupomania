@@ -47,7 +47,7 @@ export default {
     font-weight: bold;
     padding: 1%;
     color: #f1f1f1;
-    background-color:red;
+    background-color:var(--color-error);
     position: absolute;
     top: 5px;
     right: 5px;

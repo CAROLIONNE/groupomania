@@ -149,12 +149,7 @@ export default {
 <style scoped>
 #update_com {
   border: solid #a8a7a7 2px;
-  background: linear-gradient(
-    309deg,
-    rgba(144, 140, 153, 0.510224158022584) 0%,
-    rgba(208, 210, 237, 0.5858544101234244) 29%
-  );
-  /* background: silver; */
+  background: var(--gradiant);
   border-radius: 0.5em;
   padding: 0.3em;
   margin: 0.2em;
@@ -162,7 +157,7 @@ export default {
 #btn_delete-com,
 #btn_update-com {
   cursor: pointer;
-  border: black solid 1px;
+  border: var(--color-secondary) solid 1px;
   border-radius: 50%;
   padding: 0.3em;
   margin: 0.3em;
@@ -170,7 +165,7 @@ export default {
 }
 #btn_delete-com:hover,
 #btn_update-com:hover {
-  color: black;
+  color: var(--color-secondary);
   transform: scale(1.1)
 }
 #btn_delete-com:active,
