@@ -47,8 +47,16 @@ export default {
   },
   methods: {
     isObjEmpty(obj) {
-      return Object.keys(obj).length === 0;
+      return Object.keys(obj).length == 0;
     },
+    
+    // isObjEmpty(object) {
+    //     for (var key in object) {
+    //         if (object.hasOwnProperty(key)) {
+    //             return false;
+    //         }
+    //     }
+    // },
     scrollToTop() {
       window.scrollTo(0, 0);
     },
@@ -90,24 +98,20 @@ h2 {
 #article {
   margin-left: auto;
   margin-right: auto;
+  /* height: 505px; */
   width: 70%;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 1em;
-  border: 1px solid black;
+  border: 1px solid var(--color-secondary);
   margin-bottom: 3em;
   border-radius: 2em;
   box-shadow: 0.3em 0.3em 8px #a8a7a7;
-  background: rgb(144, 140, 153);
-  background: linear-gradient(
-    309deg,
-    rgba(144, 140, 153, 0.510224158022584) 0%,
-    rgba(208, 210, 237, 0.5858544101234244) 29%
-  );
+  background: var(--gradiant);
 }
 .fa-arrow-up-long {
-  border: black 1px solid;
+  border: var(--color-secondary) 1px solid;
   padding: 0.2em;
   border-radius: 25%;
   cursor: pointer;
@@ -164,7 +168,7 @@ h2 {
   transform: translateY(0);
 } */
 .error {
-  color: red;
+  color: var(--color-error);
   padding: 0.5em;
 }
 </style>

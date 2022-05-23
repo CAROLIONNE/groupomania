@@ -32,7 +32,7 @@ module.exports.signup = async (req, res) => {
     attributes: ["mail"],
     where: { mail: req.body.mail },
   });
-  // si l'utilisateur a un compte avec cet email
+  // si l'utilisateur a déja un compte avec cet email
   if (utilisateur) {
     return res.status(401).json({ error: "Cet email est deja utilisé ❌" });
   } else {
@@ -91,8 +91,9 @@ module.exports.login = async (req, res) => {
         res.status(404).json({ error: "L'email ou le pseudonyme est incorrect ❌" });
       }
       delete userFound.mot_psw;
+      // supression mail de fonctionne pas
       delete userFound.mail;
-      // console.log(userFound);
+      console.log('userFound', userFound);
       res.status(200).json({
         // Creation du token et envoi coté client
         userConnect : userFound,
@@ -157,35 +158,6 @@ module.exports.updateUser = async (req, res) => {
     }
   );
 };
-
-// Modifier MDP utilisateur
-// module.exports.updatePassword = async (req, res) => {
-//   await Utilisateur.findOne({ where: { id_user: req.params.id } }).then(
-//     (userFound) => {
-//       // Verifie que l'utilisateur existe
-//       if (!userFound) return res.status(404).json({ error: "User not found" });
-//       // Acces autorisé admin ou utilisateur qui a créer le compte
-//       if (userFound.id_user == req.auth.userId || req.auth.role == 1) {
-//         // Hachage du nouveau mot de passe
-//         bcrypt.hash(req.body.mot_psw, 10).then((hash) => {
-//           // Mettre a jour le mot de passe dans la base de donnée
-//           Utilisateur.update(
-//             {
-//               mot_psw: hash,
-//               date_mdp: new Date(),
-//             },
-//             {
-//               where: { id_user: req.params.id },
-//             }
-//           );
-//           return res.status(200).json(" Password update");
-//         });
-//       } else {
-//         return res.status(500).json({ error: "Can't update Password" });
-//       }
-//     }
-//   );
-// };
 
 // Modifier avatar d'un utilisateur
 module.exports.updateAvatar = async (req, res) => {
@@ -271,9 +243,4 @@ module.exports.deleteUser = async (req, res) => {
   ).catch(function(e) {
     console.error(e);
   })
-};
-
-module.exports.authentificate = (req, res, next) => {
-  console.log("verification token")
-  res.status(200).json({ message: "token valide !" })
 };

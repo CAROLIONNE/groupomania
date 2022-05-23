@@ -9,10 +9,8 @@
           <form @submit.prevent="update(article.id)">
             <fieldset id="container_update" v-if="showUpdate">
               <legend><h2>Modification</h2></legend>
-              <!-- Error Unexpected mutation of "article" prop -->
               <label for="titre">Titre : </label>
               <input type="text" v-model.trim="article.titre" name="titre"/>
-              <!-- <input type="text" v-model.trim=$store.state.article.titre name="titre"/> -->
               <editor
                 api-key="b7vz3gtuzy2c28rt2axsmshdeh5dfh1vftz3x9tvoqg12057"
                 :init="{
@@ -23,8 +21,7 @@
                 id="editor"
                 v-model=article.text
                 name="text"
-              />
-              
+              />        
               <input
                 id="file"
                 type="file"
@@ -86,7 +83,7 @@ export default {
     },
     showDisplayUpdate() {
       this.display = !this.display;
-      this.$emit('displayUpdate', this.display)
+      this.$emit('displayUpdate', this.display);
       this.showUpdate = !this.showUpdate;
     },
     update(id) {
@@ -110,6 +107,8 @@ export default {
           setTimeout(() => {
             this.$store.dispatch("fetchArticles")  
           }, 500);
+          this.display = !this.display;
+          this.$emit('displayUpdate', this.display);
         })
         .catch((e) => {
           this.message = e.response.data;

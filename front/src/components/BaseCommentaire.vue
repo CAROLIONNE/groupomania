@@ -7,7 +7,7 @@
         commentaire.utilisateurId == userConnect.userID ||
         userConnect.isAdmin == 1
       "
-      @click="showUp()"
+      @click="showUpdateCom = !showUpdateCom"
     ></i>
     <i
       id="btn_delete-com"
@@ -83,9 +83,6 @@ export default {
     toggleModale() {
       this.show = !this.show;
     },
-    showUp() {
-      this.showUpdateCom = !this.showUpdateCom;
-    },
     updateCom(id, idArticle) {
       let token = localStorage.getItem("token");
       if (this.commentaireUpdate.length >= 3) {
@@ -101,7 +98,7 @@ export default {
             },
           }
         )
-        .then((response) => {
+        .then((response) => { 
           this.commentaireUpdate = "";
           this.message = response.data;
           this.toggleModale();
@@ -132,7 +129,8 @@ export default {
             this.message = response.data;
             this.toggleModale();
             setTimeout(() => {
-            this.getComment(idArticle)           
+              this.getComment(idArticle)        
+              // this.$emit('updateCom', this.commentaire);
           }, 300);
           })
           .catch((e) => {

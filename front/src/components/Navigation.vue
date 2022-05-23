@@ -146,9 +146,7 @@ export default {
       this.$router.push({ name: "DisplayProfil", params: { id } });
     },
     logOut() {
-      localStorage.clear();
-      this.$store.commit("USER_DISCONNECT");
-      this.$router.push({ name: "Connect" });
+      this.$store.dispatch("logOut");
     },
     toggleMobileNav() {
       this.mobileNav = !this.mobileNav;
@@ -253,7 +251,6 @@ a {
   top: 0;
   flex-basis: 100%;
   right: 0;
-  /* height: 100%; */
   cursor: pointer;
   color: var(--color-primary);
   cursor: pointer;

@@ -5,7 +5,6 @@ import InscriptionUser from '@/views/Inscription'
 import FilActu from '@/views/FilActu'
 import NewArticle from '@/views/NewArticle'
 import DisplayArticle from '@/views/DisplayArticle'
-import DisplayArticle2 from '@/views/DisplayArticle2'
 import DisplayProfil from '@/views/DisplayProfil'
 import NotFound from '@/views/NotFound'
 
@@ -13,34 +12,7 @@ import NotFound from '@/views/NotFound'
 
 Vue.use(VueRouter)
 
-// import axios from 'vue-axios'
-// function isAuthenticated(to, from, next) {
-//   let ls = localStorage.getItem('user')
-//   if(ls){
-//   let user = JSON.parse(localStorage.getItem("user"));
-//   let token = user.token;
-//   console.log("test token", token);
-//   axios
-//     .get("http://localhost:3000/api/user/auth", {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
-//     .then((res) => {
-//       console.log(res);
-//       next()
-//     }) 
-//     .catch((err) => {
-//       console.log(err);
-//       localStorage.clear();
-//       this.$router.push({ name: "Connect" });
-//     });
-//   } else {
-//     localStorage.clear();
-//     next('/');
-//   }
-// }
-
+// Securiser navigation non authentifiée
 function isAuthenticated(to, from, next) {
   let isAuthenticated= false; 
   if(localStorage.getItem('user')) {isAuthenticated = true} 
@@ -49,9 +21,9 @@ function isAuthenticated(to, from, next) {
     next(); // permet d'entrer la route 
   } else{ 
     next('/'); // aller à la page de connexion; 
-    // this.$router.push({ name: "Connect" });
   } 
 }
+
 
 const routes = [
   {
@@ -83,11 +55,6 @@ const routes = [
     component: DisplayArticle
   },    
   {
-    path: '/articletest/:id',
-    name: 'DisplayArticle2',
-    component: DisplayArticle2
-  },
-  {
     path: '/profil/:id',
     name: 'DisplayProfil',
     beforeEnter : isAuthenticated, 
@@ -107,22 +74,5 @@ const routes = [
 const router = new VueRouter({
   routes
 })
-
-let user = JSON.parse(localStorage.getItem("user"));
-console.log(user);
-
-// router.beforeEach(async (to) => {
-//   if (
-//     // make sure the user is authenticated
-//     !user 
-//   ) {
-//     console.log("ROUTER if");
-//     // redirect the user to the login page
-//     return '/'
-//   } else {
-//     console.log("router else")
-//   }
-// })
-
 
 export default router

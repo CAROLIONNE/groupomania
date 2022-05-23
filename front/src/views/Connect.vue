@@ -4,11 +4,10 @@
     <form>
       <label for="mail">Mail :</label>
       <input id="mail" v-model="mail" placeholder="mail" /><br />
-      <label for="mot de passe">Mot de passe :</label>
+      <label for="password">Mot de passe :</label>
       <input
         id="password"
         type="password"
-        name="mot de passe"
         v-model="password"
         placeholder="mot de passe"
       />
@@ -51,7 +50,6 @@ export default {
             })
           );
           this.$store.commit("USER_CONNECT");
-          // this.$store.dispatch('getUser', user.userConnect);
           this.$store.dispatch("fetchUser");
           this.$router.push({ name: "FilActu" });
         })
@@ -146,10 +144,10 @@ label {
   box-shadow: none;
   transform: translateY(0);
 }
-  @media screen and (max-width: 768px) {
-    form {
-      transition: all 1s ease-in-out;
-      width:70%;
-    }
+@media screen and (max-width: 768px) {
+  form {
+    transition: all 1s ease-in-out;
+    width: 70%;
   }
+}
 </style>
