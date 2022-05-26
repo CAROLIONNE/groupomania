@@ -59,7 +59,6 @@ export default {
   components: { Modale },
   data() {
     return {
-      userInfo: this.$store.state.user,
       show: false,
       message: null,
     };
@@ -68,30 +67,17 @@ export default {
   created() {
     this.$store.dispatch("fetchUser");
   },
+  computed: {
+    timestamp: function () {
+      return moment(this.userInfo.createdAt).format("DD-MM-YYYY");
+    },
+    userInfo(){
+      return this.$store.state.user
+    }
+  },
   methods: {
     toggleModale() {
       this.show = !this.show;
-    },
-    getUser() {
-      let token = localStorage.getItem("token");
-      this.axios
-        .get(`http://localhost:3000/api/user/${this.$route.params.id}`, {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((user) => {
-          this.userInfo = user.data;
-          // Mise a jour du store
-          this.$store.dispatch("getUser", this.userInfo);
-        })
-        .catch((e) => {
-          this.message = e.response.data;
-          this.toggleModale();
-          localStorage.clear();
-          this.$router.push({ name: "Connect" });
-          this.$store.commit("USER_DISCONNECT");
-        });
     },
     updateAvatar($event, id) {
       let token = localStorage.getItem("token");
@@ -106,11 +92,9 @@ export default {
         .then(() => {
           // Reset input
           document.getElementById("avatar").value = "";
-          // Refresh infos utilisateur
+          // Mise a jour du store
           setTimeout(() => {
-            // STORE SE MET A JOUR mais img ne se met pas a jour
             this.$store.dispatch("fetchUser");
-            // this.getUser()
           }, 499);
         })
         .catch((e) => {
@@ -179,11 +163,6 @@ export default {
       }
     },
   },
-  computed: {
-    timestamp: function () {
-      return moment(this.userInfo.createdAt).format("DD-MM-YYYY");
-    },
-  },
 };
 </script>
 
@@ -197,17 +176,11 @@ fieldset {
   margin: 1em;
   border-radius: 20px;
   box-shadow: 0.2em 0.2em 10px #a8a7a7;
-  background: rgb(144, 140, 153);
-  background: linear-gradient(
-    309deg,
-    rgba(144, 140, 153, 0.510224158022584) 0%,
-    rgba(208, 210, 237, 0.5858544101234244) 29%
-  );
+  background: var(--gradiant);
 }
 img {
   width: 90%;
   height: 13em;
-  /* object-fit: cover; */
   border: outset;
 }
 #delete {
