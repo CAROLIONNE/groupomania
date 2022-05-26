@@ -7,16 +7,16 @@
       </button>
       <h2 id="fil">Fil d'actualité</h2>
     </div>
-    <div id="container">
-      <div id="no_content" v-if="isObjEmpty($store.state.articles)">
+    <div id="container" v-if="$store.state.articles">
+      <div id="no_content" v-if="!isEmpty">
         Pas encore d'article pour l'instant 🧐
       </div>
       <div
         id="article"
-        v-for="(article, index) in $store.state.articles"
+        v-for="article in articles"
         :key="article.id"
       >
-        <BaseArticle :article="article" :index="index" />
+        <BaseArticle :article="article" />
       </div>
       <Modale :show="show" :toggleModale="toggleModale" :message="message" />
     </div>
@@ -36,7 +36,7 @@ export default {
   components: { BaseArticle, Modale },
   data() {
     return {
-      intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
+      intro: "Bienvenue sur votre réseau social d'entreprise",
       show: false,
       message: null,
     };
@@ -45,18 +45,15 @@ export default {
   created() {
     this.$store.dispatch("fetchArticles");
   },
-  methods: {
-    isObjEmpty(obj) {
-      return Object.keys(obj).length == 0;
+  computed: {
+    articles() {
+      return this.$store.state.articles
     },
-    
-    // isObjEmpty(object) {
-    //     for (var key in object) {
-    //         if (object.hasOwnProperty(key)) {
-    //             return false;
-    //         }
-    //     }
-    // },
+    isEmpty() {
+      return this.$store.state.articles.length
+    }
+  },
+  methods: {
     scrollToTop() {
       window.scrollTo(0, 0);
     },
