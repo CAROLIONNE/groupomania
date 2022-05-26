@@ -1,11 +1,17 @@
 <template>
     <div id="mod" v-if='article.utilisateurId == userConnect.userID || userConnect.isAdmin == 1'>
+          <div id="btn">
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
+          <!-- icone version mobile -->
+          <i class="fa-solid fa-pencil" v-on:click="showDisplayUpdate()"></i>
           <button id="delete-btn" v-on:click="deleteArticle(article.id)">
             Supprimer l'article
           </button>
+          <!-- icone version mobile -->
+          <i class="fa-solid fa-trash-can" v-on:click="deleteArticle()"></i>
+          </div>
           <form @submit.prevent="update(article.id)">
             <fieldset id="container_update" v-if="showUpdate">
               <legend><h2>Modification</h2></legend>
@@ -28,6 +34,7 @@
                 name="image"
                 v-on:change="fileChange"
               />
+              <br />
               <input class="submit" type="submit" value="Sauvegarder" v-on:="$emit('getArticle', article)"/>
             </fieldset>
           </form>
@@ -148,6 +155,10 @@ export default {
 </script>
 
 <style scoped>
+#btn {
+  display: flex;
+  justify-content: center;
+}
 #container_update {
   padding: 0.5em;
   margin: 0.5em;
@@ -157,7 +168,43 @@ export default {
   padding: 0.2em;
   margin: 0.2em;
 }
-.submit{
+
+input {
   cursor: pointer;
 }
+.submit {
+  background-color: white;
+  color: black;
+  border: 2px solid #555555;
+}
+.submit:hover {
+  background-color: #555555;
+  color: white;
+}
+.fa-pencil, .fa-trash-can {
+  display: none;
+  color: #3b3b3b;
+  border: black 1px solid;
+  width: fit-content;
+  padding: 0.5em;
+  margin: 0.2em;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.fa-pencil:hover, .fa-trash-can:hover {
+  color: var(--color-secondary);
+  transform: scale(1.1)
+}
+.fa-pencil:active, .fa-trash-can:active {
+  transform: scale(1);
+}
+
+@media screen and (max-width: 768px) {
+    .fa-pencil, .fa-trash-can {
+      display: inherit;
+    }
+    #update-btn, #delete-btn {
+      display: none;
+    }
+  }
 </style>

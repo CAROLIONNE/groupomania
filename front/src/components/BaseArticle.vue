@@ -31,11 +31,10 @@
       <p v-else>Soyez le premier a commenter</p>
     </div>
     <div class="new_com" v-if="click">
-      <h2>Texte :</h2>
       <textarea
         id="com_text"
         v-model="newCommentaire"
-        name="text"
+        name="commentaire"
         rows="2"
         cols="33"
       >
@@ -51,11 +50,11 @@
         {{ errors }}
       </p>
     <div id="container_comments" v-if="displayCom">
-      <div id="display_com" v-for="(com, index) in commentaires" :key="com.id">
+      <div id="display_com" v-for="com in commentaires" :key="com.id">
         <BaseCommentaire
           :commentaire="com"
-          :index="index"
           :getComment="displayCommentaires"
+          v-on:updateCom="updateCom($event)"
         />
       </div>
     </div>
@@ -68,6 +67,7 @@ import moment from "moment";
 import Modale from "./ModaleBox.vue";
 import BaseCommentaire from "../components/BaseCommentaire.vue";
 import UpdateArticle from "../components/UpdateArticle.vue";
+// import { mapGetters } from 'vuex'
 
 export default {
   name: "BaseArticle",
@@ -75,9 +75,6 @@ export default {
   props: {
     article: {
       type: Object,
-    },
-    index: {
-      type: Number,
     },
   },
   data() {
@@ -97,6 +94,7 @@ export default {
   },
   created() {
     // Recupération des commentaires
+    // this.$store.dispatch("fetchCommentaires", this.article.id) 
     let token = localStorage.getItem("token");
     let idArticle = this.article.id;
     this.axios
@@ -112,9 +110,19 @@ export default {
         console.log(e.response.data);
       });
   },
+  // computed: {
+  //   ...mapGetters(["getCommentsById"]),
+  //   commentaires (){
+  //     return this.getCommentsById(this.$route.params.id);
+  //   },
+  // },
   methods: {
     displayUpdate($event) {
       this.displayContent = $event
+    },
+    updateCom($event) {
+      console.log($event);
+      this.commentaires = $event
     },
     toggleModale() {
       this.show = !this.show;
@@ -133,8 +141,7 @@ export default {
     displayCommentaires(id) {
       let token = localStorage.getItem("token");
       this.displayCom = !this.displayCom;
-      if (this.click == true) this.click = false
-      if (this.displayCom == true) {
+      if (this.click == true) this.click = false;
       this.axios
         .get(`http://localhost:3000/api/comment/${id}`, {
           headers: {
@@ -143,12 +150,13 @@ export default {
         })
         .then((foundCommentaires) => {
           this.commentaires = foundCommentaires.data;
-          console.log("in");
         })
         .catch((e) => {
-          console.log(e);
+          if (e.response.status === 404) {
+            this.commentaires = ""
+          }
         });
-      }
+      
     },
     createCommentaire() {
       let token = localStorage.getItem("token");
@@ -170,6 +178,7 @@ export default {
             this.newCommentaire = "";
             // Display & refresh
             this.click = false;
+            // this.$store.dispatch("fetchCommentaires", this.article.id) 
             this.displayCommentaires(this.article.id);
           })
           .catch((e) => {
@@ -185,16 +194,16 @@ export default {
 
 <style scoped>
 a {
-  color: var(--color-secondary);
+  color: black;
   text-decoration: none;
   cursor: pointer;
 }
 img {
-  height: 100%;
   margin: auto;
   border: outset;
-  min-width: 90%;
-  max-width: 100%;
+  width: 100%;
+  height: 300px;
+  max-height: 100%;
 }
 #article_text,
 #article_author {
@@ -231,7 +240,7 @@ img {
   border-radius: 3em;
   margin-left: auto;
   margin-right: auto;
-  width: 60%;
+  max-width: 100%;
 }
 #display_com {
   margin: 0.5em;
@@ -245,8 +254,16 @@ img {
 #com_date {
   padding: 0.2em;
 }
-.submit{
-  cursor: pointer;
+.submit {
+  background-color: white;
+  color: black;
+  border: 2px solid #555555;
+  padding: 0.3em;
+  margin: 0.3em;
+}
+.submit:hover {
+  background-color: #555555;
+  color: white;
 }
 .error {
   color: var(--color-error);

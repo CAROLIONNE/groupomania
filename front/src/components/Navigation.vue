@@ -45,8 +45,6 @@
           </div>
         </div>
       </nav>
-    connecté : {{ $store.state.isAuthentificated }} /
-    user : {{ $store.state.user }}
     </div>
 
     <div id="nav_mobile" v-if="mobile" >
@@ -142,7 +140,6 @@ export default {
     Profil() {
       let user = JSON.parse(localStorage.getItem("user"));
       let id = user.userID;
-      // let id = this.$store.state.user.id;
       this.$router.push({ name: "DisplayProfil", params: { id } });
     },
     logOut() {

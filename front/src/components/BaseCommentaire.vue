@@ -32,9 +32,14 @@
       v-if="showUpdateCom"
       @submit.prevent="updateCom(commentaire.id, commentaire.articleId)"
     >
-      <label for="text">Texte : </label>
-      <input type="text" v-model.trim="commentaireUpdate" name="text" /><br />
-      <input type="submit" value="Envoyer" />
+      <textarea
+            v-model.trim="commentaireUpdate"
+            name="text"
+            rows="2"
+            cols="33"
+          >
+          </textarea>
+      <input class='submit' type="submit" value="Envoyer" />
     </form>
     <Modale :show="show" :toggleModale="toggleModale" :message="message" />
   </div>
@@ -72,11 +77,6 @@ export default {
     this.userConnect = JSON.parse(ls);
   },
   methods: {
-    timestamp(date) {
-      // return moment(date, "YYYYMMDD").fromNow();
-      console.log(date);
-      return moment(date, "YYYYMMDD").from("2022-05-01 17:31:15");
-    },
     timestamp2(date) {
       return moment(date).format("DD-MM-YYYY");
     },
@@ -112,7 +112,8 @@ export default {
           this.toggleModale();
         });
       } else {
-        this.errors = "3 caractères minimum 🙏";
+        this.message = "3 caractères minimum 🙏";
+        this.toggleModale();
       }
     },
     deleteCom(id, idArticle) {
@@ -129,8 +130,8 @@ export default {
             this.message = response.data;
             this.toggleModale();
             setTimeout(() => {
-              this.getComment(idArticle)        
-              // this.$emit('updateCom', this.commentaire);
+              this.getComment(idArticle) 
+              // this.$emit('updateCom', this.commentaire);   
           }, 300);
           })
           .catch((e) => {
@@ -151,6 +152,8 @@ export default {
   border-radius: 0.5em;
   padding: 0.3em;
   margin: 0.2em;
+  display: flex;
+  justify-content: center;
 }
 #btn_delete-com,
 #btn_update-com {
@@ -178,5 +181,16 @@ export default {
 #com_date {
   font-size: smaller;
   padding: 0.2em;
+}
+.submit {
+  background-color: white;
+  color: black;
+  border: 2px solid #555555;
+  padding: 0.3em;
+  margin: 0.3em;
+}
+.submit:hover {
+  background-color: #555555;
+  color: white;
 }
 </style>
