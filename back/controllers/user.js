@@ -36,27 +36,17 @@ module.exports.signup = async (req, res) => {
   if (utilisateur) {
     return res.status(401).json({ error: "Cet email est deja utilisé ❌" });
   } else {
-      // 1er user === admin
-      let isAdmin;
-      const countUsers = await models.Utilisateur.count()
-      if (countUsers < 1)  {
-        isAdmin = true }
-      else {
-        isAdmin = false
-      }
     // Cryptage du mot de passe
     bcrypt.hash(req.body.mot_psw, 10)
       .then((hash) => {
       // Creer nouvel utilisateur
       models.Utilisateur.create({
         mail: req.body.mail,
-        isAdmin: isAdmin,
         mot_psw: hash,
         pseudonyme: req.body.pseudonyme,
       })
       .then(user => {
         delete user.mot_psw;
-        delete user.mail;
       return res.status(201).json({
         // Creation du token et envoi coté client
         userConnect : user,
@@ -90,10 +80,8 @@ module.exports.login = async (req, res) => {
       if (!verify) {
         res.status(404).json({ error: "L'email ou le pseudonyme est incorrect ❌" });
       }
-      delete userFound.mot_psw;
       // supression mail de fonctionne pas
-      delete userFound.mail;
-      console.log('userFound', userFound);
+      delete userFound.mot_psw;
       res.status(200).json({
         // Creation du token et envoi coté client
         userConnect : userFound,
