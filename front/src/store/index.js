@@ -17,6 +17,9 @@ export default new Vuex.Store({
     getArticleById: (state) => (id) => {
       return state.articles.find((article) => article.id === id);
     },
+    getCommentsById: (state) => (id) => {
+      return state.commentaires.find((commentaire) => commentaire.articleId === id);
+    },
   },
   mutations: {
     USER_INFO(state, user) {
@@ -28,7 +31,6 @@ export default new Vuex.Store({
     USER_DISCONNECT(state) {
       state.isAuthentificated = false;
       state.user = null;
-      state.articles = null;
     },
     FETCH_ARTICLES(state, articles) {
       state.articles = articles;
@@ -44,30 +46,13 @@ export default new Vuex.Store({
       localStorage.clear();
       return router.push("/");
     },
-
-    // tokenValid({ commit }) {
-    //   let token = localStorage.getItem("token");
-    //   if (token) {
-    //     instance
-    //       .get(`user/auth`)
-    //       .then((tokenValid) => {
-    //         console.log("isauthentificated2", tokenValid);
-    //         commit("USER_CONNECT");
-    //       })
-    //       .catch((err) => {
-    //         commit("USER_DISCONNECT");
-    //         console.log(err);
-    //       });
-    //   }
-    // },
-
+    // Recupération des infos de l'utilisateur 
     fetchUser({ commit, dispatch }) {
       let user = JSON.parse(localStorage.getItem("user"));
       let id = user.userID;
       instance
         .get(`user/${id}`)
         .then((user) => {
-          console.log("store user", user.data);
           commit("USER_INFO", user.data);
         })
         .catch((e) => {
@@ -76,10 +61,10 @@ export default new Vuex.Store({
           }
         });
     },
-
-    // getUser({ commit }, user) {
-    //   commit("USER_INFO", user);
-    // },
+    // Mise a jour des infos utilisateur
+    getUser({ commit }, user) {
+      commit("USER_INFO", user);
+    },
 
     // Récupération des articles
     fetchArticles({ commit, dispatch }) {
@@ -92,7 +77,9 @@ export default new Vuex.Store({
           if (error.response.status === 401) {
             dispatch("logOut");
           }
-          console.log("error fetchArticles store", error.response.data);
+          if (error.response.status === 404) {
+            commit("FETCH_ARTICLES", []);
+          }
         });
     },
 
@@ -102,7 +89,6 @@ export default new Vuex.Store({
         .get(`article/${id}`)
         .then((article) => {
           commit("FETCH_ARTICLE", article.data.articleFound);
-          console.log(article.data.articleFound);
         })
         .catch((e) => {
           console.log(e);
@@ -113,14 +99,16 @@ export default new Vuex.Store({
       instance
         .get(`comment/${id}`)
         .then((response) => {
+          console.log("idArticle", id, "coms", response.data);
           commit("FETCH_COMMENTAIRES", response.data);
         })
         .catch((error) => {
-          console.log("error fetchArticles store", error.response.data);
+          if (error.response.status === 404) {
+            commit("FETCH_COMMENTAIRES", []);
+          }
         });
     },
   },
-  modules: {},
   plugins: [
     createPersistedState({
       key: ["isAuthentificated"],

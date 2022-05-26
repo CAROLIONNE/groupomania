@@ -11,9 +11,14 @@
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
+          <!-- icone version mobile -->
+          <i class="fa-solid fa-pencil" v-on:click="showDisplayUpdate()"></i>
           <button id="delete-btn" v-on:click="deleteArticle()">
             Supprimer l'article
           </button>
+          <!-- icone version mobile -->
+          <i class="fa-solid fa-trash-can" v-on:click="deleteArticle()"></i>
+          </div>
           <form @submit.prevent="update()">
             <fieldset id="container_update" v-if="showUpdate">
               <legend><h2>Modification</h2></legend>
@@ -39,7 +44,7 @@
               <p class="error" v-if="errors">{{ errors }}</p>
             </fieldset>
           </form>
-        </div>
+        <!-- </div> -->
         <div id="content" v-if="displayContent">
           <img id="article_img" :src="article.media" v-if="article.media" />
           <p id="article_text" v-html="article.text"></p>
@@ -57,22 +62,15 @@
           <button
             id="btn_coms"
             v-on:click="displayComment()"
-            v-if="commentaires"
+            v-if="commentaires.length > 0"
           >
             Commentaire<span v-if="commentaires.length > 1">s</span> ({{
               commentaires.length
             }})
           </button>
           <p v-else>Soyez le premier a commenter</p>
-          <!-- <BtnWhite
-            id="btn_coms"
-            :show="displayComment()"
-            v-if="commentaires"
-            name="Commentaire"
-          /> -->
         </div>
         <div class="new_com" v-if="click">
-          <h2>Texte :</h2>
           <textarea
             id="com_text"
             v-model="commentaire"
@@ -94,16 +92,8 @@
         </div>
 
         <div id="container_comments" v-if="displayCom">
-          <div
-            id="display_com"
-            v-for="(com, index) in commentaires"
-            :key="com.id"
-          >
-            <BaseCommentaire
-              :commentaire="com"
-              :index="index"
-              :getComment="getComment"
-            />
+          <div id="display_com" v-for="com in commentaires" :key="com.id">
+            <BaseCommentaire :commentaire="com" :getComment="getComment" />
           </div>
         </div>
       </div>
@@ -118,7 +108,7 @@ import BtnWhite from "../components/BtnWhite.vue";
 import Modale from "../components/ModaleBox.vue";
 import BaseCommentaire from "../components/BaseCommentaire.vue";
 import Editor from "@tinymce/tinymce-vue";
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
   name: "DisplayArticle",
@@ -126,7 +116,6 @@ export default {
   data() {
     return {
       intro: "Bienvenue sur le réseau social d'entreprise de Groupomania",
-      commentaires: "",
       commentaire: "",
       errors: null,
       valid: null,
@@ -142,31 +131,24 @@ export default {
   },
   created() {
     let user = JSON.parse(localStorage.getItem("user"));
-    this.user = user
-    let token = localStorage.getItem("token");
-    // this.$store.dispatch("fetchArticle", this.$route.params.id) 
-
-    // Recupération des commentaires de l'article
-    this.axios
-      .get(`http://localhost:3000/api/comment/${this.$route.params.id}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((allCommentaires) => {
-        this.commentaires = allCommentaires.data;
-      })
-      .catch((e) => {
-        console.log("get comment", e.response);
-      });
+    this.user = user;
+    // Recuperation des commentaires
+    this.$store.dispatch("fetchCommentaires", this.$route.params.id);
   },
   computed: {
-    ...mapGetters(["getArticleById"]),
-    article () {
-      return this.getArticleById(this.$route.params.id)
-    }
+    ...mapGetters(["getArticleById", "getCommentsById"]),
+    article() {
+      return this.getArticleById(this.$route.params.id);
+    },
+    commentaires() {
+      return this.$store.state.commentaires;
+    },
   },
   methods: {
+    getComment() {
+      // Recupération des commentaires de l'article
+      this.$store.dispatch("fetchCommentaires", this.$route.params.id);
+    },
     fileChange(e) {
       let files = e.target.files || e.dataTransfer.files;
       this.article.media = files[0];
@@ -177,24 +159,6 @@ export default {
     displayComment() {
       this.displayCom = !this.displayCom;
       if (this.click == true) this.click = false;
-    },
-    getComment() {
-      // Recupération des commentaires de l'article
-      let token = localStorage.getItem("token");
-      let $id = this.$route.params.id;
-      return this.axios
-        .get(`http://localhost:3000/api/comment/${$id}`, {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((allCommentaires) => {
-          this.commentaires = allCommentaires.data;
-        })
-        .catch((e) => {
-          this.commentaires = "";
-          console.log("getComment, displayArticle", e.response);
-        });
     },
     timestamp(date) {
       return moment(date, "YYYYMMDD").fromNow();
@@ -228,11 +192,7 @@ export default {
           this.displayContent = !this.displayContent;
           this.showUpdate = false;
           this.click = false;
-
-          this.valid = res.data
-          // Modale
-          // this.message = res.data;
-          // this.toggleModale();
+          this.valid = res.data;
           // Mise a jour du store
           setTimeout(() => {
             this.$store.dispatch("fetchArticles");
@@ -262,8 +222,8 @@ export default {
             this.$store.dispatch("fetchArticles");
             // Redirection
             setTimeout(() => {
-            this.$router.push({ name: "FilActu" });
-          }, 1500);
+              this.$router.push({ name: "FilActu" });
+            }, 1500);
           })
           .catch((e) => {
             this.click = false;
@@ -297,7 +257,7 @@ export default {
             this.click = false;
             this.message = response.data;
             this.toggleModale();
-            this.getComment();
+            this.$store.dispatch("fetchCommentaires", this.$route.params.id);
           })
           .catch((e) => {
             console.log(e);
@@ -312,6 +272,10 @@ export default {
 </script>
 
 <style scoped>
+#mod {
+  display: flex;
+  justify-content: center;
+}
 #article {
   width: 70%;
   margin-left: auto;
@@ -329,11 +293,11 @@ export default {
   background: var(--gradiant);
 }
 img {
-  height: 100%;
   margin: auto;
   border: outset;
   min-width: 90%;
   max-width: 100%;
+  height: 400px;
 }
 #article_text,
 #article_author {
@@ -354,6 +318,7 @@ img {
   padding: 0.2em;
   border: 2px solid #a7a7a7;
   border-radius: 1em;
+  padding: 0.5em;
 }
 #container_update {
   padding: 0.5em;
@@ -378,7 +343,7 @@ img {
   margin-right: auto;
   border: 2px solid #a7a7a7;
   border-radius: 1em;
-  width: 80%;
+  max-width: 100%;
   background: whitesmoke;
 }
 
@@ -387,7 +352,16 @@ img {
   padding: 0.2em;
 }
 .submit {
-  cursor: pointer;
+  background-color: white;
+  color: black;
+  border: 2px solid #555555;
+  padding: 0.3em;
+  margin: 0.3em;
+  cursor:pointer;
+}
+.submit:hover {
+  background-color: #555555;
+  color: white;
 }
 .error {
   color: var(--color-error);
@@ -397,4 +371,30 @@ img {
   color: #003ba2;
   padding: 0.5em;
 }
+.fa-pencil, .fa-trash-can {
+  display: none;
+  color: #3b3b3b;
+  border: black 1px solid;
+  width: fit-content;
+  padding: 0.5em;
+  margin: 0.2em;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.fa-pencil:hover, .fa-trash-can:hover {
+  color: var(--color-secondary);
+  transform: scale(1.1)
+}
+.fa-pencil:active, .fa-trash-can:active {
+  transform: scale(1);
+}
+
+@media screen and (max-width: 768px) {
+    .fa-pencil, .fa-trash-can {
+      display: inherit;
+    }
+    #update-btn, #delete-btn {
+      display: none;
+    }
+  }
 </style>
