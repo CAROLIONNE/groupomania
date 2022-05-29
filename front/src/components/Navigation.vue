@@ -87,13 +87,7 @@
       </nav>
       <nav class="nav" v-if="$store.state.isAuthentificated == false">
         <router-link to="/" class="logo" v-if="$store.state.isAuthentificated == false">
-          <i
-            @click="toggleMobileNav"
-            class="fa fa-bars"
-            :class="{ 'icon-active': mobileNav }"
-            v-if="mobile"
-          ></i>
-          <transition name="mobile-nav"> </transition>
+
           <!-- Navigation sans authentification -->
           <img
             class="img_logo"
@@ -101,6 +95,13 @@
             alt="logo de groupomania"
           />
         </router-link>
+                  <i
+            @click="mobileNav = !mobileNav"
+            class="fa fa-bars"
+            :class="{ 'icon-active': mobileNav }"
+            v-if="mobile"
+          ></i>
+          <transition name="mobile-nav"> </transition>
         <div v-show="mobileNav" id="nav_!auth-mobile">
           <div class="navigation_M">
             <div class="inscription">
