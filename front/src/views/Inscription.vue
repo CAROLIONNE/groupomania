@@ -11,11 +11,11 @@
     <h2>{{ intro }}</h2>
     <form>
       <label for="mail">Mail :</label>
-      <input v-model="mail" placeholder="mail" /><br />
+      <input v-model.trim="mail" placeholder="mail" /><br />
       <label for="mot de passe">Mot de passe :</label>
-      <input type="password" v-model="password" placeholder="mot de passe" /><br/>
+      <input type="password" v-model.trim="password" placeholder="mot de passe" /><br/>
       <label for="pseudonyme">Pseudonyme :</label>
-      <input type="text" v-model="pseudonyme" placeholder="pseudonyme" />
+      <input type="text" v-model.trim="pseudonyme" placeholder="pseudonyme" />
     <div id="submit_form">
     <p id="error" v-if="errors.length"> {{ errors }} </p>
     <input id ="btn_submit" type="submit" v-on:click="signUp()" value="Envoyer"/>
