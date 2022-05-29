@@ -27,7 +27,11 @@
       </nav>
       <!-- Navigation sans authentification -->
       <nav class="nav" v-if="$store.state.isAuthentificated == false">
-        <router-link to="/" class="logo" v-if="$store.state.isAuthentificated == false">
+        <router-link
+          to="/"
+          class="logo"
+          v-if="$store.state.isAuthentificated == false"
+        >
           <img
             class="img_logo"
             src="../assets/icon-left-font-monochrome-white.svg"
@@ -47,7 +51,7 @@
       </nav>
     </div>
 
-    <div id="nav_mobile" v-if="mobile" >
+    <div id="nav_mobile" v-if="mobile">
       <nav class="nav" v-if="$store.state.isAuthentificated == true">
         <!-- Navigation avec authentification -->
         <router-link
@@ -69,25 +73,27 @@
         ></i>
         <transition name="mobile-nav"> </transition>
         <div v-show="mobileNav" id="nav_auth-mobile">
-          <transition name="mobile"> 
-          <div class="navigation_M">
-            
-            <!-- <div class="navigation_M" :class="{ 'menu-enter-active': mobile-nav-menu }"> -->
+          <transition name="mobile">
+            <div class="navigation_M">
+              <!-- <div class="navigation_M" :class="{ 'menu-enter-active': mobile-nav-menu }"> -->
 
-            <div class="fil_actu">
-              <router-link :to="{ name: 'FilActu' }" class="ancre_fil_actu">
-                Fil d'actualité
-              </router-link>
+              <div class="fil_actu">
+                <router-link :to="{ name: 'FilActu' }" class="ancre_fil_actu">
+                  Fil d'actualité
+                </router-link>
+              </div>
+              <a class="ancre_profil" @click="Profil()"> Profil </a>
+              <a class="ancre_logout" @click="logOut()"> Deconnexion </a>
             </div>
-            <a class="ancre_profil" @click="Profil()"> Profil </a>
-            <a class="ancre_logout" @click="logOut()"> Deconnexion </a>
-          </div>
           </transition>
         </div>
       </nav>
       <nav class="nav" v-if="$store.state.isAuthentificated == false">
-        <router-link to="/" class="logo" v-if="$store.state.isAuthentificated == false">
-
+        <router-link
+          to="/"
+          class="logo"
+          v-if="$store.state.isAuthentificated == false"
+        >
           <!-- Navigation sans authentification -->
           <img
             class="img_logo"
@@ -95,13 +101,13 @@
             alt="logo de groupomania"
           />
         </router-link>
-                  <i
-            @click="mobileNav = !mobileNav"
-            class="fa fa-bars"
-            :class="{ 'icon-active': mobileNav }"
-            v-if="mobile"
-          ></i>
-          <transition name="mobile-nav"> </transition>
+        <i
+          @click="mobileNav = !mobileNav"
+          class="fa fa-bars"
+          :class="{ 'icon-active': mobileNav }"
+          v-if="mobile"
+        ></i>
+        <transition name="mobile-nav"> </transition>
         <div v-show="mobileNav" id="nav_!auth-mobile">
           <div class="navigation_M">
             <div class="inscription">
@@ -260,7 +266,7 @@ a {
 }
 .mobile-enter-active {
   transition: opacity 1s;
-    /* z-index: 10;
+  /* z-index: 10;
   transform: translateY(60px), scale(50px); */
 }
 .mobile-enter {
