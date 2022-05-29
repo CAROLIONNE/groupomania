@@ -22,5 +22,4 @@ const Article = db.define(
   }
 );
 
-
 module.exports = Article;
