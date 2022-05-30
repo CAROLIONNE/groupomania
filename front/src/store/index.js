@@ -49,7 +49,7 @@ export default new Vuex.Store({
   },
   actions: {
   // Recupérer l'ID et le role de l'utilisateur
-  getIdAndRole({ commit, dispatch }) {
+  getIdAndRole({ commit }) {
     // Requête API 
       instance.get(`user/me`)
       .then((res) => {

@@ -6,7 +6,7 @@ const instance = axios.create({
     baseURL: 'http://localhost:3000/api/',
 });
 
-// Config Token in Anthorization-Header
+// Configuration du token dans les headers
 instance.interceptors.request.use(
     function(config) {
       const token = localStorage.getItem("token"); 
