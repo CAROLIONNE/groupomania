@@ -43,14 +43,9 @@ export default {
         .then((response) => {
           let user = response.data;
           localStorage.setItem("token", user.token);
-          localStorage.setItem("user",
-            JSON.stringify({
-              userID: user.userConnect.id,
-              isAdmin: user.userConnect.isAdmin,
-            })
-          );
           this.$store.commit("USER_CONNECT");
-          this.$store.dispatch("fetchUser");
+          this.$store.dispatch("getIdAndRole");
+          this.$store.dispatch("fetchUser", user.userID);
           this.$router.push({ name: "FilActu" });
         })
         .catch((e) => {

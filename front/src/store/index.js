@@ -12,6 +12,8 @@ export default new Vuex.Store({
     isAuthentificated: false,
     articles: [],
     commentaires: [],
+    id: "",
+    isAdmin: Boolean,
   },
   getters: {
     getArticleById: (state) => (id) => {
@@ -22,6 +24,12 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    USER_ID(state, id) {
+      state.id = id;
+    },
+    USER_ROLE(state, isAdmin) {
+      state.isAdmin = isAdmin;
+    },
     USER_INFO(state, user) {
       state.user = user;
     },
@@ -40,6 +48,19 @@ export default new Vuex.Store({
     },
   },
   actions: {
+  getIdAndRole({ commit, dispatch }) {
+      instance
+      .get(`user/me`)
+      .then((res) => {
+        commit("USER_ID", res.data.userId);
+        commit("USER_ROLE", res.data.isAdmin);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          dispatch("logOut");
+        }
+      });
+    },
     // Deconnexion
     logOut({ commit }) {
       commit("USER_DISCONNECT");
@@ -47,9 +68,7 @@ export default new Vuex.Store({
       return router.push("/");
     },
     // Recupération des infos de l'utilisateur 
-    fetchUser({ commit, dispatch }) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let id = user.userID;
+    fetchUser({ commit, dispatch }, id) {
       instance
         .get(`user/${id}`)
         .then((user) => {
@@ -99,7 +118,6 @@ export default new Vuex.Store({
       instance
         .get(`comment/${id}`)
         .then((response) => {
-          console.log("idArticle", id, "coms", response.data);
           commit("FETCH_COMMENTAIRES", response.data);
         })
         .catch((error) => {

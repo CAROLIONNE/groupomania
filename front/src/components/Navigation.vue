@@ -109,14 +109,14 @@
         <div v-show="mobileNav" id="nav_!auth-mobile">
           <div class="navigation_M">
             <div class="inscription">
-              <router-link to="/inscription" class="ancre_inscription"
-                >Inscription</router-link
-              >
+              <router-link to="/inscription" class="ancre_inscription">
+                Inscription
+                </router-link>
             </div>
             <div class="connexion">
-              <router-link to="/" class="ancre_connexion"
-                >Connexion</router-link
-              >
+              <router-link to="/" class="ancre_connexion">
+                Connexion
+              </router-link>
             </div>
           </div>
         </div>
@@ -143,8 +143,7 @@ export default {
   },
   methods: {
     Profil() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let id = user.userID;
+      let id = this.$store.state.id;
       this.$router.push({ name: "DisplayProfil", params: { id } });
     },
     logOut() {

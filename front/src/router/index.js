@@ -15,7 +15,7 @@ Vue.use(VueRouter)
 // Securiser navigation non authentifiée
 function isAuthenticated(to, from, next) {
   let isAuthenticated= false; 
-  if(localStorage.getItem('user')) {isAuthenticated = true} 
+  if(localStorage.getItem('isAuthentificated')) {isAuthenticated = true} 
   else {isAuthenticated= false}
   if(isAuthenticated) { 
     next(); // permet d'entrer la route 

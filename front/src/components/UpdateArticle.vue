@@ -1,5 +1,5 @@
 <template>
-    <div id="mod" v-if='article.utilisateurId == userConnect.userID || userConnect.isAdmin == 1'>
+    <div id="mod" v-if='article.utilisateurId == id || isAdmin == 1'>
           <div id="btn">
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
@@ -60,16 +60,13 @@ export default {
   data () {
       return {
         showUpdate: false,
-        userConnect : {},
+        id: this.$store.state.id, 
+        isAdmin: this.$store.state.isAdmin,
         show: false,
         message: null,
         media: "",
         display: this.displayContent
       }
-  },
-  mounted(){ 
-    let user = JSON.parse(localStorage.getItem("user"));
-    this.userConnect = user
   },
     computed: {
     ...mapGetters(["getArticleById"]),

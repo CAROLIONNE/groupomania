@@ -25,7 +25,7 @@ export default {
     };
   },
   created() {
-    let user = JSON.parse(localStorage.getItem("user"));
+    let user = JSON.parse(localStorage.getItem("isAuthentificated"));
     if (user) return (this.user = true);
   },
 };

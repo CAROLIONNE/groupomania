@@ -7,6 +7,28 @@ const EMAIL_REGEX =
 
 require("dotenv").config();
 
+// Renvoi du token et du rôle
+module.exports.getIdAndRole = async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    // Decode et verifie le token avec la clef secrète
+    jwt.verify(token, process.env.SECRET, (err, decodedToken) => {
+      if (err) {
+        console.log(err);
+        res.status(401).json({ error: "Token invalide" });
+      } else {
+        const userId = decodedToken.id;
+        const isAdmin = decodedToken.isAdmin;
+        // Renvoi des données
+        res.status(200).json({ userId: userId, isAdmin: isAdmin});
+      }
+    })
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+
 // Inscription
 module.exports.signup = async (req, res) => {
   // Verifie que les champs sont remplis

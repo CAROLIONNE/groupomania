@@ -64,7 +64,7 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch("fetchUser");
+    this.$store.dispatch("fetchUser", this.$store.state.id);
   },
   computed: {
     timestamp: function () {
@@ -92,7 +92,7 @@ export default {
           document.getElementById("avatar").value = "";
           // Mise a jour du store
           setTimeout(() => {
-            this.$store.dispatch("fetchUser");
+            this.$store.dispatch("fetchUser", this.$store.state.id);
           }, 499);
         })
         .catch((e) => {
