@@ -48,38 +48,45 @@ export default new Vuex.Store({
     },
   },
   actions: {
+  // Recupérer l'ID et le role de l'utilisateur
   getIdAndRole({ commit, dispatch }) {
-      instance
-      .get(`user/me`)
+    // Requête API 
+      instance.get(`user/me`)
       .then((res) => {
+        // Mutation du state
         commit("USER_ID", res.data.userId);
         commit("USER_ROLE", res.data.isAdmin);
       })
       .catch((e) => {
-        if (e.response.status === 401) {
-          dispatch("logOut");
-        }
+        console.log(e)
       });
     },
-    // Deconnexion
+
+    // Deconnexion 
     logOut({ commit }) {
       commit("USER_DISCONNECT");
+      // Vide le localStorage
       localStorage.clear();
+      // Redirection vers le login
       return router.push("/");
     },
+
     // Recupération des infos de l'utilisateur 
     fetchUser({ commit, dispatch }, id) {
-      instance
-        .get(`user/${id}`)
+      // Requête API
+      instance.get(`user/${id}`)
         .then((user) => {
+          // Mutation du state
           commit("USER_INFO", user.data);
         })
         .catch((e) => {
+          // Deconnexion si token invalide
           if (e.response.status === 401) {
             dispatch("logOut");
           }
         });
     },
+
     // Mise a jour des infos utilisateur
     getUser({ commit }, user) {
       commit("USER_INFO", user);
@@ -87,12 +94,14 @@ export default new Vuex.Store({
 
     // Récupération des articles
     fetchArticles({ commit, dispatch }) {
-      instance
-        .get(`article`)
+      // Requête API
+      instance.get(`article`)
         .then((response) => {
+          // Mutation du state
           commit("FETCH_ARTICLES", response.data);
         })
         .catch((error) => {
+          // Deconnexion si token invalide
           if (error.response.status === 401) {
             dispatch("logOut");
           }
@@ -104,20 +113,23 @@ export default new Vuex.Store({
 
     // Récupération des données d'un article
     fetchArticle({ commit }, id) {
-      instance
-        .get(`article/${id}`)
+      // Requête API
+      instance.get(`article/${id}`)
         .then((article) => {
+          // Mutation du state
           commit("FETCH_ARTICLE", article.data.articleFound);
         })
         .catch((e) => {
           console.log(e);
         });
     },
+
     // Récupération des commentaires
     fetchCommentaires({ commit }, id) {
-      instance
-        .get(`comment/${id}`)
+      // Requête API
+      instance.get(`comment/${id}`)
         .then((response) => {
+          // Mutation du state
           commit("FETCH_COMMENTAIRES", response.data);
         })
         .catch((error) => {
