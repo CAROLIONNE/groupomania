@@ -21,18 +21,20 @@ module.exports.signup = async (req, res) => {
   if (req.body.pseudonyme.length <= 3 || req.body.pseudonyme.length >= 14) {
     return res.status(400).json({ error: "Pseudonyme trop long ou trop court (entre 3 et 14 caractères)❌" });
   }
-  // Contrôle adresse email
+  // Contrôle adresse email avec Regex
   if (!EMAIL_REGEX.test(req.body.mail)) {
     return res.status(400).json({ error: "Email invalide ❌" });
   }
+  // Verifie que le champ est rempli
   if (req.body.pseudonyme.length == 0) {
     return res.status(401).json({ error: "Pseudonyme requis ❌" });
   }
+  // Requête base de donnée
   const utilisateur = await models.Utilisateur.findOne({
     attributes: ["mail"],
     where: { mail: req.body.mail },
   });
-  // si l'utilisateur a déja un compte avec cet email
+  // Si l'utilisateur a déja un compte avec cet email renvoi l'erreur
   if (utilisateur) {
     return res.status(401).json({ error: "Cet email est deja utilisé ❌" });
   } else {
@@ -70,6 +72,7 @@ module.exports.signup = async (req, res) => {
 // Connexion
 module.exports.login = async (req, res) => {
   const { mail, mot_psw } = req.body;
+  // Requête base de donnée
   const userFound = await models.Utilisateur.findOne({ where: { mail: mail } });
   // Verifie que l'utilisateur existe avec l'adresse email
   if (!userFound) {
@@ -80,7 +83,6 @@ module.exports.login = async (req, res) => {
       if (!verify) {
         res.status(404).json({ error: "L'email ou le pseudonyme est incorrect ❌" });
       }
-      // supression mail de fonctionne pas
       delete userFound.mot_psw;
       res.status(200).json({
         // Creation du token et envoi coté client
@@ -164,7 +166,6 @@ module.exports.updateAvatar = async (req, res) => {
           // Mettre à jour l'avatar en conservant img par default dans stockage serveur
           models.Utilisateur.update(
             {
-              // avatar: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
               avatar: req.file.filename,
             },
             { where: { id: req.params.id } }
@@ -176,7 +177,6 @@ module.exports.updateAvatar = async (req, res) => {
             // Mettre à jour l'avatar
             models.Utilisateur.update(
               {
-                // avatar: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
                 avatar: req.file.filename,
               },
               { where: { id: req.params.id } }
@@ -187,8 +187,7 @@ module.exports.updateAvatar = async (req, res) => {
       } else {
         return res.status(500).json({ error: "Requête non authorisée ⛔" });
       }
-    })
-    .catch((err) => {
+    }).catch((err) => {
       console.log(err);
     });
 };
@@ -228,7 +227,7 @@ module.exports.deleteUser = async (req, res) => {
         return res.status(401).json({ error: "Requête non authorisée ⛔" });
       }
     }
-  ).catch(function(e) {
-    console.error(e);
-  })
+  ).catch((err) => {
+    console.log(err);
+  });
 };

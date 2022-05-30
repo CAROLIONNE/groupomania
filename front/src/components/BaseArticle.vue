@@ -11,9 +11,9 @@
     <p id="article_text" v-html="article.text"></p>
     <p id="article_author">
       Créé par {{ article.utilisateur.pseudonyme }}, le
-      {{ timestamp2(article.createdAt) }}
+      {{ timestamp(article.createdAt) }}
       <span v-if="article.createdAt != article.updatedAt"
-        >, Modifié le {{ timestamp2(article.updatedAt) }}
+        >, Modifié le {{ timestamp(article.updatedAt) }}
       </span>
     </p>
     </div>
@@ -67,7 +67,6 @@ import moment from "moment";
 import Modale from "./ModaleBox.vue";
 import BaseCommentaire from "../components/BaseCommentaire.vue";
 import UpdateArticle from "../components/UpdateArticle.vue";
-// import { mapGetters } from 'vuex'
 
 export default {
   name: "BaseArticle",
@@ -94,7 +93,6 @@ export default {
   },
   created() {
     // Recupération des commentaires
-    // this.$store.dispatch("fetchCommentaires", this.article.id) 
     let token = localStorage.getItem("token");
     let idArticle = this.article.id;
     this.axios
@@ -110,12 +108,6 @@ export default {
         console.log(e.response.data);
       });
   },
-  // computed: {
-  //   ...mapGetters(["getCommentsById"]),
-  //   commentaires (){
-  //     return this.getCommentsById(this.$route.params.id);
-  //   },
-  // },
   methods: {
     displayUpdate($event) {
       this.displayContent = $event
@@ -128,9 +120,6 @@ export default {
       this.show = !this.show;
     },
     timestamp(date) {
-      return moment(date, "YYYYMMDD").fromNow();
-    },
-    timestamp2(date) {
       return moment(date).format("DD-MM-YYYY");
     },
     displayNewComment() {

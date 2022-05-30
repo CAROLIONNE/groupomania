@@ -228,7 +228,6 @@ export default {
           .catch((e) => {
             this.click = false;
             this.message = e.response.data;
-            // console.log(e.response.config.data);
           });
       }
     },

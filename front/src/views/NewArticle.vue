@@ -7,7 +7,7 @@
         name="titre"
         id="titre"
         placeholder="Votre titre"
-        v-model="titre"
+        v-model.trim="titre"
       />
     <editor
       api-key="b7vz3gtuzy2c28rt2axsmshdeh5dfh1vftz3x9tvoqg12057"
@@ -17,7 +17,7 @@
       }"
        initial-value=""
        id="editor"
-       v-model="text"
+       v-model.trim="text"
        output-format="html" 
     />
       <input id="file" type="file" name="image" v-on:change="fileChange" />
@@ -109,7 +109,6 @@ h1 {
   border-radius: 3em;
   -webkit-box-shadow: 0px 10px 13px -7px #000000,
     5px 5px 15px 5px rgba(0, 0, 0, 0);
-  /* box-shadow: 0px 10px 13px -7px #000000, 5px 5px 15px 5px rgba(0, 0, 0, 0); */
   box-shadow: 0.3em 0.3em 8px #a8a7a7;
 }
 #titre {
@@ -151,7 +150,6 @@ h1 {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  /* width: 100%; */
   will-change: transform;
 }
 

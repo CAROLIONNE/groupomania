@@ -61,7 +61,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1 {
   position: absolute;
@@ -145,7 +144,6 @@ input {
     padding: 0.5em;
   }
   form {
-    /* transition ne fonctionne pas  */
     transition : all 1s ease-in;
     position: inherit;
     width: 60%;

@@ -3,12 +3,12 @@
     <h1>Page de connexion</h1>
     <form>
       <label for="mail">Mail :</label>
-      <input id="mail" v-model="mail" placeholder="mail" /><br />
+      <input id="mail" v-model.trim="mail" placeholder="mail" /><br />
       <label for="password">Mot de passe :</label>
       <input
         id="password"
         type="password"
-        v-model="password"
+        v-model.trim="password"
         placeholder="mot de passe"
       />
       <br />

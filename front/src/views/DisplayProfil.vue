@@ -63,7 +63,6 @@ export default {
       message: null,
     };
   },
-
   created() {
     this.$store.dispatch("fetchUser");
   },
@@ -86,7 +85,6 @@ export default {
         .put(`http://localhost:3000/api/user/avatar/${id}`, updatedPost, {
           headers: {
             Authorization: "Bearer " + token,
-            // "content-Type": "multipart/form-data",
           },
         })
         .then(() => {

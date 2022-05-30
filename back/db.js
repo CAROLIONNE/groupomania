@@ -1,10 +1,11 @@
 require("dotenv").config();
 
-
-//Connexion BDD sequelize
+// Import sequelize
 const { Sequelize } = require("sequelize");
 
+// Definition des paramètres de la BDD
 const sequelize = new Sequelize(
+  // Variable d'environnement
   process.env.database,
   process.env.user_sql,
   process.env.password_sql,
@@ -16,7 +17,7 @@ const sequelize = new Sequelize(
 
 try {
   sequelize.authenticate();
-  console.log("Connection has been established successfully.");
+  console.log("Connexion BDD réeussie");
 } catch (error) {
   console.error("Unable to connect to the database:", error);
 }

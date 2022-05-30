@@ -1,17 +1,19 @@
-
-const models = require("../models/index"); 
+const models = require("../models/index");
 
 // Afficher commentaires d'un article
 exports.ViewComment = async (req, res) => {
+  // Requête base de donnée
   const commentFound = await models.Comment.findAll({
     where: { articleId: req.params.id },
-    include: [{model: models.Utilisateur, attributes: ["pseudonyme"]}] ,
-    order: [['createdAt', 'DESC']]
-  })
+    // Inclus le pseudonyme des utilisateurs
+    include: [{ model: models.Utilisateur, attributes: ["pseudonyme"] }],
+    // Trier plus récent au plus ancien
+    order: [["createdAt", "DESC"]],
+  });
+  // Si il y a un commentaire il est renvoyé en JSON
   if (commentFound.length > 0) {
-    res.status(200).json( commentFound );
+    res.status(200).json(commentFound);
   } else {
-    console.log("0 commentaire trouvé");
     res
       .status(404)
       .json({ error: "Pour l'instant, pas de commentaire sur cet article 🙄" });
@@ -21,21 +23,22 @@ exports.ViewComment = async (req, res) => {
 // Créer un commentaire
 module.exports.createComment = async (req, res) => {
   try {
-  await models.Comment.create({
-    articleId: req.params.id,
-    utilisateurId: req.auth.userId,
-    text: req.body.text,
-  });
-  res.status(201).json("Commentaire créé 😉");
-} catch (error) {
-  console.log(error);
-  res.status(401).json("Merçi de remplir le champ correctement 🙏");
-}
-}
+    // Requête base de donnée
+    await models.Comment.create({
+      articleId: req.params.id,
+      utilisateurId: req.auth.userId,
+      text: req.body.text,
+    });
+    res.status(201).json("Commentaire créé 😉");
+  } catch (error) {
+    console.log(error);
+    res.status(401).json("Merçi de remplir le champ correctement 🙏");
+  }
+};
 
 // Modifier texte d'un commentaire
 module.exports.updateComment = async (req, res) => {
-    // Verifie que l'id du commentaire existe
+  // Requête base de donnée
   let com = await models.Comment.findOne({
     where: { id: req.params.id },
   });
@@ -44,7 +47,7 @@ module.exports.updateComment = async (req, res) => {
   }
   // Acces admin ou utilisateur qui a créer le post
   if (req.auth.userId == com.utilisateurId || req.auth.isAdmin == 1) {
-    // Mise à jour du commentaire
+    // Mise à jour du commentaire et de la date
     models.Comment.update(
       { text: req.body.text, updatedAt: new Date() },
       {
@@ -59,7 +62,7 @@ module.exports.updateComment = async (req, res) => {
 
 // Suprimer un commentaire
 exports.deleteComment = async (req, res) => {
-  // Verifie que l'id du commentaire existe
+  // Requête base de donnée 
   let com = await models.Comment.findOne({
     where: { id: req.params.id },
   });
@@ -68,7 +71,7 @@ exports.deleteComment = async (req, res) => {
   }
   // Acces admin ou utilisateur qui a créer le post
   if (req.auth.userId == com.utilisateurId || req.auth.isAdmin == 1) {
-    // Supression
+    // Supression en base de donnée
     await models.Comment.destroy({
       where: {
         id: req.params.id,

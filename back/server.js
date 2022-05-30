@@ -21,7 +21,7 @@ app.use("/api/user", userRoutes);
 app.use('/api/article', articleRoutes);
 app.use('/api/comment', commentRoutes);
 
-// Import dotenv
+// Import dotenv variables d'environnement
 require("dotenv").config();
 
 // Limitation du nombre de requêtes

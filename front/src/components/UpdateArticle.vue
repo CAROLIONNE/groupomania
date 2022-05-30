@@ -38,9 +38,6 @@
               <input class="submit" type="submit" value="Sauvegarder" v-on:="$emit('getArticle', article)"/>
             </fieldset>
           </form>
-              <!-- <button v-on:click="$emit('getArticle', article)">
-                click
-              </button> -->
           <Modale :show="show" :toggleModale="toggleModale" :message="message"/>
         </div>
 </template>
@@ -135,14 +132,9 @@ export default {
         .then((response) => {
           this.message = response.data;
           this.toggleModale();
-          // refresh ne fonctionne pas
           setTimeout(() => {
             this.$store.dispatch("fetchArticles")  
           }, 1000);
-          // TODO repasser les données au parent
-          // si sur une autre page renvoyer au fil d'actu
-          // this.$router.push({ name: "FilActu" });
-
         })
         .catch((e) => {
           this.message = e.response.data;

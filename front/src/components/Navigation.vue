@@ -75,8 +75,6 @@
         <div v-show="mobileNav" id="nav_auth-mobile">
           <transition name="mobile">
             <div class="navigation_M">
-              <!-- <div class="navigation_M" :class="{ 'menu-enter-active': mobile-nav-menu }"> -->
-
               <div class="fil_actu">
                 <router-link :to="{ name: 'FilActu' }" class="ancre_fil_actu">
                   Fil d'actualité
@@ -209,13 +207,7 @@ a {
   transition: all ease-in-out 1s;
   overflow: hidden;
   z-index: 10;
-  /* visibility: hidden; */
 }
-/* i:active + .navigation_M {
-  z-index: 10;
-  transform: translateY(60px), scale(50px);
-    visibility: visible;
-  } */
 .inscription,
 .connexion,
 .fil_actu,
@@ -225,7 +217,6 @@ a {
   margin: 1em;
   display: flex;
 }
-
 .ancre_inscription,
 .ancre_connexion,
 .ancre_fil_actu,
@@ -235,7 +226,6 @@ a {
   font-size: larger;
   cursor: pointer;
 }
-
 .ancre_inscription:hover,
 .ancre_connexion:hover,
 .ancre_fil_actu:hover,
@@ -263,15 +253,5 @@ a {
 }
 .icon-active {
   transform: rotate(180deg);
-}
-.mobile-enter-active {
-  transition: opacity 1s;
-  /* z-index: 10;
-  transform: translateY(60px), scale(50px); */
-}
-.mobile-enter {
-  opacity: 0;
-  /* z-index: 10;
-  transform: translateY(60px), scale(50px); */
 }
 </style>
