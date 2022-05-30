@@ -4,10 +4,7 @@
       <div id="article">
         <h1>{{ article.titre }}</h1>
         <p class="valid" v-if="valid">{{ valid }}</p>
-        <div
-          id="mod"
-          v-if="article.utilisateurId == user.userID || user.isAdmin == 1"
-        >
+        <div id="mod" v-if="article.utilisateurId == id || isAdmin == 1">
           <button id="update-btn" v-on:click="showDisplayUpdate()">
             Modifier l'article
           </button>
@@ -44,13 +41,15 @@
               <p class="error" v-if="errors">{{ errors }}</p>
             </fieldset>
           </form>
-        <!-- </div> -->
         <div id="content" v-if="displayContent">
           <img id="article_img" :src="article.media" v-if="article.media" />
           <p id="article_text" v-html="article.text"></p>
           <p id="article_author">
-            Créé par {{ article.utilisateur.pseudonyme }}, le
-            {{ timestamp2(article.createdAt) }}
+            Créé par <strong>{{ article.utilisateur.pseudonyme }} </strong>| Publié le
+      {{ timestamp(article.createdAt) }}
+      <span v-if="article.createdAt != article.updatedAt"
+        > | Modifié le {{ timestamp(article.updatedAt) }}
+      </span>
           </p>
         </div>
         <div id="btn">
@@ -90,7 +89,6 @@
             {{ errors }}
           </p>
         </div>
-
         <div id="container_comments" v-if="displayCom">
           <div id="display_com" v-for="com in commentaires" :key="com.id">
             <BaseCommentaire :commentaire="com" :getComment="getComment" />
@@ -126,12 +124,11 @@ export default {
       media: "",
       show: false,
       message: null,
-      user: {},
+      id: this.$store.state.id, 
+      isAdmin: this.$store.state.isAdmin,
     };
   },
   created() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    this.user = user;
     // Recuperation des commentaires
     this.$store.dispatch("fetchCommentaires", this.$route.params.id);
   },
@@ -161,9 +158,6 @@ export default {
       if (this.click == true) this.click = false;
     },
     timestamp(date) {
-      return moment(date, "YYYYMMDD").fromNow();
-    },
-    timestamp2(date) {
       return moment(date).format("DD-MM-YYYY");
     },
     showDisplayUpdate() {
@@ -271,6 +265,9 @@ export default {
 </script>
 
 <style scoped>
+h1 {
+  margin: 0.1em;
+}
 #mod {
   display: flex;
   justify-content: center;

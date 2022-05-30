@@ -10,10 +10,10 @@
     <img :src="article.media" v-if="article.media" />
     <p id="article_text" v-html="article.text"></p>
     <p id="article_author">
-      Créé par {{ article.utilisateur.pseudonyme }}, le
+      Créé par <strong>{{ article.utilisateur.pseudonyme }} </strong>| Publié le
       {{ timestamp(article.createdAt) }}
       <span v-if="article.createdAt != article.updatedAt"
-        >, Modifié le {{ timestamp(article.updatedAt) }}
+        > | Modifié le {{ timestamp(article.updatedAt) }}
       </span>
     </p>
     </div>
@@ -186,6 +186,9 @@ a {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+h2 {
+  margin: 0.3em;
 }
 img {
   margin: auto;

@@ -3,27 +3,21 @@
     <i
       id="btn_update-com"
       class="fa-solid fa-pencil"
-      v-if="
-        commentaire.utilisateurId == userConnect.userID ||
-        userConnect.isAdmin == 1
-      "
+      v-if="commentaire.utilisateurId == id ||isAdmin == 1"
       @click="showUpdateCom = !showUpdateCom"
     ></i>
     <i
       id="btn_delete-com"
       class="fa-solid fa-trash-can"
-      v-if="
-        commentaire.utilisateurId == userConnect.userID ||
-        userConnect.isAdmin == 1
-      "
+      v-if="commentaire.utilisateurId == id || isAdmin == 1"
       @click="deleteCom(commentaire.id, commentaire.articleId)"
     ></i>
     <div id="com_text">{{ commentaire.text }}</div>
     <p id="com_date">
       Posté le {{ timestamp2(commentaire.createdAt) }} par
-      {{ commentaire.utilisateur.pseudonyme }}
+      <strong>{{ commentaire.utilisateur.pseudonyme }} </strong>
       <span v-if="commentaire.createdAt != commentaire.updatedAt"
-        >- Modifié le {{ timestamp2(commentaire.updatedAt) }}
+        > | Modifié le {{ timestamp2(commentaire.updatedAt) }}
       </span>
     </p>
 
@@ -69,12 +63,9 @@ export default {
       show: false,
       commentaireUpdate: "",
       message: null,
-      userConnect: {},
+      id: this.$store.state.id, 
+      isAdmin: this.$store.state.isAdmin,
     };
-  },
-  mounted() {
-    const ls = localStorage.getItem("user");
-    this.userConnect = JSON.parse(ls);
   },
   methods: {
     timestamp2(date) {
