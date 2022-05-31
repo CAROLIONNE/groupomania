@@ -145,5 +145,10 @@ export default new Vuex.Store({
       paths: ["isAuthentificated"],
       storage: window.localStorage,
     }),
+    createPersistedState({
+      key: ["id", "isAdmin"],
+      paths: ["id", "isAdmin"],
+      storage: window.localStorage,
+    }),
   ],
 });
