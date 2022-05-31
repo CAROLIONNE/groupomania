@@ -4,19 +4,10 @@ import router from "./router";
 import store from "./store";
 import axios from "axios";
 import VueAxios from "vue-axios";
-import VueMq from "vue-mq";
 
 
 Vue.use(VueAxios, axios);
 
-Vue.use(VueMq, {
-  breakpoints: {
-    sm: 450,
-    md: 768,
-    lg: Infinity,
-  },
-});
-Vue.config.productionTip = false;
 
 new Vue({
   router,
