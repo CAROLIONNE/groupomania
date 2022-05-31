@@ -64,9 +64,6 @@ h1 {
   text-align: center;
   padding: 1em;
 }
-.auth {
-  height: 17em;
-}
 form {
   margin-bottom: 6em;
   padding: 1em;
