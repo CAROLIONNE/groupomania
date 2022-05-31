@@ -13,6 +13,7 @@
       </router-link>
     </p>
     <router-view />
+    <img src="../assets/page_not_found_.png"/>
   </div>
 </template>
 
@@ -32,6 +33,9 @@ export default {
 </script>
 
 <style scoped>
+img {
+  max-width: 60%;
+}
 div {
   display: flex;
   flex-direction: column;
@@ -40,15 +44,16 @@ div {
   padding: 1em;
   border: thick double var(--color-secondary);
   width: fit-content;
-  margin-right: auto;
-  margin-left: auto;
 }
-h1 {
+/* h1 {
   padding: 0.3em;
   text-align: center;
-}
+} */
 p {
   padding: 0.3em;
+}
+p :hover{
+  text-decoration: underline;
 }
 .link {
   text-decoration: none;
