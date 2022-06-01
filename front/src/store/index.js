@@ -64,7 +64,10 @@ export default new Vuex.Store({
 
     // Deconnexion 
     logOut({ commit }) {
+      // Mise a jour du store
       commit("USER_DISCONNECT");
+      commit("USER_ID", "");
+      commit("USER_ROLE", "");
       // Vide le localStorage
       localStorage.clear();
       // Redirection vers le login
