@@ -60,8 +60,6 @@ export default {
   data () {
       return {
         showUpdate: false,
-        id: this.$store.state.id, 
-        isAdmin: this.$store.state.isAdmin,
         show: false,
         message: null,
         media: "",
@@ -72,7 +70,13 @@ export default {
     ...mapGetters(["getArticleById"]),
     article () {
       return this.getArticleById(this.idArticle)
-    }
+    },
+    isAdmin () {
+      return this.$store.state.isAdmin
+    },
+    id () {
+      return this.$store.state.id
+    },
   },
   methods: {
     fileChange(e) {

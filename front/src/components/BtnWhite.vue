@@ -6,7 +6,7 @@
 <script>
 export default {
   name: 'BtnWhite',
-  props: ['name', 'show', 'addComment'],
+  props: ['name', 'show'],
 }
 </script>
 
